@@ -1,0 +1,14 @@
+{
+  "name": "antify-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*/src",
+    "packages/*/e2e",
+    "packages/*"
+  ],
+  "engines": {
+    "node": "^14.17.0",
+    "pnpm": ">=7"
+  },
+  "packageManager": "pnpm@7.5.0"
+}

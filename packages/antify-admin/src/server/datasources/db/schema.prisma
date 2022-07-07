@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id           String             @id @default(uuid())
+  name         String
+  userAccesses UserTenantAccess[]
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime?          @updatedAt
+}
+
+model User {
+  id             String             @id @default(uuid())
+  email          String             @unique
+  password       String
+  name           String
+  isSuperAdmin   Boolean            @default(false)
+  tenantAccesses UserTenantAccess[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime?          @updatedAt
+}
+
+model Role {
+  id               String             @id @default(uuid())
+  isAdmin          Boolean
+  name             String
+  permissions      RolePermission[]
+  UserTenantAccess UserTenantAccess[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime?          @updatedAt
+}
+
+model RolePermission {
+  permissionId String
+  role         Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  roleId       String
+  createdAt    DateTime @default(now())
+
+  @@id([roleId, permissionId])
+}
+
+model UserTenantAccess {
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  tenantId  String
+  role      Role     @relation(fields: [roleId], references: [id])
+  roleId    String
+  createdAt DateTime @default(now())
+
+  @@id([userId, tenantId])
+}
+
+model MailTemplate {
+  id        String    @id @default(uuid())
+  title     String
+  content     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}

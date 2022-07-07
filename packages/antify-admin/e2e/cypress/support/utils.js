@@ -1,0 +1,1 @@
+export const uuidRegex = '(((\w{4,12}-?)){5})';

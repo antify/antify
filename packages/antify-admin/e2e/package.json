@@ -1,0 +1,9 @@
+{
+  "name": "@antify-admin/e2e",
+  "scripts": {
+    "cy:open": "cypress open"
+  },
+  "dependencies": {
+    "cypress": "^10.1.0"
+  }
+}
