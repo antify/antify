@@ -1,4 +1,4 @@
-import { TOKEN_COOKIE_KEY } from "~~/composables/useGuard";
+import { TOKEN_COOKIE_KEY } from "../composables/useGuard";
 
 export default defineNuxtPlugin(nuxtApp => {
   return {

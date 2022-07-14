@@ -1,8 +1,8 @@
-export type UsersUserIdGetResponse = {
+export type Response = {
     default: {
-        id: string
+        id: string,
+        email: string,
         name: string
-        email: string
         roleId: string
     }
 }

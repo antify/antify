@@ -30,6 +30,5 @@ export default defineNuxtConfig({
   },
 
   modules: [
-    // '@antify/ant-validate'
   ],
 })

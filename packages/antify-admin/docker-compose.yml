@@ -6,9 +6,18 @@ services:
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_USE=antify
-      - MYSQL_PASSWORD=antify
-      - MYSQL_DATABASE=antify
+      - MYSQL_USE=tenant
+      - MYSQL_PASSWORD=tenant
+      - MYSQL_DATABASE=tenant
+      - MYSQL_ROOT_PASSWORD=root
+  auth:
+    image: mysql:8
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_USE=auth
+      - MYSQL_PASSWORD=auth
+      - MYSQL_DATABASE=auth
       - MYSQL_ROOT_PASSWORD=root
     # volumes:
       # - ./database:/var/lib/mysql

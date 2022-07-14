@@ -1,4 +1,4 @@
-import prisma from "~~/server/datasources/db/client";
+import tenantClient from "~~/server/datasources/db/client";
 import { useGuard } from "~~/composables/useGuard";
 import { createForbiddenError, HttpForbiddenError } from '~~/server/errors';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
@@ -18,7 +18,7 @@ export default defineEventHandler(async (event) => {
     throw new HttpForbiddenError();
   }
 
-  return await prisma.mailTemplate.findMany({
+  return await tenantClient.mailTemplate.findMany({
     select: {
       id: true,
       title: true

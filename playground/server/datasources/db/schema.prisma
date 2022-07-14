@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+  // TODO:: https://github.com/nuxt/framework/issues/4797
+  output   = "../../../node_modules/@internal/prisma/tenantClient"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("TENANT_DATABASE_URL")
+}
+
+model MailTemplate {
+  id        String    @id @default(uuid())
+  title     String
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  isValid   Boolean
+}
+
+// --------------------------------------------------
+
+model Meeting {
+  id        String    @id @default(uuid())
+  name     String
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+snippet AuditRecords {
+  createdAt     DateTime   @default(now())
+  createdBy     String
+  updatedAt     DateTime   @updatedAt
+  updatedBy     String
+}
+
+model MailTemplate {
+  id        String    @id @default(uuid())
+  name      String
+  content   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+  isValid Boolean
+}

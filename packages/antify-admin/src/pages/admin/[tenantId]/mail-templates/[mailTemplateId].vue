@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Response as GetResponse } from "~~/glue/api/mail_templates/[mailTemplateId].get";
-import { validator as baseValidator, Response as PutResponse } from "~~/glue/api/mail_templates/[mailTemplateId].put";
-import TenantLink from "~~/components/fields/TenantLink.vue";
+import { Response as GetResponse } from "../../../../glue/api/mail_templates/[mailTemplateId].get";
+import { validator as baseValidator, Response as PutResponse } from "../../../../glue/api/mail_templates/[mailTemplateId].put";
+import TenantLink from "../../../../components/fields/TenantLink.vue";
 
 const { data } = await useFetch<GetResponse | PutResponse>(
   `/api/mail_templates/${useRoute().params.mailTemplateId}`,

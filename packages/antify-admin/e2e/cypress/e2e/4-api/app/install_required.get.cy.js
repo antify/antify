@@ -2,7 +2,7 @@
 
 describe('Test get install required api endpoint', () => {
     it('Should return false on empty database', () => {
-        cy.exec('cd ../src && pnpm app:db:reinit', { timeout: 10000 });
+        cy.exec('cd ../src && pnpm auth:migration:reset', { timeout: 10000 });
 
         cy.request({
             method: 'get',

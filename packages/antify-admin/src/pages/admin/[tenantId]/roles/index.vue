@@ -1,5 +1,5 @@
 <script setup>
-import TenantLink from '~/components/fields/TenantLink.vue';
+import TenantLink from '~~/components/fields/TenantLink.vue';
 
 const { data: roles } = await useFetch('/api/roles/roles', useDefaultFetchOpts());
 </script>
