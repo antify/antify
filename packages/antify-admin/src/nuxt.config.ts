@@ -1,4 +1,4 @@
-import { defineNuxtConfig } from 'nuxt'
+import { defineNuxtConfig } from "nuxt";
 
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
@@ -19,17 +19,20 @@ export default defineNuxtConfig({
         "../../playground/**/plugins/**/*.{js,ts}",
         // Next line throw an error. Discussion here https://github.com/nuxt-community/tailwindcss-module/issues/429
         // "../../playground/**/nuxt.config.{js,ts}",
-      ]
-    }
+
+        "./node_modules/@antify/antify-ui/dist/components/**/*.{js,vue,ts}",
+        "./node_modules/@antify/antify-ui/dist/index.{js,vue,ts}",
+      ],
+    },
   },
   // TODO:: remove me an replace with antify-ui
-  buildModules: ['@nuxtjs/tailwindcss'],
-
+  buildModules: ["@nuxtjs/tailwindcss"],
+  plugins: ["~/plugins/antify-ui.ts"],
   privateRuntimeConfig: {
-    passwordSalt: process.env.PASSWORD_SALT
+    passwordSalt: process.env.PASSWORD_SALT,
   },
 
   modules: [
     // '@antify/ant-validate'
   ],
-})
+});
