@@ -1,6 +1,8 @@
 TODO's
 
 - [ ] Call fixtures from nuxt typescript context and remove ts-node and typescript from dependencies
+- [ ] Document why using prisma merge schema and how it works (https://github.com/smcelhinney/prisma-merge-schema, https://github.com/prisma/prisma/issues/2377)
+- [ ] Document why antify admin is using ~~ and in the main project this should not be used (https://github.com/nuxt/framework/issues/3222)
 
 # Features
 

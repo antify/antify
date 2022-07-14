@@ -1,6 +1,6 @@
 // TODO:: split an bring a system into it
 (async () => {
-    const { PrismaClient } = require('@prisma/client');
+    const { PrismaClient } = require('../../node_modules/@internal/prisma/authClient/index.js');
     const { faker } = require("@faker-js/faker");
 
     const tenantFixtures = {
@@ -50,7 +50,7 @@
         }
     }
 
-    const prisma = new PrismaClient();
+    const prisma = new PrismaClient({ datasources: { db: { url: process.env.AUTH_DATABASE_URL }} });
 
     console.log("Load fixtures");
 
@@ -66,7 +66,7 @@
             id: "1039fc07-7be9-4dd4-b299-26addb875771",
             name: 'Demo Benutzer',
             // Password is: admin
-            password: "e827e7bd4001513072b33581d291cc590332ba6e2b5f5f9cca44c88b8c0f6bacb77648803ab8639ba87ac63f062dec35ff8a23e6f691d05d899e65a1740b10b2",
+            password: "3ba0469d6c4724298538beb08d2e3f5120df0f7670c2a4ff2874cf55fbda5f634661a0ca6a0d17cafc3e05fbe9d8ad868c32c2438bd2ba653c467ba55e4695a1",
             email: "admin@admin.de",
             isSuperAdmin: true
         })

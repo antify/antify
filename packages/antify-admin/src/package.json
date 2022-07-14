@@ -3,33 +3,46 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "nuxi build",
+    "build": "pnpm auth:generate && pnpm tenant:generate && nuxi build",
     "dev": "nuxi dev",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
-    "app:make:migration": "npx prisma migrate dev --schema=./server/datasources/db/schema.prisma --name",
-    "app:db:reinit": "npx prisma migrate reset --force --preview-feature --schema=./server/datasources/db/schema.prisma && npx prisma migrate deploy --preview-feature --schema=./server/datasources/db/schema.prisma",
-    "app:rebuild": "pnpm app:db:reinit && pnpm app:db:install && npx ts-node ./command/fixtures/fixtures.ts",
-    "app:reinit": "rm -rf server/datasources/db/migrations && pnpm app:make:migration init",
-    "app:db:install": "npx ts-node ./command/install/index.ts"
+    "auth:generate": "npx prisma generate --schema=./server/datasources/auth/schema.prisma",
+    "auth:migration:make": "npx prisma migrate dev --schema=./server/datasources/auth/schema.prisma --name",
+    "auth:migration:reset": "npx prisma migrate reset --force --preview-feature --schema=./server/datasources/auth/schema.prisma",
+    "auth:migration:reinit": "rm -rf server/datasources/auth/migrations && pnpm auth:migration:make init",
+    "auth:migration:migrate": "npx prisma migrate deploy --preview-feature --schema=./server/datasources/auth/schema.prisma",
+    "auth:load:install": "npx ts-node ./command/install/auth.install.ts",
+    "auth:load:fixtures": "npx ts-node ./command/fixtures/auth.fixtures.ts",
+    "auth:rebuild": "pnpm auth:migration:reset && pnpm auth:load:install && pnpm auth:load:fixtures",
+    "tenant:generate": "npx prisma generate --schema=./server/datasources/db/schema.prisma",
+    "tenant:migration:make": "npx prisma migrate dev --schema=./server/datasources/db/schema.prisma --name",
+    "tenant:migration:reset": "npx prisma migrate reset --force --preview-feature --schema=./server/datasources/db/schema.prisma",
+    "tenant:migration:reinit": "rm -rf server/datasources/db/migrations && pnpm tenant:migration:make init",
+    "tenant:migration:migrate": "npx prisma migrate deploy --preview-feature --schema=./server/datasources/db/schema.prisma",
+    "tenant:load:install": "npx ts-node ./command/install/tenant.install.ts",
+    "tenant:load:fixtures": "npx ts-node ./command/fixtures/tenant.fixtures.ts",
+    "tenant:rebuild": "pnpm tenant:migration:reset && pnpm tenant:load:install && pnpm tenant:load:fixtures",
+    "app:rebuild": "pnpm tenant:rebuild && pnpm auth:rebuild"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.2.0",
-    "@nuxt/kit": "3.0.0-rc.4",
+    "@nuxt/kit": "3.0.0-rc.5",
     "@nuxtjs/tailwindcss": "^5.0.3",
     "autoprefixer": "^10.4.4",
     "postcss": "^8.4.12",
+    "prisma-merge-schema": "^1.0.0",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.4"
   },
   "dependencies": {
     "@antify/ant-validate": "1.0.0",
     "@antify/antify-ui": "^0.0.24",
+    "@prisma/client": "^3.15.1",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
-    "uuid": "^8.3.2",
-    "@prisma/client": "^3.14.0",
-    "nuxt": "3.0.0-rc.4",
-    "prisma": "^3.14.0"
+    "nuxt": "3.0.0-rc.5",
+    "prisma": "^3.15.1",
+    "uuid": "^8.3.2"
   }
 }

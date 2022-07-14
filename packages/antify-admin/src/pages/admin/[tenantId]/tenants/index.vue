@@ -1,5 +1,5 @@
 <script setup>
-import TenantLink from '~/components/fields/TenantLink.vue';
+import TenantLink from '~~/components/fields/TenantLink.vue';
 
 const { data } = await useFetch('/api/tenants/tenants', useDefaultFetchOpts());
 </script>

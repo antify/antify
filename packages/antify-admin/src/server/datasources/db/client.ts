@@ -1,19 +1,19 @@
-// import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '~~/node_modules/@internal/prisma/tenantClient/index.js'
+// TODO:: https://github.com/nuxt/framework/issues/4797
+// import { PrismaClient } from './generated'
 
-// // add prisma to the NodeJS global type
-// interface CustomNodeJsGlobal extends NodeJS.Global {
-//     prisma: PrismaClient
-// }
+// add prisma to the NodeJS global type
+interface CustomNodeJsGlobal extends NodeJS.Global {
+    tenantClient: PrismaClient
+}
 
 // // Prevent multiple instances of Prisma Client in development
 // declare const global: CustomNodeJsGlobal
 
-// const prisma = global.prisma || new PrismaClient()
+const tenantClient = global.tenantClient || new PrismaClient()
 
-// if (process.env.NODE_ENV === 'development') {
-//     global.prisma = prisma
-// }
+if (process.env.NODE_ENV === 'development') {
+    global.tenantClient = tenantClient
+}
 
-const prisma = {};
-
-export default prisma;
+export default tenantClient

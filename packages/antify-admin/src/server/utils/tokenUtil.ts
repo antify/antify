@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { CompatibilityEvent, setCookie } from "h3";
 import { TOKEN_COOKIE_KEY, CustomToken } from "~~/composables/useGuard";
-import prisma from "~~/server/datasources/db/client";
+import prisma from "~~/server/datasources/auth/client";
 import crypto from 'crypto';
 
 export const hashPassword = async (password: string): Promise<string> => {
@@ -24,7 +24,7 @@ export const tokenValid = async (token: string): Promise<boolean> => {
   const JWT_SECRET = 'secret';
 
   return new Promise((resolve, reject) => {
-    jwt.verify(token, JWT_SECRET, function(error) {
+    jwt.verify(token, JWT_SECRET, function (error) {
       resolve(!!!error)
     });
   })

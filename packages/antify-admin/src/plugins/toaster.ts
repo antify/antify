@@ -1,4 +1,4 @@
-import { Toast, ToastType } from "~~/composables/states";
+import { Toast, ToastType } from "../composables/states";
 
 const messageShowTime = 4000;
 

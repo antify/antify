@@ -1,4 +1,4 @@
-import prisma from "~~/server/datasources/db/client";
+import prisma from "~~/server/datasources/auth/client";
 import { useGuard } from "~~/composables/useGuard";
 import { HttpNotFoundError } from '~~/server/errors';
 import { authenticatedMiddleware } from '~~/server/guard/authenticated.middleware';

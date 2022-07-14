@@ -1,44 +1,18 @@
-import prisma from "~~/server/datasources/db/client";
+import prisma from "~~/server/datasources/auth/client";
 import { useGuard } from "~~/composables/useGuard";
 import { PermissionId } from '~~/server/datasources/static/permissions';
-import { createBadRequestError, createForbiddenError, createNotFoundError, createUnauthorizedError } from '~~/server/errors';
+import { HttpForbiddenError, HttpNotFoundError } from '~~/server/errors';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
+import { Input, Response, validator } from "~~/glue/api/users/[userId].put";
 
-export type UserResponse = {
-    id: string,
-    email: string,
-    name: string | null,
-    roleId: string | null
-}
-export type UserInput = {
-    email: string,
-    name: string | null,
-    roleId: string
-}
-
-export const validate = (data: Record<string, string>): UserInput => {
-    if (!data.email) {
-        throw new Error('Missing required email');
-    }
-
-    if (!data.name) {
-        throw new Error('Missing required name');
-    }
-
-    if (!data.roleId) {
-        throw new Error('Missing required role');
-    }
-
-    return data as UserInput;
-}
-
-export default defineEventHandler(async (event) => {
+export default defineEventHandler<Response>(async (event) => {
     tenantContextMiddleware(event);
-  
+
     const guard = useGuard(useAuthorizationHeader(event));
     const tenantId = useTenantHeader(event);
+    const userId = guard.token.id;
     const user = await prisma.user.findUnique({
         select: {
             id: true,
@@ -46,26 +20,28 @@ export default defineEventHandler(async (event) => {
             name: true
         },
         where: {
-            id: event.context.params.userId
+            id: userId
         }
     });
 
     if (!user) {
-        return createNotFoundError();
+        throw new HttpNotFoundError();
     }
 
-    if (!guard.hasPermissionTo(PermissionId.CAN_UPDATE_USER, tenantId) &&
-        !(user.id === guard.token.id && guard.hasPermissionTo(PermissionId.CAN_UPDATE_SELF, tenantId))) {
-        return createForbiddenError();
+    if (!guard.hasPermissionTo(PermissionId.CAN_UPDATE_USER, tenantId)) {
+        throw new HttpForbiddenError();
     }
 
-    const requestBody = await useBody<UserInput>(event);
-    let requestUser;
+    const requestData = await useBody<Input>(event);
 
-    try {
-        requestUser = validate(requestBody);
-    } catch (e) {
-        return createBadRequestError({ message: e.message });
+    validator.validate(requestData);
+
+    if (validator.hasErrors()) {
+        return {
+            badRequest: {
+                errors: validator.getErrors()
+            }
+        }
     }
 
     const updatedUser = await prisma.user.update({
@@ -84,18 +60,18 @@ export default defineEventHandler(async (event) => {
             id: event.context.params.userId
         },
         data: {
-            email: requestUser.email,
-            name: requestUser.name,
+            email: requestData.email,
+            name: requestData.name,
             tenantAccesses: {
                 delete: {
                     userId_tenantId: {
                         tenantId: tenantId,
-                        userId: requestUser.id
+                        userId: event.context.params.userId
                     }
                 },
                 create: {
                     tenantId: tenantId,
-                    roleId: requestUser.roleId
+                    roleId: requestData.roleId
                 }
             }
         }

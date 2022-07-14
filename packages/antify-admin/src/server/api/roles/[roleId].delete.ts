@@ -4,7 +4,7 @@ import { HttpForbiddenError } from '~~/server/errors';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
-import prisma from "~~/server/datasources/db/client";
+import prisma from "~~/server/datasources/auth/client";
 
 export default defineEventHandler(async (event) => {
   tenantContextMiddleware(event);

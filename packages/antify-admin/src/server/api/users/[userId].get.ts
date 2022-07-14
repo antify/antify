@@ -1,20 +1,20 @@
-import prisma from "~~/server/datasources/db/client";
+import prisma from "~~/server/datasources/auth/client";
 import { useGuard } from "~~/composables/useGuard";
 import { PermissionId } from '~~/server/datasources/static/permissions';
-import { createForbiddenError } from '~~/server/errors';
+import { HttpForbiddenError } from '~~/server/errors';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
-import { UsersUserIdGetResponse } from "~~/glue/api/users/[userId].get";
+import { Response } from "~~/glue/api/users/[userId].get";
 
-export default defineEventHandler<UsersUserIdGetResponse>(async (event) => {
+export default defineEventHandler<Response>(async (event) => {
   tenantContextMiddleware(event);
 
   const guard = useGuard(useAuthorizationHeader(event));
   const tenantId = useTenantHeader(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_READ_USER, tenantId)) {
-    return createForbiddenError();
+    throw new HttpForbiddenError();
   }
 
   const user = await prisma.user.findUnique({
@@ -35,9 +35,11 @@ export default defineEventHandler<UsersUserIdGetResponse>(async (event) => {
   });
 
   return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    roleId: user.tenantAccesses.find(tenantAccess => tenantAccess.tenantId === tenantId)?.roleId
+    default: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      roleId: user.tenantAccesses.find(tenantAccess => tenantAccess.tenantId === tenantId)?.roleId || null
+    }
   };
 });

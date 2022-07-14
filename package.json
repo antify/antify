@@ -4,10 +4,11 @@
   "workspaces": [
     "packages/*/src",
     "packages/*/e2e",
-    "packages/*"
+    "packages/*",
+    "playground/*"
   ],
   "engines": {
-    "node": "^14.17.0",
+    "node": "^16.16.0",
     "pnpm": ">=7"
   },
   "packageManager": "pnpm@7.5.0"

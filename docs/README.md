@@ -15,7 +15,7 @@
 - [ ] Extend all script sections with ``lang="ts"`` and fix all errors
 - [ ] e2e tests
 - [ ] Setup clean error handling
-- [ ] Remove app:reinit command
+- [ ] Remove auth:migration:reinit command
 - [ ] CI/CD
 - [ ] Docker
 - [ ] CORS
