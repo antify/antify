@@ -15,7 +15,6 @@ model MailTemplate {
   content   String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-  isValid   Boolean
 }
 
 model Meeting {
