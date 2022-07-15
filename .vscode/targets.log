@@ -1,4 +1,6 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+make: *** No rule to make target 'all'.  Stop.
+
 # GNU Make 4.2.1
 # Built for x86_64-pc-linux-gnu
 # Copyright (C) 1988-2016 Free Software Foundation, Inc.
@@ -6,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Jul 14 15:38:41 2022
+# Make data base, printed on Fri Jul 15 07:57:12 2022
 
 # Variables
 
@@ -49,7 +51,7 @@ SNAP_DATA = /var/snap/code/101
 # environment
 VSCODE_NLS_CONFIG = {"locale":"de","availableLanguages":{"*":"de"},"_languagePackId":"ac49ed8871898f6ccc91afa1076d75a0.de","_translationsConfigFile":"/home/hannes/.config/Code/clp/ac49ed8871898f6ccc91afa1076d75a0.de/tcf.json","_cacheRoot":"/home/hannes/.config/Code/clp/ac49ed8871898f6ccc91afa1076d75a0.de","_resolvedLanguagePackCoreLocation":"/home/hannes/.config/Code/clp/ac49ed8871898f6ccc91afa1076d75a0.de/b06ae3b2d2dbfe28bca3134cc6be65935cdfea6a","_corruptedFile":"/home/hannes/.config/Code/clp/ac49ed8871898f6ccc91afa1076d75a0.de/corrupted.info","_languagePackSupport":true}
 # environment
-JOURNAL_STREAM = 8:59062
+JOURNAL_STREAM = 8:69832
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 # environment
@@ -73,7 +75,7 @@ DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
 # environment
 _ = /snap/code/101/usr/share/code/code
 # environment
-MANAGERPID = 1926
+MANAGERPID = 2404
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
@@ -87,7 +89,7 @@ PATH = /home/hannes/.local/bin:/home/hannes/.local/share/pnpm:/home/hannes/.nvm/
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/hannes-desktop:@/tmp/.ICE-unix/2147,unix/hannes-desktop:/tmp/.ICE-unix/2147
+SESSION_MANAGER = local/hannes-desktop:@/tmp/.ICE-unix/2642,unix/hannes-desktop:/tmp/.ICE-unix/2642
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -107,7 +109,7 @@ DISABLE_WAYLAND = 1
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-INVOCATION_ID = 07b1480a328443af845e0fb55a698a7f
+INVOCATION_ID = 28866a70f733466db00b7734182194e9
 # environment
 GDK_PIXBUF_MODULEDIR = /snap/code/101/usr/lib/x86_64-linux-gnu/gdk-pixbuf-2.0/2.10.0/loaders
 # default
@@ -119,7 +121,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 350672
+GIO_LAUNCHED_DESKTOP_FILE_PID = 13825
 # automatic
 %F = $(notdir $%)
 # environment
@@ -131,7 +133,7 @@ PWD = /home/hannes/projects/antify/antify-nuxt3
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 2111
+SSH_AGENT_PID = 2607
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # environment
@@ -253,7 +255,7 @@ GJS_DEBUG_OUTPUT = stderr
 # environment
 LANG = C
 # environment
-VSCODE_PID = 350727
+VSCODE_PID = 13878
 # variable set hash-table stats:
 # Load=122/1024=12%, Rehash=0, Collisions=17/144=12%
 
@@ -282,14 +284,12 @@ all:
 
 # Not a target:
 Makefile:
- 
-make: *** No rule to make target 'all'.  Stop.
-
 #  Implicit rule search has been done.
 #  File does not exist.
 #  File has been updated.
 #  Failed to be updated.
 
+ 
 # Not a target:
 makefile:
 #  Implicit rule search has been done.
@@ -324,6 +324,6 @@ GNUmakefile:
 # strcache performance: lookups = 28 / hit rate = 10%
 # hash-table stats:
 # Load=25/8192=0%, Rehash=0, Collisions=1/28=4%
-# Finished Make data base on Thu Jul 14 15:38:41 2022
+# Finished Make data base on Fri Jul 15 07:57:12 2022
 
  
