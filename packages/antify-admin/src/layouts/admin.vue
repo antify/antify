@@ -59,7 +59,7 @@ const profileHref = { name: 'admin-tenantId-profile' };
     :nav-items="navItems"
     :profile-href="profileHref"
     :user-name="userName"
-    class="bg-gray-100"
+    class="bg-gray-50"
   >
     <template #logo>
       <AntLogo>
