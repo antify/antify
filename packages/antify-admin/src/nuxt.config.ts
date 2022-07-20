@@ -27,11 +27,9 @@ export default defineNuxtConfig({
   },
   // TODO:: remove me an replace with antify-ui
   buildModules: ["@nuxtjs/tailwindcss"],
-  plugins: ["~/plugins/antify-ui.ts"],
   privateRuntimeConfig: {
     passwordSalt: process.env.PASSWORD_SALT,
   },
 
-  modules: [
-  ],
+  modules: [],
 });

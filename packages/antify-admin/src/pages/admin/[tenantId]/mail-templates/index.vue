@@ -1,26 +1,39 @@
 <script setup>
-import TenantLink from '~~/components/fields/TenantLink.vue';
+import TenantLink from "~~/components/fields/TenantLink.vue";
+import { ROW_TYPES } from "@antify/antify-ui";
 
-const { data } = await useFetch('/api/mail_templates/mail_templates', useDefaultFetchOpts());
+const { data } = await useFetch(
+  "/api/mail_templates/mail_templates",
+  useDefaultFetchOpts()
+);
+const tableHeader = [
+  {
+    title: "Name",
+    identifier: "title",
+    type: ROW_TYPES.SLOT,
+  },
+];
 </script>
 
 <template>
-  <div>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="mailTemplate in data" :key="mailTemplate.id">
-          <td>
-            <TenantLink :to="{ name: 'admin-tenantId-mail-templates-mailTemplateId', params: { mailTemplateId: mailTemplate.id } }">
-              {{ mailTemplate.title }}
-            </TenantLink>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <AntContent>
+    <template #head>
+      <AntHeader>E-Mail Templates</AntHeader>
+    </template>
+
+    <template #body>
+      <AntTable :headers="tableHeader" :data="data">
+        <template #cellContent="{ elem }">
+          <TenantLink
+            :to="{
+              name: 'admin-tenantId-mail-templates-mailTemplateId',
+              params: { mailTemplateId: elem.id },
+            }"
+          >
+            {{ elem.title }}
+          </TenantLink>
+        </template>
+      </AntTable>
+    </template>
+  </AntContent>
 </template>

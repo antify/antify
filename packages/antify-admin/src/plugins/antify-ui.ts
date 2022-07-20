@@ -1,6 +1,6 @@
 import { defineNuxtPlugin } from "#app";
-import { Plugin } from "@antify/antify-ui";
+import { AntifyUi } from "@antify/antify-ui";
 
 export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.use(Plugin);
+  nuxtApp.vueApp.use(AntifyUi);
 });
