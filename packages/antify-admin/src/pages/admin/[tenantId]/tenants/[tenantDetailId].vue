@@ -78,7 +78,7 @@ const onSubmit = async () => {
         <li v-for="error in errors">{{ error }}</li>
       </ul>
 
-      <AntForm @submit.prevent="onSubmit">
+      <AntForm @submit.prevent="onSubmit" id="edit-tenant-form">
         <div data-cy="name">
           <AntInput
             v-model:value="data.default.name"
@@ -98,24 +98,30 @@ const onSubmit = async () => {
             </template>
           </AntInput>
         </div>
-
-        <template #footer>
-          <AntButton>
-            <TenantLink :to="{ name: 'admin-tenantId-tenants' }">
-              Zurück
-            </TenantLink>
-          </AntButton>
-
-          <AntButton :primary="true" type="submit" data-cy="submit">
-            Speichern
-          </AntButton>
-        </template>
       </AntForm>
+    </template>
+
+    <template #mainFooter>
+      <AntButton>
+        <TenantLink :to="{ name: 'admin-tenantId-tenants' }">
+          Zurück
+        </TenantLink>
+      </AntButton>
+
+      <AntButton
+        :primary="true"
+        type="submit"
+        data-cy="submit"
+        form="edit-tenant-form"
+      >
+        Speichern
+      </AntButton>
     </template>
 
     <template #asideHead>
       <AntInput v-model:value="search" placeholder="Suche" />
     </template>
+
     <template #asideBody><TenantTable /></template>
   </AntDualContent>
 </template>
