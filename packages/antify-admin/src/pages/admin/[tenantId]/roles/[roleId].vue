@@ -1,5 +1,6 @@
 <script setup>
 import RoleTable from '~~/components/entity/role/RoleTable.vue';
+import TenantLink from '~~/components/fields/TenantLink.vue';
 const { data: role } = await useFetch(
   `/api/roles/${useRoute().params.roleId}`,
   useDefaultFetchOpts()
