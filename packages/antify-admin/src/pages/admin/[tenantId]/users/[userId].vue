@@ -1,104 +1,137 @@
 <script setup lang="ts">
-import { Response as GetResponse } from "~~/glue/api/users/[userId].get";
-import { validator as baseValidator, Response as PutResponse } from "~~/glue/api/users/[userId].put";
+import { Response as GetResponse } from '~~/glue/api/users/[userId].get';
+import {
+  validator as baseValidator,
+  Response as PutResponse,
+} from '~~/glue/api/users/[userId].put';
 
 const { data } = await useFetch<GetResponse | PutResponse>(
-    `/api/users/${useRoute().params.userId}`,
-    useDefaultFetchOpts()
+  `/api/users/${useRoute().params.userId}`,
+  useDefaultFetchOpts()
 );
-const { data: roles } = await useFetch('/api/roles/roles', useDefaultFetchOpts());
+const { data: roles } = await useFetch(
+  '/api/roles/roles',
+  useDefaultFetchOpts()
+);
 
 const { $toaster } = useNuxtApp();
 const errors = ref([]);
 const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
 const onSubmit = async () => {
-    loading.value = true;
-    errors.value = [];
+  loading.value = true;
+  errors.value = [];
 
-    validator.value.validate(data.value.default, true);
+  validator.value.validate(data.value.default, true);
 
-    if (validator.value.hasErrors()) {
-        loading.value = false;
-        return;
-    }
-
-    const { data: response } = await useFetch<PutResponse>(
-        `/api/users/${useRoute().params.userId}`,
-        {
-            ...useDefaultFetchOpts(),
-            ...{
-                method: "PUT",
-                body: data.value.default,
-            },
-        }
-    );
+  if (validator.value.hasErrors()) {
     loading.value = false;
+    return;
+  }
 
-    if (response.value.default) {
-        data.value = response.value;
-        $toaster.toastUpdated();
+  const { data: response } = await useFetch<PutResponse>(
+    `/api/users/${useRoute().params.userId}`,
+    {
+      ...useDefaultFetchOpts(),
+      ...{
+        method: 'PUT',
+        body: data.value.default,
+      },
     }
+  );
+  loading.value = false;
 
-    if (response.value.badRequest) {
-        $toaster.toastError(response.value.badRequest.errors.join('\n'));
-    }
+  if (response.value.default) {
+    data.value = response.value;
+    $toaster.toastUpdated();
+  }
+
+  if (response.value.badRequest) {
+    $toaster.toastError(response.value.badRequest.errors.join('\n'));
+  }
 };
 </script>
 
 <template>
-    <div>
-        <ul data-cy="response-errors" v-if="errors.length" style="
-        background: #dc2626;
-        color: #fff;
-        padding: 20px;
-        list-style-position: inside;
-      ">
-            <li v-for="error in errors">{{ error }}</li>
-        </ul>
+  <AntContent>
+    <template #head></template>
+    <template #body>
+      <ul
+        data-cy="response-errors"
+        v-if="errors.length"
+        style="
+          background: #dc2626;
+          color: #fff;
+          padding: 20px;
+          list-style-position: inside;
+        "
+      >
+        <li v-for="error in errors">{{ error }}</li>
+      </ul>
 
-        <form @submit.prevent="onSubmit">
-            <div data-cy="name">
-                <label>
-                    Name <br />
-                    <input v-model="data.default.name" placeholder="Name" autofocus
-                        @input="() => validator.validateProperty('name', data.default.name, true)" />
-                </label>
+      <AntForm @submit.prevent="onSubmit">
+        <div data-cy="name">
+          <label>
+            Name <br />
+            <input
+              v-model="data.default.name"
+              placeholder="Name"
+              autofocus
+              @input="
+                () => validator.validateProperty('name', data.default.name, 1)
+              "
+            />
+          </label>
 
-                <div data-cy="error" v-for="message in validator.errorMap['name']">{{ message }}</div>
-            </div>
+          <div data-cy="error" v-for="message in validator.errorMap['name']">
+            {{ message }}
+          </div>
+        </div>
 
-            <div data-cy="email">
-                <label>
-                    E-Mail <br />
-                    <input v-model="data.default.email" placeholder="E-Mail"
-                        @input="() => validator.validateProperty('email', data.default.email, true)" />
-                </label>
+        <div data-cy="email">
+          <label>
+            E-Mail <br />
+            <input
+              v-model="data.default.email"
+              placeholder="E-Mail"
+              @input="
+                () => validator.validateProperty('email', data.default.email, 1)
+              "
+            />
+          </label>
 
-                <div data-cy="error" v-for="message in validator.errorMap['email']">{{ message }}</div>
-            </div>
+          <div data-cy="error" v-for="message in validator.errorMap['email']">
+            {{ message }}
+          </div>
+        </div>
 
-            <div data-cy="roles">
-                <label>
-                    Rolle <br />
-                    <select v-model="data.default.roleId"
-                        @change="() => validator.validateProperty('roleId', data.default.roleId, true)">
-                        <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
-                    </select>
-                </label>
+        <div data-cy="roles">
+          <label>
+            Rolle <br />
+            <select
+              v-model="data.default.roleId"
+              @change="
+                () =>
+                  validator.validateProperty('roleId', data.default.roleId, 1)
+              "
+            >
+              <option v-for="role in roles" :key="role.id" :value="role.id">
+                {{ role.name }}
+              </option>
+            </select>
+          </label>
 
-                <div data-cy="error" v-for="message in validator.errorMap['roleId']">{{ message }}</div>
-            </div>
+          <div data-cy="error" v-for="message in validator.errorMap['roleId']">
+            {{ message }}
+          </div>
+        </div>
 
-            <div>
-                TODO:: Profile photo
-            </div>
+        <div>TODO:: Profile photo</div>
 
-            <div>
-                TODO:: Password
-            </div>
+        <div>TODO:: Password</div>
 
-            <button type="submit" data-cy="submit">Speichern</button>
-        </form>
-    </div>
+        <button type="submit" data-cy="submit">Speichern</button>
+      </AntForm>
+    </template>
+  </AntContent>
 </template>

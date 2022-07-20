@@ -1,26 +1,37 @@
 <script setup>
-import TenantLink from '~~/components/fields/TenantLink.vue';
+import TenantLink from "~~/components/fields/TenantLink.vue";
+import { ROW_TYPES } from "@antify/antify-ui";
 
-const { data } = await useFetch('/api/tenants/tenants', useDefaultFetchOpts());
+const { data } = await useFetch("/api/tenants/tenants", useDefaultFetchOpts());
+
+const tableHeaders = [
+  {
+    title: "name",
+    identifier: "name",
+    type: ROW_TYPES.SLOT,
+  },
+];
 </script>
 
 <template>
-  <div>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="tenant in data.default" :key="tenant.id">
-          <td>
-            <TenantLink :to="{ name: 'admin-tenantId-tenants-tenantDetailId', params: { tenantDetailId: tenant.id } }">
-              {{ tenant.name }}
-            </TenantLink>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <AntContent>
+    <template #head>
+      <AntHeader>Mandanten</AntHeader>
+    </template>
+
+    <template #body>
+      <AntTable :headers="tableHeaders" :data="data.default">
+        <template #cellContent="{ elem }">
+          <TenantLink
+            :to="{
+              name: 'admin-tenantId-tenants-tenantDetailId',
+              params: { tenantDetailId: elem.id },
+            }"
+          >
+            {{ elem.name }}
+          </TenantLink>
+        </template>
+      </AntTable>
+    </template>
+  </AntContent>
 </template>

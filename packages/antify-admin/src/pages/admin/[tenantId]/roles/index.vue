@@ -1,28 +1,46 @@
 <script setup>
-import TenantLink from '~~/components/fields/TenantLink.vue';
+import TenantLink from "~~/components/fields/TenantLink.vue";
+import { ROW_TYPES } from "@antify/antify-ui";
 
-const { data: roles } = await useFetch('/api/roles/roles', useDefaultFetchOpts());
+const { data: roles } = await useFetch(
+  "/api/roles/roles",
+  useDefaultFetchOpts()
+);
+
+const tableHeaders = [
+  {
+    title: "Rollen",
+    identifier: "name",
+    type: ROW_TYPES.SLOT,
+  },
+];
 </script>
 
 <template>
-    <div>
-        <TenantLink :to="{name: 'admin-tenantId-roles-create'}">Hinzufügen</TenantLink>
+  <AntContent>
+    <template #head>
+      <AntHeader class="">Rollen</AntHeader>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Rollen</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="role in roles" :key="role.id">
-                    <td>
-                        <TenantLink :to="{ name: 'admin-tenantId-roles-roleId', params: { roleId: role.id } }">
-                            {{ role.name }}
-                        </TenantLink>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+      <AntButton :primary="true" class="">
+        <TenantLink :to="{ name: 'admin-tenantId-roles-create' }">
+          Hinzufügen
+        </TenantLink>
+      </AntButton>
+    </template>
+
+    <template #body>
+      <AntTable :headers="tableHeaders" :data="roles">
+        <template #cellContent="{ elem }">
+          <TenantLink
+            :to="{
+              name: 'admin-tenantId-roles-roleId',
+              params: { roleId: elem.id },
+            }"
+          >
+            {{ elem.name }}
+          </TenantLink>
+        </template>
+      </AntTable>
+    </template>
+  </AntContent>
 </template>

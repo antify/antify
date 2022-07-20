@@ -1,74 +1,84 @@
 export class Validator {
-    readonly ruleMap: Record<string, Function[]>
-    errorMap: Record<string, string[]> = {}
+  readonly ruleMap: Record<string, Function[]>;
+  errorMap: Record<string, string[]> = {};
 
-    constructor(ruleMap: Record<string, Function[]>) {
-        this.ruleMap = ruleMap;
+  constructor(ruleMap: Record<string, Function[]>) {
+    this.ruleMap = ruleMap;
+  }
+
+  validate(data: unknown, errorLimitPerProperty: number | null = null) {
+    this.errorMap = {};
+
+    Object.keys(this.ruleMap).forEach((key: string) => {
+      if (typeof data !== "object" || Array.isArray(data) || !data) {
+        throw new Error(`Can not validate data of type ${typeof data}`);
+      }
+
+      this.validateProperty(key, data[key], errorLimitPerProperty);
+    });
+  }
+
+  validateProperty(
+    property: string,
+    data: unknown,
+    errorLimit: number | null = null
+  ) {
+    if (!this.ruleMap[property]) {
+      throw new Error(`There is no rule for property ${property}`);
     }
 
-    validate(data: unknown, errorLimitPerProperty: number | null = null) {
-        this.errorMap = {};
+    delete this.errorMap[property];
 
-        Object.keys(this.ruleMap)
-            .forEach((key: string) => {
-                if (typeof data !== 'object' || Array.isArray(data) || !data) {
-                    throw new Error(`Can not validate data of type ${typeof data}`);
-                }
+    this.ruleMap[property].every((ruleFunction) => {
+      const errorMessage = ruleFunction(data);
+      const hasError = typeof errorMessage === "string";
 
-                this.validateProperty(key, data[key], errorLimitPerProperty);
-            });
-    }
-
-    validateProperty(property: string, data: unknown, errorLimit: number | null = null) {
-        if (!this.ruleMap[property]) {
-            throw new Error(`There is no rule for property ${property}`);
+      if (hasError) {
+        if (!this.errorMap[property]) {
+          this.errorMap[property] = [];
         }
 
-        delete this.errorMap[property];
+        this.errorMap[property].push(errorMessage);
+      }
 
-        this.ruleMap[property].every(ruleFunction => {
-            const errorMessage = ruleFunction(data);
-            const hasError = typeof errorMessage === 'string';
+      return (
+        errorLimit === null ||
+        errorLimit > (this.errorMap[property]?.length || 0)
+      );
+    });
+  }
 
-            if (hasError) {
-                if (!this.errorMap[property]) {
-                    this.errorMap[property] = [];
-                }
+  hasErrors(): boolean {
+    return Object.values(this.errorMap).length > 0;
+  }
 
-                this.errorMap[property].push(errorMessage);
-            }
+  getErrors() {
+    const errorList = [];
 
-            return errorLimit === null || errorLimit > (this.errorMap[property]?.length || 0);
-        });
-    }
+    Object.values(this.errorMap).forEach((errors) =>
+      errors.forEach((error) => errorList.push(error))
+    );
 
-    hasErrors(): boolean {
-        return Object.values(this.errorMap).length > 0;
-    }
+    return errorList;
+  }
 
-    getErrors() {
-        const errorList = [];
+  getErrorsAsString(): string {
+    const delimiter = "\n- ";
+    let stringMessage = "";
 
-        Object.values(this.errorMap).forEach((errors) => errors.forEach(error => errorList.push(error)));
+    Object.values(this.errorMap).forEach((errors) =>
+      errors.forEach((error) => (stringMessage += `${delimiter}${error}`))
+    );
 
-        return errorList;
-    }
+    return stringMessage;
+  }
 
-    getErrorsAsString(): string {
-        const delimiter = '\n- ';
-        let stringMessage = '';
-
-        Object.values(this.errorMap).forEach((errors) => errors.forEach(error => stringMessage += `${delimiter}${error}`));
-
-        return stringMessage;
-    }
-
-    getErrorsOfProperty(property: string): string {
-        // TODO:: implement me
-        return '';
-    }
+  getErrorsOfProperty(property: string): string {
+    // TODO:: implement me
+    return "";
+  }
 }
 
 export const useValidator = (map: Record<string, Function[]>) => {
-    return new Validator(map);
-}
+  return new Validator(map);
+};

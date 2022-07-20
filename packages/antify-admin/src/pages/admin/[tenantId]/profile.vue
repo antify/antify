@@ -1,6 +1,9 @@
 <script setup lang="ts">
-import { Response as GetResponse } from "~~/glue/api/profile/user.get";
-import { validator as baseValidator, Response as PutResponse } from "~~/glue/api/profile/user.put";
+import { Response as GetResponse } from '~~/glue/api/profile/user.get';
+import {
+  validator as baseValidator,
+  Response as PutResponse,
+} from '~~/glue/api/profile/user.put';
 
 const { data } = await useFetch<GetResponse | PutResponse>(
   `/api/profile/user`,
@@ -15,23 +18,20 @@ const onSubmit = async () => {
   loading.value = true;
   errors.value = [];
 
-  validator.value.validate(data.value.default, true);
+  validator.value.validate(data.value.default, 1);
 
   if (validator.value.hasErrors()) {
     loading.value = false;
     return;
   }
 
-  const { data: response } = await useFetch<PutResponse>(
-    `/api/profile/user`,
-    {
-      ...useDefaultFetchOpts(),
-      ...{
-        method: "PUT",
-        body: data.value.default,
-      },
-    }
-  );
+  const { data: response } = await useFetch<PutResponse>(`/api/profile/user`, {
+    ...useDefaultFetchOpts(),
+    ...{
+      method: 'PUT',
+      body: data.value.default,
+    },
+  });
   loading.value = false;
 
   if (response.value.default) {
@@ -46,46 +46,62 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div>
-    <ul data-cy="response-errors" v-if="errors.length" style="
-        background: #dc2626;
-        color: #fff;
-        padding: 20px;
-        list-style-position: inside;
-      ">
-      <li v-for="error in errors">{{ error }}</li>
-    </ul>
+  <AntContent>
+    <template #head>
+      <AntHeader>Profil</AntHeader>
+    </template>
 
-    <form @submit.prevent="onSubmit">
-      <div data-cy="name">
-        <label>
-          Name <br />
-          <input v-model="data.default.name" placeholder="Name" autofocus
-            @input="() => validator.validateProperty('name', data.default.name, true)" />
-        </label>
+    <template #body>
+      <ul
+        data-cy="response-errors"
+        v-if="errors.length"
+        style="
+          background: #dc2626;
+          color: #fff;
+          padding: 20px;
+          list-style-position: inside;
+        "
+      >
+        <li v-for="error in errors">{{ error }}</li>
+      </ul>
 
-        <div data-cy="error" v-for="message in validator.errorMap['name']">{{ message }}</div>
-      </div>
+      <form class="px-4 py-4 space-y-4" @submit.prevent="onSubmit">
+        <div data-cy="name">
+          <AntInput
+            v-model:value="data.default.name"
+            :label="'Name'"
+            autofocus
+            :errors="validator.errorMap['name']"
+            :validator="
+              (val: string) => validator.validateProperty('name', val, 1)
+            "
+          />
+        </div>
 
-      <div data-cy="email">
-        <label>
-          E-Mail <br />
-          <input v-model="data.default.email" placeholder="E-Mail"
-            @input="() => validator.validateProperty('email', data.default.email, true)" />
-        </label>
+        <div data-cy="email">
+          <AntInput
+            v-model:value="data.default.email"
+            :label="'E-Mail'"
+            autofocus
+            :errors="validator.errorMap['email']"
+            :is-error="
+              validator.errorMap['email'] &&
+              validator.errorMap['email'].length > 0
+            "
+            :validator="
+              (val: string) => validator.validateProperty('email', val, 1)
+            "
+          />
+        </div>
 
-        <div data-cy="error" v-for="message in validator.errorMap['email']">{{ message }}</div>
-      </div>
+        <div>TODO:: Profile photo</div>
 
-      <div>
-        TODO:: Profile photo
-      </div>
+        <div>TODO:: Profile password</div>
 
-      <div>
-        TODO:: Profile password
-      </div>
-
-      <button type="submit" data-cy="submit">Speichern</button>
-    </form>
-  </div>
+        <AntButton type="submit" data-cy="submit" :primary="true">
+          Speichern
+        </AntButton>
+      </form>
+    </template>
+  </AntContent>
 </template>

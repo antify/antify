@@ -2,12 +2,12 @@
 import {
   authLoginPostValidator,
   AuthLoginPostInput,
-} from "~~/glue/api/auth/login.post";
+} from '~~/glue/api/auth/login.post';
 
 definePageMeta({
   middleware: () => {
     if (useNuxtApp().$auth.getGuard().isUserLoggedIn) {
-      return { name: "admin" };
+      return { name: 'admin' };
     }
   },
 });
@@ -15,20 +15,26 @@ definePageMeta({
 const { $auth } = useNuxtApp();
 const errors = ref([]);
 
-const isDev = process.env.NODE_ENV === "development";
+const isDev = process.env.NODE_ENV === 'development';
 const formData = ref<AuthLoginPostInput>({
-  email: isDev ? "admin@admin.de" : "",
-  password: isDev ? "admin" : "",
+  email: isDev ? 'admin@admin.de' : '',
+  password: isDev && false ? 'admin' : '',
 });
 const loading = ref<Boolean>(false);
-const validator = ref(authLoginPostValidator);
+
+const validator = reactive(authLoginPostValidator);
+
+const validateErrors = computed<string[]>(() => {
+  return [...validator.getErrors(), ...errors.value];
+});
+
 const onLogin = async () => {
   loading.value = true;
   errors.value = [];
 
-  validator.value.validate(formData.value, true);
+  validator.validate(formData.value, 1);
 
-  if (validator.value.hasErrors()) {
+  if (validator.hasErrors()) {
     loading.value = false;
     return;
   }
@@ -41,76 +47,73 @@ const onLogin = async () => {
   loading.value = false;
 
   if (error.value) {
-    return throwError("Uuups something went wrong");
+    return throwError('Uuups something went wrong');
   }
 
   if (data.value.default) {
-    await navigateTo({ name: "admin" });
+    await navigateTo({ name: 'admin' });
   }
 
   if (data.value.badRequest || data.value.invalidCredentials) {
     errors.value =
       data.value.badRequest?.errors || data.value.invalidCredentials.errors;
 
-    formData.value.email = "";
-    formData.value.password = "";
+    // formData.value.email = "";
+    formData.value.password = '';
   }
 };
 </script>
 
 <template>
-  <div>
-    <AntButton><template #label>Foo</template></AntButton>
-    <br /><br />
-    <h1>Login</h1>
+  <AntLoginLayout>
+    <template #logo><span></span></template>
+    <template #loginHeader>
+      <AntHeader class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        Login
+      </AntHeader>
+    </template>
 
-    <ul
-      data-cy="response-errors"
-      v-if="errors.length"
-      style="
-        background: #dc2626;
-        color: #fff;
-        padding: 20px;
-        list-style-position: inside;
-      "
-    >
-      <li v-for="error in errors">{{ error }}</li>
-    </ul>
-
-    <form @submit.prevent="onLogin">
-      <div data-cy="email">
-        <input
-          type="text"
-          v-model="formData.email"
-          placeholder="E-Mail"
-          autofocus
-          @input="
-            () => validator.validateProperty('email', formData.email, true)
-          "
-        />
-
-        <div data-cy="error" v-for="message in validator.errorMap['email']">
-          {{ message }}
+    <AntLoginWidget @submit.prevent="onLogin" :errors="validateErrors">
+      <template #emailField>
+        <div data-cy="email">
+          <AntInput
+            v-model:value="formData.email"
+            class="rounded-none relative block rounded-t-md focus:z-10"
+            placeholder="Email"
+            :is-error="
+              validator.errorMap['email'] &&
+              validator.errorMap['email'].length > 0
+            "
+            :validator="(val: string) => validator.validateProperty('email', val, 1)"
+          />
         </div>
-      </div>
+      </template>
 
-      <div data-cy="password">
-        <input
-          type="password"
-          v-model="formData.password"
-          placeholder="Password"
-          @input="
-            () =>
-              validator.validateProperty('password', formData.password, true)
-          "
-        />
-
-        <div data-cy="error" v-for="message in validator.errorMap['password']">
-          {{ message }}
+      <template #passwordField>
+        <div data-cy="password">
+          <AntPasswordField
+            v-model:password="formData.password"
+            class="rounded-none block rounded-b-md focus:z-10"
+            placeholder="password"
+            :is-error="
+              validator.errorMap['password'] &&
+              validator.errorMap['password'].length > 0
+            "
+            :validator="(val: string) => validator.validateProperty('password', val, 1)"
+            :show-password="true"
+          />
         </div>
-      </div>
+      </template>
 
-      <button type="submit" data-cy="submit">Login</button>
-    </form>
-  </div>
+      <template #error="param">
+        {{ param.error }}
+      </template>
+
+      <template #submitButton>
+        <AntButton type="submit" data-cy="submit" :primary="true">
+          Login
+        </AntButton>
+      </template>
+    </AntLoginWidget>
+  </AntLoginLayout>
 </template>
