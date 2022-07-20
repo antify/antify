@@ -1,37 +1,17 @@
 <script setup>
-import TenantLink from "~~/components/fields/TenantLink.vue";
-import { ROW_TYPES } from "@antify/antify-ui";
-
-const { data } = await useFetch("/api/tenants/tenants", useDefaultFetchOpts());
-
-const tableHeaders = [
-  {
-    title: "name",
-    identifier: "name",
-    type: ROW_TYPES.SLOT,
-  },
-];
+import TenantTable from '~~/components/entity/tenant/TenantTable.vue';
+import { ref } from 'vue';
+const search = ref('');
 </script>
 
 <template>
   <AntContent>
     <template #head>
-      <AntHeader>Mandanten</AntHeader>
+      <AntInput v-model:value="search" placeholder="Suche" />
     </template>
 
     <template #body>
-      <AntTable :headers="tableHeaders" :data="data.default">
-        <template #cellContent="{ elem }">
-          <TenantLink
-            :to="{
-              name: 'admin-tenantId-tenants-tenantDetailId',
-              params: { tenantDetailId: elem.id },
-            }"
-          >
-            {{ elem.name }}
-          </TenantLink>
-        </template>
-      </AntTable>
+      <TenantTable />
     </template>
   </AntContent>
 </template>

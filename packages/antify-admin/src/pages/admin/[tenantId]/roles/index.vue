@@ -1,25 +1,14 @@
 <script setup>
-import TenantLink from "~~/components/fields/TenantLink.vue";
-import { ROW_TYPES } from "@antify/antify-ui";
+import TenantLink from '~~/components/fields/TenantLink.vue';
+import RoleTable from '~~/components/entity/role/RoleTable.vue';
 
-const { data: roles } = await useFetch(
-  "/api/roles/roles",
-  useDefaultFetchOpts()
-);
-
-const tableHeaders = [
-  {
-    title: "Rollen",
-    identifier: "name",
-    type: ROW_TYPES.SLOT,
-  },
-];
+const search = ref('');
 </script>
 
 <template>
   <AntContent>
     <template #head>
-      <AntHeader class="">Rollen</AntHeader>
+      <AntInput v-model:value="search" placeholder="Suche" />
 
       <AntButton :primary="true" class="">
         <TenantLink :to="{ name: 'admin-tenantId-roles-create' }">
@@ -29,18 +18,7 @@ const tableHeaders = [
     </template>
 
     <template #body>
-      <AntTable :headers="tableHeaders" :data="roles">
-        <template #cellContent="{ elem }">
-          <TenantLink
-            :to="{
-              name: 'admin-tenantId-roles-roleId',
-              params: { roleId: elem.id },
-            }"
-          >
-            {{ elem.name }}
-          </TenantLink>
-        </template>
-      </AntTable>
+      <RoleTable />
     </template>
   </AntContent>
 </template>

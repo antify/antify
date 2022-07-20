@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { Response as GetResponse } from "~~/glue/api/tenants/[tenantDetailId].get";
-import { validator as baseValidator, Response as PutResponse } from "~~/glue/api/tenants/[tenantDetailId].put";
-import TenantLink from "~~/components/fields/TenantLink.vue";
+import { Response as GetResponse } from '~~/glue/api/tenants/[tenantDetailId].get';
+import {
+  validator as baseValidator,
+  Response as PutResponse,
+} from '~~/glue/api/tenants/[tenantDetailId].put';
+import TenantLink from '~~/components/fields/TenantLink.vue';
+import TenantTable from '~~/components/entity/tenant/TenantTable.vue';
 
 const { data } = await useFetch<GetResponse | PutResponse>(
   `/api/tenants/${useRoute().params.tenantDetailId}`,
@@ -14,14 +18,17 @@ const { data } = await useFetch<GetResponse | PutResponse>(
 // }
 
 const { $toaster } = useNuxtApp();
+
 const errors = ref([]);
 const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
+const search = ref('');
+
 const onSubmit = async () => {
   loading.value = true;
   errors.value = [];
 
-  validator.value.validate(data.value.default, true);
+  validator.value.validate(data.value.default, 1);
 
   if (validator.value.hasErrors()) {
     loading.value = false;
@@ -33,7 +40,7 @@ const onSubmit = async () => {
     {
       ...useDefaultFetchOpts(),
       ...{
-        method: "PUT",
+        method: 'PUT',
         body: data.value.default,
       },
     }
@@ -52,29 +59,63 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div>
-    <ul data-cy="response-errors" v-if="errors.length" style="
-        background: #dc2626;
-        color: #fff;
-        padding: 20px;
-        list-style-position: inside;
-      ">
-      <li v-for="error in errors">{{ error }}</li>
-    </ul>
+  <AntDualContent>
+    <template #mainHead>
+      <AntHeader>Mandant bearbeiten</AntHeader>
+    </template>
 
-    <form @submit.prevent="onSubmit">
-      <div data-cy="name">
-        <label>
-          Bezeichnung <br />
-          <input v-model="data.default.name" placeholder="Bezeichnung" autofocus
-            @input="() => validator.validateProperty('name', data.default.name, true)" />
-        </label>
+    <template #mainBody>
+      <ul
+        data-cy="response-errors"
+        v-if="errors.length"
+        style="
+          background: #dc2626;
+          color: #fff;
+          padding: 20px;
+          list-style-position: inside;
+        "
+      >
+        <li v-for="error in errors">{{ error }}</li>
+      </ul>
 
-        <div data-cy="error" v-for="message in validator.errorMap['name']">{{ message }}</div>
-      </div>
+      <AntForm @submit.prevent="onSubmit">
+        <div data-cy="name">
+          <AntInput
+            v-model:value="data.default.name"
+            label="Bezeichnung"
+            autofocus
+            :validator="(val: string) => validator.validateProperty('name', val, 1)"
+            :errors="validator.errorMap['name']"
+          >
+            <template #errorList="{ errors }">
+              <div
+                data-cy="error"
+                v-for="message in errors"
+                class="text-red-600"
+              >
+                {{ message }}
+              </div>
+            </template>
+          </AntInput>
+        </div>
 
-      <TenantLink :to="{ name: 'admin-tenantId-tenants' }">Zurück</TenantLink> - 
-      <button type="submit" data-cy="submit">Speichern</button>
-    </form>
-  </div>
+        <template #footer>
+          <AntButton>
+            <TenantLink :to="{ name: 'admin-tenantId-tenants' }">
+              Zurück
+            </TenantLink>
+          </AntButton>
+
+          <AntButton :primary="true" type="submit" data-cy="submit">
+            Speichern
+          </AntButton>
+        </template>
+      </AntForm>
+    </template>
+
+    <template #asideHead>
+      <AntInput v-model:value="search" placeholder="Suche" />
+    </template>
+    <template #asideBody><TenantTable /></template>
+  </AntDualContent>
 </template>

@@ -32,7 +32,7 @@ importers:
   packages/antify-admin/src:
     specifiers:
       '@antify/ant-validate': 1.0.0
-      '@antify/antify-ui': 0.0.45
+      '@antify/antify-ui': 0.0.52
       '@faker-js/faker': ^6.2.0
       '@nuxt/kit': 3.0.0-rc.5
       '@nuxtjs/tailwindcss': ^5.0.3
@@ -50,7 +50,7 @@ importers:
       vite: ^2.3.0
     dependencies:
       '@antify/ant-validate': link:../../ant-validate
-      '@antify/antify-ui': 0.0.45_7mznwn7en2tqb2j4vto3mkdepm
+      '@antify/antify-ui': 0.0.52_7mznwn7en2tqb2j4vto3mkdepm
       '@prisma/client': 3.15.2_prisma@3.15.2
       jsonwebtoken: 8.5.1
       jwt-decode: 3.1.2
@@ -77,8 +77,8 @@ packages:
       '@jridgewell/gen-mapping': 0.1.1
       '@jridgewell/trace-mapping': 0.3.14
 
-  /@antify/antify-ui/0.0.45_7mznwn7en2tqb2j4vto3mkdepm:
-    resolution: {integrity: sha512-lEYw/fULfMRQA8qBk4wrAFyy8UKSNsNBmBAzjL416dE9uD4hHBbrisi/p5FCfBp7iDNQH3JvnzcLtGRD4GxGgQ==}
+  /@antify/antify-ui/0.0.52_7mznwn7en2tqb2j4vto3mkdepm:
+    resolution: {integrity: sha512-dW1BC0HgE0v4Yqxp/gx9rMuQ62JQY7Sz87WiRuLZbd+uPpU5qufqQm1lcnbnXnSM5YAxrdNeKCLn5EOOUoagVQ==}
     engines: {node: '>=0.14'}
     dependencies:
       '@fortawesome/fontawesome-svg-core': 6.1.1

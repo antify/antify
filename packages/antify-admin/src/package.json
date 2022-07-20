@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@antify/ant-validate": "1.0.0",
-    "@antify/antify-ui": "0.0.45",
+    "@antify/antify-ui": "0.0.52",
     "@prisma/client": "^3.15.1",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",

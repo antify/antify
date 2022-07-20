@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { Checkbox } from '@antify/antify-ui/dist/types/Checkbox.type';
-import TenantLink from '~~/components/fields/TenantLink.vue';
 
 type Role = {
   id: string;
@@ -63,7 +62,7 @@ const checkboxes = computed<Checkbox[]>(() => {
     <AntCheckboxWidget
       v-if="role.isAdmin"
       label="Rechte dieser Rolle"
-      :value="allPermissions"
+      v-model:value="allPermissions"
       :checkboxes="checkboxes"
     >
     </AntCheckboxWidget>
@@ -75,12 +74,5 @@ const checkboxes = computed<Checkbox[]>(() => {
       :checkboxes="checkboxes"
     >
     </AntCheckboxWidget>
-
-    <template #footer>
-      <AntButton>
-        <TenantLink :to="{ name: 'admin-tenantId-roles' }">Zurück</TenantLink>
-      </AntButton>
-      <AntButton :primary="true" type="submit">Speichern</AntButton>
-    </template>
   </AntForm>
 </template>

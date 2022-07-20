@@ -1,9 +1,13 @@
 <script setup lang="ts">
 import { Response as GetResponse } from '~~/glue/api/users/[userId].get';
+import TenantLink from '~~/components/fields/TenantLink.vue';
 import {
   validator as baseValidator,
   Response as PutResponse,
 } from '~~/glue/api/users/[userId].put';
+import UserTable from '~~/components/entity/user/UserTable.vue';
+
+const search = ref('');
 
 const { data } = await useFetch<GetResponse | PutResponse>(
   `/api/users/${useRoute().params.userId}`,
@@ -18,11 +22,12 @@ const { $toaster } = useNuxtApp();
 const errors = ref([]);
 const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
+
 const onSubmit = async () => {
   loading.value = true;
   errors.value = [];
 
-  validator.value.validate(data.value.default, true);
+  validator.value.validate(data.value.default, 1);
 
   if (validator.value.hasErrors()) {
     loading.value = false;
@@ -50,12 +55,28 @@ const onSubmit = async () => {
     $toaster.toastError(response.value.badRequest.errors.join('\n'));
   }
 };
+
+const roleOptions = computed(() => {
+  return (
+    roles.value as {
+      permissions: string[];
+      name: string;
+      id: string;
+      isAdmin: boolean;
+    }[]
+  ).map((role) => ({
+    value: role.id,
+    label: role.name,
+  }));
+});
 </script>
 
 <template>
-  <AntContent>
-    <template #head></template>
-    <template #body>
+  <AntDualContent>
+    <template #mainHead>
+      <AntHeader header-type="h1">Benutzer bearbeiten</AntHeader>
+    </template>
+    <template #mainBody>
       <ul
         data-cy="response-errors"
         v-if="errors.length"
@@ -69,59 +90,64 @@ const onSubmit = async () => {
         <li v-for="error in errors">{{ error }}</li>
       </ul>
 
-      <AntForm @submit.prevent="onSubmit">
+      <AntForm
+        @submit.prevent="onSubmit"
+        class="flex flex-col bg-white"
+        id="user-create-form"
+      >
         <div data-cy="name">
-          <label>
-            Name <br />
-            <input
-              v-model="data.default.name"
-              placeholder="Name"
-              autofocus
-              @input="
-                () => validator.validateProperty('name', data.default.name, 1)
-              "
-            />
-          </label>
-
-          <div data-cy="error" v-for="message in validator.errorMap['name']">
-            {{ message }}
-          </div>
+          <AntInput
+            v-model:value="data.default.name"
+            label="Name"
+            :errors="validator.errorMap['name']"
+            :validator="(val: string) => validator.validateProperty('name', val, 1)"
+          >
+            <template #errorList="{ errors }">
+              <div
+                data-cy="error"
+                v-for="message in errors"
+                class="text-red-600"
+              >
+                {{ message }}
+              </div>
+            </template>
+          </AntInput>
         </div>
 
         <div data-cy="email">
-          <label>
-            E-Mail <br />
-            <input
-              v-model="data.default.email"
-              placeholder="E-Mail"
-              @input="
-                () => validator.validateProperty('email', data.default.email, 1)
-              "
-            />
-          </label>
-
-          <div data-cy="error" v-for="message in validator.errorMap['email']">
-            {{ message }}
-          </div>
+          <AntInput
+            v-model:value="data.default.email"
+            label="E-Mail"
+            :errors="validator.errorMap['email']"
+            :validator="(val: string) => validator.validateProperty('email', val, 1)"
+          >
+            <template #errorList="{ errors }">
+              <div
+                data-cy="error"
+                v-for="message in errors"
+                class="text-red-600"
+              >
+                {{ message }}
+              </div>
+            </template>
+          </AntInput>
         </div>
 
         <div data-cy="roles">
-          <label>
-            Rolle <br />
-            <select
-              v-model="data.default.roleId"
-              @change="
-                () =>
-                  validator.validateProperty('roleId', data.default.roleId, 1)
-              "
-            >
-              <option v-for="role in roles" :key="role.id" :value="role.id">
-                {{ role.name }}
-              </option>
-            </select>
-          </label>
+          <AntSelect
+            label="Rolle"
+            :options="roleOptions"
+            v-model:value="data.default.roleId"
+            @change="
+              () => validator.validateProperty('roleId', data.default.roleId, 1)
+            "
+          />
 
-          <div data-cy="error" v-for="message in validator.errorMap['roleId']">
+          <div
+            class="text-red-600"
+            data-cy="error"
+            v-for="message in validator.errorMap['roleId']"
+          >
             {{ message }}
           </div>
         </div>
@@ -129,9 +155,34 @@ const onSubmit = async () => {
         <div>TODO:: Profile photo</div>
 
         <div>TODO:: Password</div>
-
-        <button type="submit" data-cy="submit">Speichern</button>
       </AntForm>
     </template>
-  </AntContent>
+
+    <template #mainFooter>
+      <AntButton>
+        <TenantLink
+          :to="{
+            name: 'admin-tenantId-users',
+          }"
+        >
+          Zurück
+        </TenantLink>
+      </AntButton>
+      <AntButton
+        type="submit"
+        data-cy="submit"
+        :primary="true"
+        form="user-create-form"
+      >
+        Speichern
+      </AntButton>
+    </template>
+
+    <template #asideHead>
+      <AntInput v-model:value="search" placeholder="Suche" />
+    </template>
+    <template #asideBody>
+      <UserTable :single-col="true"></UserTable>
+    </template>
+  </AntDualContent>
 </template>

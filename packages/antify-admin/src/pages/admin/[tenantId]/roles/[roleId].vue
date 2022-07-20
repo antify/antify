@@ -1,24 +1,26 @@
 <script setup>
+import RoleTable from '~~/components/entity/role/RoleTable.vue';
 const { data: role } = await useFetch(
   `/api/roles/${useRoute().params.roleId}`,
   useDefaultFetchOpts()
 );
 const { data: permissions } = await useFetch(
-  "/api/roles/permissions",
+  '/api/roles/permissions',
   useDefaultFetchOpts()
 );
 const { $toaster } = useNuxtApp();
 
+const search = ref('');
 const onDelete = async () => {
   await useFetch(`/api/roles/${useRoute().params.roleId}`, {
     ...useDefaultFetchOpts(),
-    method: "DELETE",
+    method: 'DELETE',
   });
 
   $toaster.toastDeleted();
 
   await navigateTo({
-    name: "admin-tenantId-roles",
+    name: 'admin-tenantId-roles',
     params: {
       roleId: useRoute().params.roleId,
       tenantId: useRoute().params.tenantId,
@@ -28,14 +30,34 @@ const onDelete = async () => {
 </script>
 
 <template>
-  <AntContent>
-    <template #head>
-      <AntHeader>Rolle {{ role ? role.name : "" }} bearbeiten</AntHeader>
+  <AntDualContent>
+    <template #mainHead>
+      <AntHeader>Rolle {{ role ? role.name : '' }} bearbeiten</AntHeader>
       <DeleteButton @click="onDelete">Löschen </DeleteButton>
     </template>
 
-    <template #body>
-      <EntityRoleEditRoleForm :role="role" :permissions="permissions" />
+    <template #mainBody>
+      <EntityRoleEditRoleForm
+        :role="role"
+        :permissions="permissions"
+        id="edit-role-form"
+      />
     </template>
-  </AntContent>
+
+    <template #mainFooter>
+      <AntButton>
+        <TenantLink :to="{ name: 'admin-tenantId-roles' }">Zurück</TenantLink>
+      </AntButton>
+
+      <AntButton :primary="true" type="submit" form="edit-role-form">
+        Speichern
+      </AntButton>
+    </template>
+
+    <template #asideHead>
+      <AntInput v-model:value="search" placeholder="Suche" />
+    </template>
+
+    <template #asideBody> <RoleTable /> </template>
+  </AntDualContent>
 </template>

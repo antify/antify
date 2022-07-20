@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { Response as GetResponse } from "../../../../glue/api/mail_templates/[mailTemplateId].get";
-import { validator as baseValidator, Response as PutResponse } from "../../../../glue/api/mail_templates/[mailTemplateId].put";
-import TenantLink from "../../../../components/fields/TenantLink.vue";
+import { Response as GetResponse } from '../../../../glue/api/mail_templates/[mailTemplateId].get';
+import {
+  validator as baseValidator,
+  Response as PutResponse,
+} from '../../../../glue/api/mail_templates/[mailTemplateId].put';
+import TenantLink from '../../../../components/fields/TenantLink.vue';
+import MailTemplatesTable from '~~/components/entity/mail-templates/MailTemplatesTable.vue';
 
 const { data } = await useFetch<GetResponse | PutResponse>(
   `/api/mail_templates/${useRoute().params.mailTemplateId}`,
@@ -17,11 +21,13 @@ const { $toaster } = useNuxtApp();
 const errors = ref([]);
 const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
+const search = ref('');
+
 const onSubmit = async () => {
   loading.value = true;
   errors.value = [];
 
-  validator.value.validate(data.value.default, true);
+  validator.value.validate(data.value.default, 1);
 
   if (validator.value.hasErrors()) {
     loading.value = false;
@@ -33,7 +39,7 @@ const onSubmit = async () => {
     {
       ...useDefaultFetchOpts(),
       ...{
-        method: "PUT",
+        method: 'PUT',
         body: data.value.default,
       },
     }
@@ -52,39 +58,87 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div>
-    <ul data-cy="response-errors" v-if="errors.length" style="
-        background: #dc2626;
-        color: #fff;
-        padding: 20px;
-        list-style-position: inside;
-      ">
-      <li v-for="error in errors">{{ error }}</li>
-    </ul>
+  <AntDualContent>
+    <template #mainHead>
+      <AntHeader>E-Mail Template bearbeiten</AntHeader>
+    </template>
 
-    <form @submit.prevent="onSubmit">
-      <div data-cy="title">
-        <label>
-          Bezeichnung <br />
-          <input v-model="data.default.title" placeholder="Titel" autofocus
-            @input="() => validator.validateProperty('title', data.default.title, true)" />
-        </label>
+    <template #mainBody>
+      <ul
+        data-cy="response-errors"
+        v-if="errors.length"
+        style="
+          background: #dc2626;
+          color: #fff;
+          padding: 20px;
+          list-style-position: inside;
+        "
+      >
+        <li v-for="error in errors">{{ error }}</li>
+      </ul>
 
-        <div data-cy="error" v-for="message in validator.errorMap['title']">{{ message }}</div>
-      </div>
+      <AntForm @submit.prevent="onSubmit" id="mail-template-form">
+        <div data-cy="title">
+          <AntInput
+            v-model:value="data.default.title"
+            label="Bezeichnung"
+            :errors="validator.errorMap['title']"
+            :validator="
+              () => validator.validateProperty('title', data.default.title, 1)
+            "
+          >
+            <template #errorList="{ errors }">
+              <div
+                data-cy="error"
+                class="text-red-600"
+                v-for="message in errors"
+              >
+                {{ message }}
+              </div>
+            </template>
+          </AntInput>
+        </div>
 
-      <div data-cy="content">
-        <label>
-          Inhalt <br />
-          <textarea v-model="data.default.content" placeholder="Inhalt" autofocus
-            @input="() => validator.validateProperty('content', data.default.content, true)"></textarea>
-        </label>
+        <div data-cy="content">
+          <AntRichTextEditor
+            v-model:data="data.default.content"
+            label="Inhalt"
+            :errors="validator.errorMap['content']"
+            :validator="(val: string) => validator.validateProperty('content', val, 1)"
+          >
+            <template #errorList="{ errors }">
+              <div data-cy="error" v-for="message in errors">
+                {{ message }}
+              </div>
+            </template>
+          </AntRichTextEditor>
+        </div>
+      </AntForm>
+    </template>
 
-        <div data-cy="error" v-for="message in validator.errorMap['content']">{{ message }}</div>
-      </div>
+    <template #mainFooter>
+      <AntButton>
+        <TenantLink :to="{ name: 'admin-tenantId-mail-templates' }">
+          Zurück
+        </TenantLink>
+      </AntButton>
 
-      <TenantLink :to="{ name: 'admin-tenantId-mail-templates' }">Zurück</TenantLink> - 
-      <button type="submit" data-cy="submit">Speichern</button>
-    </form>
-  </div>
+      <AntButton
+        :primary="true"
+        type="submit"
+        data-cy="submit"
+        form="mail-template-form"
+      >
+        Speichern
+      </AntButton>
+    </template>
+
+    <template #asideHead>
+      <AntInput v-model:value="search" placeholder="Suche" />
+    </template>
+
+    <template #asideBody>
+      <MailTemplatesTable />
+    </template>
+  </AntDualContent>
 </template>
