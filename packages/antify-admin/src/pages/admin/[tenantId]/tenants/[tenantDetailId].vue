@@ -9,7 +9,10 @@ import TenantTable from '~~/components/entity/tenant/TenantTable.vue';
 
 const { data } = await useFetch<GetResponse | PutResponse>(
   `/api/tenants/${useRoute().params.tenantDetailId}`,
-  useDefaultFetchOpts()
+  {
+    ...useDefaultFetchOpts(),
+    key: `/api/tenants/${useRoute().params.tenantDetailId}`
+  }
 );
 
 // if (!data.value?.default) {
@@ -42,7 +45,7 @@ const onSubmit = async () => {
       ...{
         method: 'PUT',
         body: data.value.default,
-      },
+      }
     }
   );
   loading.value = false;
@@ -65,34 +68,22 @@ const onSubmit = async () => {
     </template>
 
     <template #mainBody>
-      <ul
-        data-cy="response-errors"
-        v-if="errors.length"
-        style="
+      <ul data-cy="response-errors" v-if="errors.length" style="
           background: #dc2626;
           color: #fff;
           padding: 20px;
           list-style-position: inside;
-        "
-      >
+        ">
         <li v-for="error in errors">{{ error }}</li>
       </ul>
 
       <AntForm @submit.prevent="onSubmit">
         <div data-cy="name">
-          <AntInput
-            v-model:value="data.default.name"
-            label="Bezeichnung"
-            autofocus
+          <AntInput v-model:value="data.default.name" label="Bezeichnung" autofocus
             :validator="(val: string) => validator.validateProperty('name', val, 1)"
-            :errors="validator.errorMap['name']"
-          >
+            :errors="validator.errorMap['name']">
             <template #errorList="{ errors }">
-              <div
-                data-cy="error"
-                v-for="message in errors"
-                class="text-red-600"
-              >
+              <div data-cy="error" v-for="message in errors" class="text-red-600">
                 {{ message }}
               </div>
             </template>
@@ -116,6 +107,8 @@ const onSubmit = async () => {
     <template #asideHead>
       <AntInput v-model:value="search" placeholder="Suche" />
     </template>
-    <template #asideBody><TenantTable /></template>
+    <template #asideBody>
+      <TenantTable />
+    </template>
   </AntDualContent>
 </template>

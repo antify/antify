@@ -17,10 +17,11 @@ model MailTemplate {
   updatedAt DateTime? @updatedAt
 }
 
-model Meeting {
+model Media {
   id        String    @id @default(uuid())
-  name      String
-  content   String
+  title     String
+  fileName  String    @unique
+  fileType  String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 }

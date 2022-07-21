@@ -28,7 +28,7 @@ const navItems = [
     title: 'Mandanten',
     link: { name: 'admin-tenantId-tenants' },
     icon: ['fa', 'user']
-  },
+  }
 ];
 const me = useMeState();
 </script>
