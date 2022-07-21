@@ -62,6 +62,11 @@ const onLogin = async () => {
     formData.value.password = '';
   }
 };
+
+onBeforeUnmount(() => {
+  // Reset error maps
+  validator.errorMap = {};
+});
 </script>
 
 <template>
@@ -106,7 +111,17 @@ const onLogin = async () => {
       </template>
 
       <template #error="param">
-        {{ param.error }}
+        <div data-cy="login-errors">
+          {{ param.error }}
+        </div>
+      </template>
+
+      <template #beforeSubmit>
+        <div class="flex justify-end w-full text-blue-500 text-sm">
+          <NuxtLink :to="{ name: 'forgotPassword' }">
+            Passwort vergessen?
+          </NuxtLink>
+        </div>
       </template>
 
       <template #submitButton>
