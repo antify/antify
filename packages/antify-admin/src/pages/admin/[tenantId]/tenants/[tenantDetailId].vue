@@ -11,7 +11,7 @@ const { data } = await useFetch<GetResponse | PutResponse>(
   `/api/tenants/${useRoute().params.tenantDetailId}`,
   {
     ...useDefaultFetchOpts(),
-    key: `/api/tenants/${useRoute().params.tenantDetailId}`
+    key: `/api/tenants/${useRoute().params.tenantDetailId}`,
   }
 );
 
@@ -45,7 +45,7 @@ const onSubmit = async () => {
       ...{
         method: 'PUT',
         body: data.value.default,
-      }
+      },
     }
   );
   loading.value = false;
@@ -68,47 +68,63 @@ const onSubmit = async () => {
     </template>
 
     <template #mainBody>
-      <ul data-cy="response-errors" v-if="errors.length" style="
+      <ul
+        data-cy="response-errors"
+        v-if="errors.length"
+        style="
           background: #dc2626;
           color: #fff;
           padding: 20px;
           list-style-position: inside;
-        ">
+        "
+      >
         <li v-for="error in errors">{{ error }}</li>
       </ul>
 
-      <AntForm @submit.prevent="onSubmit">
+      <AntForm @submit.prevent="onSubmit" id="edit-tenant-form">
         <div data-cy="name">
-          <AntInput v-model:value="data.default.name" label="Bezeichnung" autofocus
+          <AntInput
+            v-model:value="data.default.name"
+            label="Bezeichnung"
+            autofocus
             :validator="(val: string) => validator.validateProperty('name', val, 1)"
-            :errors="validator.errorMap['name']">
+            :errors="validator.errorMap['name']"
+          >
             <template #errorList="{ errors }">
-              <div data-cy="error" v-for="message in errors" class="text-red-600">
+              <div
+                data-cy="error"
+                v-for="message in errors"
+                class="text-red-600"
+              >
                 {{ message }}
               </div>
             </template>
           </AntInput>
         </div>
-
-        <template #footer>
-          <AntButton>
-            <TenantLink :to="{ name: 'admin-tenantId-tenants' }">
-              Zurück
-            </TenantLink>
-          </AntButton>
-
-          <AntButton :primary="true" type="submit" data-cy="submit">
-            Speichern
-          </AntButton>
-        </template>
       </AntForm>
+    </template>
+
+    <template #mainFooter>
+      <AntButton>
+        <TenantLink :to="{ name: 'admin-tenantId-tenants' }">
+          Zurück
+        </TenantLink>
+      </AntButton>
+
+      <AntButton
+        :primary="true"
+        type="submit"
+        data-cy="submit"
+        form="edit-tenant-form"
+      >
+        Speichern
+      </AntButton>
     </template>
 
     <template #asideHead>
       <AntInput v-model:value="search" placeholder="Suche" />
     </template>
-    <template #asideBody>
-      <TenantTable />
-    </template>
+
+    <template #asideBody><TenantTable /></template>
   </AntDualContent>
 </template>
