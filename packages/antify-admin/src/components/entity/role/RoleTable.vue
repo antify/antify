@@ -2,10 +2,28 @@
 import { ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 
+const route = useRoute();
+
 const { data: roles } = await useFetch(
   '/api/roles/roles',
   useDefaultFetchOpts()
 );
+
+const _roles = computed(() => {
+  return (roles.value as Array<any>).map((role) => {
+    if (route.params?.roleId === role.id) {
+      return {
+        ...role,
+        active: true,
+      };
+    }
+
+    return {
+      ...role,
+      active: false,
+    };
+  });
+});
 
 const tableHeaders = [
   {
@@ -17,7 +35,7 @@ const tableHeaders = [
 </script>
 
 <template>
-  <AntTable :headers="tableHeaders" :data="roles">
+  <AntTable :headers="tableHeaders" :data="_roles">
     <template #cellContent="{ elem }">
       <TenantLink
         :to="{
