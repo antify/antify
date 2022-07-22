@@ -64,15 +64,14 @@ const checkboxes = computed<Checkbox[]>(() => {
       label="Rechte dieser Rolle"
       v-model:value="allPermissions"
       :checkboxes="checkboxes"
-    >
-    </AntCheckboxWidget>
+      disabled="true"
+    />
 
     <AntCheckboxWidget
       v-else
       label="Rechte dieser Rolle"
       v-model:value="role.permissions"
       :checkboxes="checkboxes"
-    >
-    </AntCheckboxWidget>
+    />
   </AntForm>
 </template>

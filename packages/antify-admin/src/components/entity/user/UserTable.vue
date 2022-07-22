@@ -2,6 +2,7 @@
 import { ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 
+const route = useRoute();
 const props = defineProps<{
   singleCol: boolean;
 }>();
@@ -10,6 +11,22 @@ const { data: users } = await useFetch(
   '/api/users/users',
   useDefaultFetchOpts()
 );
+
+const _users = computed(() => {
+  return (users.value as Array<any>).map((user) => {
+    if (route.params?.userId === user.id) {
+      return {
+        ...user,
+        active: true,
+      };
+    }
+
+    return {
+      ...user,
+      active: false,
+    };
+  });
+});
 
 const tableHeaders = [
   {
@@ -31,7 +48,7 @@ if (!props.singleCol) {
 </script>
 
 <template>
-  <AntTable :headers="tableHeaders" :data="users">
+  <AntTable :headers="tableHeaders" :data="_users">
     <template #cellContent="{ elem }">
       <TenantLink
         :to="{
