@@ -26,10 +26,22 @@ export default defineNuxtPlugin((nuxtApp) => {
           });
         },
         async forgotPassword(identifier: String): Promise<void> {
-          await useFetch('/api/auth/forgotPassword', {
+          await useFetch('/api/auth/forgot_password', {
             method: 'POST',
             body: {
               email: identifier,
+            },
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        },
+        async newPassword(token: String, password: String): Promise<void> {
+          await useFetch('/api/auth/new_password', {
+            method: 'POST',
+            body: {
+              token: token,
+              password: password,
             },
             headers: {
               'Content-Type': 'application/json',

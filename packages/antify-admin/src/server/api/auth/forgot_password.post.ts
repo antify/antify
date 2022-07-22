@@ -2,7 +2,7 @@ import {
   Input,
   validator,
   Response,
-} from '~~/glue/api/auth/forgotPassword.post';
+} from '~~/glue/api/auth/forgot_password.post';
 
 export default defineEventHandler<Response>(async (event) => {
   const requestData = await useBody<Input>(event);
