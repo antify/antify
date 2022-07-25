@@ -4,8 +4,24 @@ import {
   validator,
   Response
 } from '~~/glue/api/mail_templates/[mailTemplateId].put';
+import { useAuthorizationHeader } from "~~/server/utils/useAuthorizationHeader";
+import { HttpForbiddenError } from "~~/server/errors";
+import { useTenantHeader } from "~~/server/utils/useTenantHeader";
+import { PermissionId } from "~~/server/datasources/static/permissions";
 
 export default defineEventHandler<Response>(async (event) => {
+  const guard = useGuard(useAuthorizationHeader(event));
+
+  if (!guard.isUserLoggedIn) {
+    throw new HttpForbiddenError();
+  }
+
+  const tenantId = useTenantHeader(event);
+
+  if (!guard.hasPermissionTo(PermissionId.CAN_EDIT_MAIL_TEMPLATES, tenantId)) {
+    throw new HttpForbiddenError();
+  }
+
   const requestData = await useBody<Input>(event);
 
   validator.validate(requestData);

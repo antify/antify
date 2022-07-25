@@ -6,17 +6,12 @@ import {
 } from '../../../../glue/api/mail_templates/[mailTemplateId].put';
 import TenantLink from '../../../../components/fields/TenantLink.vue';
 import MailTemplatesTable from '~~/components/entity/mail-templates/MailTemplatesTable.vue';
+import { validator as sendTestMailValidator } from '~~/glue/api/mail_templates/[mailTemplateId]/send_test_mail.post';
 
 const { data } = await useFetch<GetResponse | PutResponse>(
   `/api/mail_templates/${useRoute().params.mailTemplateId}`,
   useDefaultFetchOpts()
 );
-
-// if (!data.value?.default) {
-//   // TODO:: Handle it
-//   throw throwError('HANDLE ME');
-// }
-
 const { $toaster } = useNuxtApp();
 const errors = ref([]);
 const loading = ref<Boolean>(false);
@@ -54,6 +49,29 @@ const onSubmit = async () => {
   if (response.value.badRequest) {
     $toaster.toastError(response.value.badRequest.errors.join('\n'));
   }
+};
+
+const testMail = ref('');
+const sendTestMailValidatorRef = ref(sendTestMailValidator);
+const onSendTestMail = async () => {
+  sendTestMailValidatorRef.value.validate({ testMail: testMail.value }, 1);
+
+  if (sendTestMailValidatorRef.value.hasErrors()) {
+    return;
+  }
+
+  await useFetch(
+    `/api/mail_templates/${useRoute().params.mailTemplateId}/send_test_mail`,
+    {
+      ...useDefaultFetchOpts(),
+      method: 'POST',
+      body: {
+        testMail: testMail.value,
+      },
+    }
+  );
+
+  $toaster.toastSuccess('E-Mail versendet');
 };
 </script>
 
@@ -112,6 +130,49 @@ const onSubmit = async () => {
               </div>
             </template>
           </AntRichTextEditor>
+        </div>
+      </AntForm>
+
+      <AntForm @submit.prevent="onSendTestMail">
+        <div class="flex space-x-4 items-center">
+          <div data-cy="test-mail" class="grow">
+            <AntInput
+              v-model:value="testMail"
+              label="E-Mail Template testen"
+              :errors="sendTestMailValidatorRef.errorMap['testMail']"
+              description="Mehrere E-Mails mit Komma separiert angeben"
+              placeholder="E-Mail"
+              :validator="
+                () =>
+                  sendTestMailValidatorRef.validateProperty(
+                    'testMail',
+                    testMail,
+                    1
+                  )
+              "
+            >
+              <template #errorList="{ errors }">
+                <div
+                  data-cy="error"
+                  class="text-red-600"
+                  v-for="message in errors"
+                >
+                  {{ message }}
+                </div>
+              </template>
+            </AntInput>
+          </div>
+
+          <div>
+            <AntButton
+              :primary="false"
+              type="submit"
+              data-cy="testn"
+              class="mb-2"
+            >
+              Senden
+            </AntButton>
+          </div>
         </div>
       </AntForm>
     </template>

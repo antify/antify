@@ -11,6 +11,7 @@ export enum PermissionId {
     CAN_READ_TENANT = "CAN_READ_TENANT",
 
     CAN_READ_MAIL_TEMPLATES = "CAN_READ_MAIL_TEMPLATES",
+    CAN_EDIT_MAIL_TEMPLATES = "CAN_EDIT_MAIL_TEMPLATES",
 };
 
 export const permissions = [

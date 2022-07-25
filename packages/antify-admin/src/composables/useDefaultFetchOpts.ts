@@ -9,6 +9,7 @@ export const useDefaultFetchOpts = () => {
     headers[CURRENT_TENANT_HEADER_KEY] = useCookie(CURRENT_TENANT_COOKIE_KEY).value
 
     return {
-        headers
+        headers,
+        initialCache: false
     };
 }

@@ -26,10 +26,12 @@ export default defineNuxtConfig({
     },
   },
   // TODO:: remove me an replace with antify-ui
-  buildModules: ["@nuxtjs/tailwindcss"],
+  modules: ["@nuxtjs/tailwindcss"],
   privateRuntimeConfig: {
     passwordSalt: process.env.PASSWORD_SALT,
-  },
-
-  modules: [],
+    smtpHost: process.env.SMTP_HOST, 
+    smtpPort: process.env.SMTP_PORT, 
+    smtpUser: process.env.SMTP_USER, 
+    smtpPassword: process.env.SMTP_PASSWORD
+  }
 });
