@@ -34,6 +34,21 @@ CREATE TABLE `Role` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `UserProfilePicture` (
+    `id` VARCHAR(191) NOT NULL,
+    `title` VARCHAR(191) NOT NULL,
+    `fileName` VARCHAR(191) NOT NULL,
+    `fileType` VARCHAR(191) NOT NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `updatedAt` DATETIME(3) NULL,
+    `userId` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `UserProfilePicture_fileName_key`(`fileName`),
+    UNIQUE INDEX `UserProfilePicture_userId_key`(`userId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `RolePermission` (
     `permissionId` VARCHAR(191) NOT NULL,
     `roleId` VARCHAR(191) NOT NULL,
@@ -51,6 +66,9 @@ CREATE TABLE `UserTenantAccess` (
 
     PRIMARY KEY (`userId`, `tenantId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `UserProfilePicture` ADD CONSTRAINT `UserProfilePicture_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `RolePermission` ADD CONSTRAINT `RolePermission_roleId_fkey` FOREIGN KEY (`roleId`) REFERENCES `Role`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
