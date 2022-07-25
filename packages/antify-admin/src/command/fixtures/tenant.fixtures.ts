@@ -40,9 +40,9 @@
         })
     });
 
-    await prisma.media.createMany({
+    /* await prisma.media.createMany({
         data: mediaFixtures.create(50)
-    });
+    }); */
 
     console.log("Fixtures loaded 🐅🐅🐅🐈🐈🐆🐆🐈🐆");
 })();

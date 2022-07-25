@@ -5,6 +5,7 @@ export enum PermissionId {
   CAN_DELETE_USER = 'CAN_DELETE_USER',
   CAN_UPDATE_SELF = 'CAN_UPDATE_SELF',
   CAN_UPLOAD_PROFILE_PICTURE = 'CAN_UPLOAD_PROFILE_PICTURE',
+  CAN_REMOVE_PROFILE_PICTURE = 'CAN_REMOVE_PROFILE_PICTURE',
 
   CAN_UPDATE_ROLE = 'CAN_UPDATE_ROLE',
   CAN_DELETE_ROLE = 'CAN_DELETE_ROLE',
@@ -43,6 +44,10 @@ export const permissions = [
   {
     id: PermissionId.CAN_UPLOAD_PROFILE_PICTURE,
     name: 'Kann Profil Bild hochladen',
+  },
+  {
+    id: PermissionId.CAN_REMOVE_PROFILE_PICTURE,
+    name: 'Kann Profil Bild entfernen',
   },
   {
     id: PermissionId.CAN_READ_MAIL_TEMPLATES,

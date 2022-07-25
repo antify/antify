@@ -18,15 +18,16 @@ model Tenant {
 }
 
 model User {
-  id                 String              @id @default(uuid())
-  email              String              @unique
-  password           String
-  name               String
-  isSuperAdmin       Boolean             @default(false)
-  tenantAccesses     UserTenantAccess[]
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime?           @updatedAt
-  UserProfilePicture UserProfilePicture?
+  id               String             @id @default(uuid())
+  email            String             @unique
+  password         String
+  name             String
+  isSuperAdmin     Boolean            @default(false)
+  tenantAccesses   UserTenantAccess[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime?          @updatedAt
+  profilePicture   Media?             @relation(fields: [profilePictureId], references: [id])
+  profilePictureId String?
 }
 
 model Role {
@@ -39,15 +40,14 @@ model Role {
   updatedAt        DateTime?          @updatedAt
 }
 
-model UserProfilePicture {
+model Media {
   id        String    @id @default(uuid())
   title     String
   fileName  String    @unique
   fileType  String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
-  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String    @unique
+  User      User[]
 }
 
 model RolePermission {

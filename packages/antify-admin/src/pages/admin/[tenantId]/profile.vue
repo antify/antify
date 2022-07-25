@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Response as GetResponse } from '~~/glue/api/profile/user.get';
-import { faCamera } from '@fortawesome/free-solid-svg-icons';
+import { faCamera, faX } from '@fortawesome/free-solid-svg-icons';
+import { useDefaultFetchOpts } from '../../../composables/useDefaultFetchOpts';
 import {
   validator as baseValidator,
   Response as PutResponse,
@@ -17,7 +18,7 @@ const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
 const profilePicture = ref({});
 
-const onSubmit = async () => {
+async function onSubmit() {
   loading.value = true;
   errors.value = [];
 
@@ -45,23 +46,34 @@ const onSubmit = async () => {
   if (response.value.badRequest) {
     $toaster.toastError(response.value.badRequest.errors.join('\n'));
   }
-};
+}
 
-const onSelectFile = async (event) => {
+async function onSelectFile(event) {
   let formData = new FormData();
 
   for (let i = 0; i < event.target.files.length; i++) {
     formData.append(`file-${i}`, event.target.files[i]);
   }
 
-  await useFetch('/api/admin/:tenantId/media', {
+  await useFetch('/api/profile/profile_picture', {
     ...useDefaultFetchOpts(),
     method: 'POST',
     body: formData,
   });
 
   $toaster.toastCreated();
-};
+}
+
+async function removeProfilePicture() {
+  console.log('DROP IT');
+
+  await useFetch('/api/profile/profile_picture', {
+    ...useDefaultFetchOpts(),
+    method: 'DELETE',
+  });
+
+  $toaster.toastDeleted();
+}
 </script>
 
 <template>
@@ -115,26 +127,40 @@ const onSelectFile = async (event) => {
 
         <div>
           <div class="block text-sm font-medium text-gray-700">
-            Profil Bild Hochladen
+            Profil Bild ändern
           </div>
 
           <AntUpload
+            v-model:value="profilePicture"
             accept-type="acceptType"
             :icon="faCamera"
             :show-preview="true"
             @change="onSelectFile"
           >
-            <template #label>Profil Bild Hochladen</template>
+            <template #label>Profil Bild hochladen</template>
 
             <template #preview="uploaded">
-              <div class="mr-4">
+              <div
+                class="mr-4 flex items-center relative"
+                v-if="(uploaded && uploaded.src) || data.default.url"
+              >
                 <AntProfilePicture
-                  v-model:value="profilePicture"
-                  :image-url="uploaded.src"
+                  :image-url="uploaded.src || data.default.url"
                   :alt="uploaded.fileName"
                   size="large"
                   class="h-16"
                 />
+
+                <div
+                  class="absolute w-4 h-4 -right-2 -top-1 z-10 cursor-pointer"
+                  title="Profilbild entfernen"
+                  @click="removeProfilePicture()"
+                >
+                  <fa-icon
+                    :icon="faX"
+                    class="h-full w-full text-gray-400 hover:text-gray-800 transition-all duration-300"
+                  />
+                </div>
               </div>
             </template>
           </AntUpload>
