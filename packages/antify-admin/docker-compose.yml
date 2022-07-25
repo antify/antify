@@ -21,11 +21,11 @@ services:
       - MYSQL_ROOT_PASSWORD=root
     # volumes:
       # - ./database:/var/lib/mysql
-  # mailhog:
-  #   image: mailhog/mailhog
-  #   logging:
-  #     driver: 'none'  # disable saving logs
-  #   ports:
-  #     - "8025:8025" # web ui
-  #     - "1025:1025" # smtp server
+  mailhog:
+    image: mailhog/mailhog
+    logging:
+      driver: 'none'  # disable saving logs
+    ports:
+      - "8025:8025" # web ui
+      - "1025:1025" # smtp server
 

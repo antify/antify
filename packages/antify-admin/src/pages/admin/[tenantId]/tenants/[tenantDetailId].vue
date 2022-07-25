@@ -9,7 +9,10 @@ import TenantTable from '~~/components/entity/tenant/TenantTable.vue';
 
 const { data } = await useFetch<GetResponse | PutResponse>(
   `/api/tenants/${useRoute().params.tenantDetailId}`,
-  useDefaultFetchOpts()
+  {
+    ...useDefaultFetchOpts(),
+    key: `/api/tenants/${useRoute().params.tenantDetailId}`,
+  }
 );
 
 // if (!data.value?.default) {
