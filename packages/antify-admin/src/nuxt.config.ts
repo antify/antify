@@ -29,6 +29,7 @@ export default defineNuxtConfig({
   buildModules: ["@nuxtjs/tailwindcss"],
   privateRuntimeConfig: {
     passwordSalt: process.env.PASSWORD_SALT,
+    mediaUploadDir: process.env.MEDIA_UPLOAD_DIR,
   },
 
   modules: [],

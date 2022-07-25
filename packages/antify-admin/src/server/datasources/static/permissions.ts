@@ -11,6 +11,11 @@ export enum PermissionId {
     CAN_READ_TENANT = "CAN_READ_TENANT",
 
     CAN_READ_MAIL_TEMPLATES = "CAN_READ_MAIL_TEMPLATES",
+
+    CAN_READ_MEDIA = "CAN_READ_MEDIA",
+    CAN_CREATE_MEDIA = "CAN_CREATE_MEDIA",
+    CAN_EDIT_MEDIA = "CAN_EDIT_MEDIA",
+    CAN_DELETE_MEDIA = "CAN_DELETE_MEDIA",
 };
 
 export const permissions = [
@@ -36,6 +41,22 @@ export const permissions = [
     },
     {
         id: PermissionId.CAN_READ_MAIL_TEMPLATES,
-        name: 'Kann E-Mail Templates bearbeiten'
+        name: 'Kann E-Mail Templates lesen'
+    },
+    {
+        id: PermissionId.CAN_READ_MEDIA,
+        name: 'Kann Medien lesen'
+    },
+    {
+        id: PermissionId.CAN_CREATE_MEDIA,
+        name: 'Kann Dateien hochladen'
+    },
+    {
+        id: PermissionId.CAN_EDIT_MEDIA,
+        name: 'Kann Dateien bearbeiten'
+    },
+    {
+        id: PermissionId.CAN_DELETE_MEDIA,
+        name: 'Kann Dateien löschen'
     }
 ];
