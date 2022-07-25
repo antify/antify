@@ -4,6 +4,7 @@ import { CURRENT_TENANT_COOKIE_KEY, CURRENT_TENANT_HEADER_KEY } from "~~/composa
 export const useDefaultFetchOpts = () => {
     const headers = {
         authorization: useCookie(TOKEN_COOKIE_KEY).value,
+        'Cache-Control': 'no-cache'
     };
 
     headers[CURRENT_TENANT_HEADER_KEY] = useCookie(CURRENT_TENANT_COOKIE_KEY).value

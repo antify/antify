@@ -5,3 +5,5 @@ node_modules
 .cache
 .output
 .env
+upload/*
+!upload/.gitkeep

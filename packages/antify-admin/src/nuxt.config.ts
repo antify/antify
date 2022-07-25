@@ -32,6 +32,7 @@ export default defineNuxtConfig({
     smtpHost: process.env.SMTP_HOST, 
     smtpPort: process.env.SMTP_PORT, 
     smtpUser: process.env.SMTP_USER, 
-    smtpPassword: process.env.SMTP_PASSWORD
+    smtpPassword: process.env.SMTP_PASSWORD,
+    mediaUploadDir: process.env.MEDIA_UPLOAD_DIR,
   }
 });

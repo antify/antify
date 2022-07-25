@@ -21,7 +21,7 @@ if (!useRoute().params.tenantId) {
   }
 
   if (!tenants.value.some(tenant => tenant.id === useRoute().params.tenantId)) {
-    // User has no access to the current tenant - redirect him to an other one.
+    // User has no access to the current tenant - redirect him to another one.
     // TODO:: 404 or 403 page
     await navigateTo({ name: 'admin-tenantId-dashboard', params: { tenantId: tenants.value[0].id } });
   }
