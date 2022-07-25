@@ -1,30 +1,15 @@
 <script setup lang="ts">
-import TenantLink from "~~/components/fields/TenantLink.vue";
-import { ROW_TYPES } from "@antify/antify-ui";
-import { Response } from "~~/glue/api/admin/[tenantId]/media/index.get";
-import { TableHeader } from "@antify/antify-ui/dist/types/TableHeader.type";
-
-const { data, refresh: reloadAllMedia } = await useFetch<Response>(
-  "/api/admin/:tenantId/media",
-  useDefaultFetchOpts()
-);
-
-const tableHeaders: TableHeader[] = [
-  {
-    title: "Bild",
-    identifier: "url",
-    type: ROW_TYPES.IMAGE,
-    rowClassList: 'w-6'
-  },
-  {
-    title: "Name",
-    identifier: "title",
-    type: ROW_TYPES.SLOT,
-  },
-];
+import { Response } from '~~/glue/api/admin/[tenantId]/media/index.get';
+import Media from '~~/components/entity/media/Media.vue';
 
 const file = ref({});
 const { $toaster } = useNuxtApp();
+const route = useRoute();
+const { data, refresh: reloadAllMedia } = await useFetch<Response>(
+  () => `/api/admin/:tenantId/media?search=${route.query.search || ''}`,
+  useDefaultFetchOpts()
+);
+
 const onSelectFile = async (event) => {
   let formData = new FormData();
 
@@ -32,19 +17,16 @@ const onSelectFile = async (event) => {
     formData.append(`file-${i}`, event.target.files[i]);
   }
 
-  await useFetch('/api/admin/:tenantId/media', { ...useDefaultFetchOpts(), method: 'POST', body: formData });
+  await useFetch('/api/admin/:tenantId/media', {
+    ...useDefaultFetchOpts(),
+    method: 'POST',
+    body: formData,
+  });
 
   $toaster.toastCreated();
 
   reloadAllMedia();
-}
-const onDeleteMedia = async (mediaId: string) => {
-  await useFetch(`/api/admin/:tenantId/media/${mediaId}`, { ...useDefaultFetchOpts(), method: 'DELETE' });
-
-  $toaster.toastCreated();
-
-  reloadAllMedia();
-}
+};
 </script>
 
 <template>
@@ -52,23 +34,16 @@ const onDeleteMedia = async (mediaId: string) => {
     <template #head>
       <AntHeader>Mediatheke</AntHeader>
 
-      <!-- TODO:: Replace with a button -->
-      <AntUpload v-model:value="file" label="Hochladen" :show-preview="true" @change="onSelectFile" />
+      <AntUpload v-model:value="file" @change="onSelectFile" :label-style="''">
+        <template #preview><span></span></template>
+        <template #label>
+          <CreateButton label="Hochladen" class="pointer-events-none" />
+        </template>
+      </AntUpload>
     </template>
 
     <template #body>
-      <AntTable :headers="tableHeaders" :data="(data.default || [])">
-        <template #cellContent="{ elem }">
-          <TenantLink :to="{
-            name: 'admin-tenantId-media-mediaId',
-            params: { mediaId: elem.id },
-          }">
-            {{ elem.title }}
-          </TenantLink>
-          -
-          <AntButton @click="() => onDeleteMedia(elem.id)">Löschen</AntButton>
-        </template>
-      </AntTable>
+      <Media :media-files="data.default" @reload-media="reloadAllMedia" />
     </template>
   </AntContent>
 </template>

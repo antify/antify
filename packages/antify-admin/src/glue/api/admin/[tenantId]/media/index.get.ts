@@ -1,7 +1,9 @@
 export type Response = {
-    default: {
-        id: string
-        title: string
-        url: string
-    }[]
-}
+  default: Default[];
+};
+
+export type Default = {
+  id: string;
+  title: string;
+  url: string;
+};
