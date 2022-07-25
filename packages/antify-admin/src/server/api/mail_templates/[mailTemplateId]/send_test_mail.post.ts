@@ -13,14 +13,9 @@ import { useMailer } from '~~/server/utils/useMailer';
 
 export default defineEventHandler<Response>(async (event) => {
   const guard = useGuard(useAuthorizationHeader(event));
-
-  if (!guard.isUserLoggedIn) {
-    throw new HttpForbiddenError();
-  }
-
   const tenantId = useTenantHeader(event);
 
-  if (!guard.hasPermissionTo(PermissionId.CAN_EDIT_MAIL_TEMPLATES, tenantId)) {
+  if (!guard.isUserLoggedIn || !guard.hasPermissionTo(PermissionId.CAN_EDIT_MAIL_TEMPLATES, tenantId)) {
     throw new HttpForbiddenError();
   }
 
