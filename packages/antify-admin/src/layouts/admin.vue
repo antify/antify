@@ -75,6 +75,12 @@ const profileHref = { name: 'admin-tenantId-profile' };
       </AntLogo>
     </template>
 
+    <template #header>
+      <div class="m-2">
+        <FieldsCurrentTenantSelectField />
+      </div>
+    </template>
+
     <template #profilePicture>
       <AntProfilePicture v-if="me.url" :image-url="me.url" alt="" />
       <!-- TODO:: use some default image instead -->
