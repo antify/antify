@@ -4,7 +4,7 @@ import {
   faTrophy,
   faUser,
   faUsers,
-  faPhotoFilm
+  faPhotoFilm,
 } from '@fortawesome/free-solid-svg-icons';
 const { $auth } = useNuxtApp();
 
@@ -41,37 +41,42 @@ const navItems = [
   {
     label: 'Mediatheke',
     route: { name: 'admin-tenantId-media' },
-    icon: faPhotoFilm
+    icon: faPhotoFilm,
   },
   {
     label: 'Logout',
     active: false,
     clickHandler: () => $auth.logout(),
-  }, 
+  },
 ];
 const userName = 'Some Name';
 const profileHref = { name: 'admin-tenantId-profile' };
 </script>
 
 <template>
-  <!-- <AntLayout>
-    <main class="flex-1 bg-gray-100 min-h-screen">
-      <slot />
-
-      <Toaster />
-    </main>
-  </AntLayout> -->
-  <AntLayout :nav-items="navItems" :profile-href="profileHref" :user-name="userName" class="bg-gray-50">
+  <AntLayout
+    :nav-items="navItems"
+    :profile-href="profileHref"
+    :user-name="userName"
+    class="bg-gray-50"
+  >
     <template #logo>
       <AntLogo>
         <img class="h-full" src="~~~/assets/img/logo.svg" alt="Logo" />
       </AntLogo>
     </template>
 
+    <template #header>
+      <div class="m-2">
+        <FieldsCurrentTenantSelectField />
+      </div>
+    </template>
+
     <template #profilePicture>
       <AntProfilePicture
         image-url="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-        alt="" />
+        alt=""
+      />
     </template>
 
     <template #viewProfile> open profile </template>
