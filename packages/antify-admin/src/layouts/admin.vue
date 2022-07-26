@@ -1,4 +1,6 @@
 <script setup>
+import { AntToaster, ANT_TOASTER_TYPE } from '@antify/antify-ui';
+import { ToastType } from '../composables/states';
 import {
   faHouse,
   faTrophy,
@@ -7,6 +9,7 @@ import {
   faPhotoFilm,
 } from '@fortawesome/free-solid-svg-icons';
 const { $auth } = useNuxtApp();
+const { $toaster } = useNuxtApp();
 
 const navItems = [
   {
@@ -53,16 +56,27 @@ const navItems = [
 const me = useMeState();
 const userName = me.value.name;
 const profileHref = { name: 'admin-tenantId-profile' };
+
+const toasts = computed(() => {
+  console.log('toasts', $toaster.getToasts());
+
+  const elem = $toaster.getToasts().map((toast) => ({
+    id: toast.id,
+    message: toast.text,
+    type:
+      toast.type === ToastType.error
+        ? ANT_TOASTER_TYPE.ERROR
+        : toast.type === ToastType.warning
+        ? ANT_TOASTER_TYPE.WARNING
+        : ANT_TOASTER_TYPE.NOTIFICATION,
+  }));
+
+  console.log('elem', elem);
+  return elem;
+});
 </script>
 
 <template>
-  <!-- <AntLayout>
-    <main class="flex-1 bg-gray-100 min-h-screen">
-      <slot />
-
-      <Toaster />
-    </main>
-  </AntLayout> -->
   <AntLayout
     :nav-items="navItems"
     :profile-href="profileHref"
@@ -88,6 +102,8 @@ const profileHref = { name: 'admin-tenantId-profile' };
 
     <template #default>
       <slot />
+
+      <AntToaster :toasts="toasts"></AntToaster>
     </template>
   </AntLayout>
 </template>
