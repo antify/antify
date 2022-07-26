@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { Response as GetResponse } from '~~/glue/api/profile/user.get';
+import { faCamera, faX } from '@fortawesome/free-solid-svg-icons';
+import { useDefaultFetchOpts } from '../../../composables/useDefaultFetchOpts';
 import {
   validator as baseValidator,
   Response as PutResponse,
@@ -14,7 +16,9 @@ const { $toaster } = useNuxtApp();
 const errors = ref([]);
 const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
-const onSubmit = async () => {
+const profilePicture = ref({});
+
+async function onSubmit() {
   loading.value = true;
   errors.value = [];
 
@@ -42,7 +46,34 @@ const onSubmit = async () => {
   if (response.value.badRequest) {
     $toaster.toastError(response.value.badRequest.errors.join('\n'));
   }
-};
+}
+
+async function onSelectFile(event) {
+  let formData = new FormData();
+
+  for (let i = 0; i < event.target.files.length; i++) {
+    formData.append(`file-${i}`, event.target.files[i]);
+  }
+
+  await useFetch('/api/profile/profile_picture', {
+    ...useDefaultFetchOpts(),
+    method: 'POST',
+    body: formData,
+  });
+
+  $toaster.toastCreated();
+}
+
+async function removeProfilePicture() {
+  console.log('DROP IT');
+
+  await useFetch('/api/profile/profile_picture', {
+    ...useDefaultFetchOpts(),
+    method: 'DELETE',
+  });
+
+  $toaster.toastDeleted();
+}
 </script>
 
 <template>
@@ -69,8 +100,8 @@ const onSubmit = async () => {
         <div data-cy="name">
           <AntInput
             v-model:value="data.default.name"
-            :label="'Name'"
             autofocus
+            :label="'Name'"
             :errors="validator.errorMap['name']"
             :validator="
               (val: string) => validator.validateProperty('name', val, 1)
@@ -81,8 +112,8 @@ const onSubmit = async () => {
         <div data-cy="email">
           <AntInput
             v-model:value="data.default.email"
-            :label="'E-Mail'"
             autofocus
+            :label="'E-Mail'"
             :errors="validator.errorMap['email']"
             :is-error="
               validator.errorMap['email'] &&
@@ -94,7 +125,46 @@ const onSubmit = async () => {
           />
         </div>
 
-        <div>TODO:: Profile photo</div>
+        <div>
+          <div class="block text-sm font-medium text-gray-700">
+            Profil Bild ändern
+          </div>
+
+          <AntUpload
+            v-model:value="profilePicture"
+            accept-type="acceptType"
+            :icon="faCamera"
+            :show-preview="true"
+            @change="onSelectFile"
+          >
+            <template #label>Profil Bild hochladen</template>
+
+            <template #preview="uploaded">
+              <div
+                class="mr-4 flex items-center relative"
+                v-if="(uploaded && uploaded.src) || data.default.url"
+              >
+                <AntProfilePicture
+                  :image-url="uploaded.src || data.default.url"
+                  :alt="uploaded.fileName"
+                  size="large"
+                  class="h-16"
+                />
+
+                <div
+                  class="absolute w-4 h-4 -right-2 -top-1 z-10 cursor-pointer"
+                  title="Profilbild entfernen"
+                  @click="removeProfilePicture()"
+                >
+                  <fa-icon
+                    :icon="faX"
+                    class="h-full w-full text-gray-400 hover:text-gray-800 transition-all duration-300"
+                  />
+                </div>
+              </div>
+            </template>
+          </AntUpload>
+        </div>
 
         <div>TODO:: Profile password</div>
 

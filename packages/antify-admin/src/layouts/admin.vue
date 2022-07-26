@@ -49,11 +49,20 @@ const navItems = [
     clickHandler: () => $auth.logout(),
   },
 ];
-const userName = 'Some Name';
+
+const me = useMeState();
+const userName = me.value.name;
 const profileHref = { name: 'admin-tenantId-profile' };
 </script>
 
 <template>
+  <!-- <AntLayout>
+    <main class="flex-1 bg-gray-100 min-h-screen">
+      <slot />
+
+      <Toaster />
+    </main>
+  </AntLayout> -->
   <AntLayout
     :nav-items="navItems"
     :profile-href="profileHref"
@@ -73,13 +82,9 @@ const profileHref = { name: 'admin-tenantId-profile' };
     </template>
 
     <template #profilePicture>
-      <AntProfilePicture
-        image-url="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-        alt=""
-      />
+      <AntProfilePicture v-if="me.url" :image-url="me.url" alt="" />
+      <!-- TODO:: use some default image instead -->
     </template>
-
-    <template #viewProfile> open profile </template>
 
     <template #default>
       <slot />

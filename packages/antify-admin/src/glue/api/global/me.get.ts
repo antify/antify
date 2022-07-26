@@ -1,8 +1,9 @@
 export type Response = {
-    default: User
-}
+  default: User;
+};
 export type User = {
-    id: string,
-    email: string,
-    name: string | null
-}
+  id: string;
+  email: string;
+  name: string | null;
+  url: string;
+};

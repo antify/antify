@@ -21,7 +21,11 @@ importers:
       standard-version: 9.5.0
       typescript: 4.7.4
       unbuild: 0.7.6
+<<<<<<< HEAD
       vitest: 0.19.1_c8@7.12.0
+=======
+      vitest: 0.19.0_c8@7.12.0
+>>>>>>> 538b2ee575c67c3df88ff670816d7ee55b8ee1ea
 
   packages/antify-admin/e2e:
     specifiers:
@@ -32,7 +36,11 @@ importers:
   packages/antify-admin/src:
     specifiers:
       '@antify/ant-validate': 1.0.0
+<<<<<<< HEAD
       '@antify/antify-ui': 0.0.58
+=======
+      '@antify/antify-ui': 0.0.57
+>>>>>>> 538b2ee575c67c3df88ff670816d7ee55b8ee1ea
       '@faker-js/faker': ^6.2.0
       '@nuxt/kit': 3.0.0-rc.6
       '@nuxtjs/tailwindcss': ^5.0.3
@@ -54,7 +62,11 @@ importers:
       vite: ^2.3.0
     dependencies:
       '@antify/ant-validate': link:../../ant-validate
+<<<<<<< HEAD
       '@antify/antify-ui': 0.0.58_7mznwn7en2tqb2j4vto3mkdepm
+=======
+      '@antify/antify-ui': 0.0.57_7mznwn7en2tqb2j4vto3mkdepm
+>>>>>>> 538b2ee575c67c3df88ff670816d7ee55b8ee1ea
       '@prisma/client': 3.15.2_prisma@3.15.2
       '@types/formidable': 2.0.5
       formidable: 2.0.1
@@ -85,8 +97,13 @@ packages:
       '@jridgewell/gen-mapping': 0.1.1
       '@jridgewell/trace-mapping': 0.3.14
 
+<<<<<<< HEAD
   /@antify/antify-ui/0.0.58_7mznwn7en2tqb2j4vto3mkdepm:
     resolution: {integrity: sha512-YAwBwIraRu+kKy6IfGGfORZm36YjZ4i4Is86v0YZAO+BiwpS6WIGdl+oWe0mKkF34ytv9MptkdM4Gf0qdrj6Sg==}
+=======
+  /@antify/antify-ui/0.0.57_7mznwn7en2tqb2j4vto3mkdepm:
+    resolution: {integrity: sha512-CqEuiKgP9V5liLTrkJh9ofSd5y9UYt5QDapHjvCpS2gWmNk3/u4y+TK6BJQW2j6U5llswuj+90Qjqo8OJJ5JRA==}
+>>>>>>> 538b2ee575c67c3df88ff670816d7ee55b8ee1ea
     engines: {node: '>=0.14'}
     dependencies:
       '@fortawesome/fontawesome-svg-core': 6.1.1
@@ -8694,8 +8711,13 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
 
+<<<<<<< HEAD
   /vitest/0.19.1_c8@7.12.0:
     resolution: {integrity: sha512-E/ZXpFMUahn731wzhMBNzWRp4mGgiZFT0xdHa32cbNO0CSaHpE9hTfteEU247Gi2Dula8uXo5vvrNB6dtszmQA==}
+=======
+  /vitest/0.19.0_c8@7.12.0:
+    resolution: {integrity: sha512-nU80Gm95tMchigHpAMukxv1LoWbBGgknX/1MqrXCOoJoJL7/wfq4h2aow61o2jwf5szQrahoNqBqaGb+fYdYrQ==}
+>>>>>>> 538b2ee575c67c3df88ff670816d7ee55b8ee1ea
     engines: {node: '>=v14.16.0'}
     hasBin: true
     peerDependencies:

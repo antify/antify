@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@antify/ant-validate": "1.0.0",
-    "@antify/antify-ui": "0.0.58",
+    "@antify/antify-ui": "0.0.57",
     "@prisma/client": "^3.15.1",
     "@types/formidable": "^2.0.5",
     "formidable": "^2.0.1",
