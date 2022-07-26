@@ -21,7 +21,7 @@ importers:
       standard-version: 9.5.0
       typescript: 4.7.4
       unbuild: 0.7.6
-      vitest: 0.18.1_c8@7.12.0
+      vitest: 0.19.0_c8@7.12.0
 
   packages/antify-admin/e2e:
     specifiers:
@@ -32,12 +32,13 @@ importers:
   packages/antify-admin/src:
     specifiers:
       '@antify/ant-validate': 1.0.0
-      '@antify/antify-ui': 0.0.56
+      '@antify/antify-ui': 0.0.57
       '@faker-js/faker': ^6.2.0
       '@nuxt/kit': 3.0.0-rc.6
       '@nuxtjs/tailwindcss': ^5.0.3
       '@prisma/client': ^3.15.1
       '@types/formidable': ^2.0.5
+      '@types/nodemailer': ^6.4.4
       autoprefixer: ^10.4.4
       formidable: ^2.0.1
       jsonwebtoken: ^8.5.1
@@ -53,7 +54,7 @@ importers:
       vite: ^2.3.0
     dependencies:
       '@antify/ant-validate': link:../../ant-validate
-      '@antify/antify-ui': 0.0.56_7mznwn7en2tqb2j4vto3mkdepm
+      '@antify/antify-ui': 0.0.57_7mznwn7en2tqb2j4vto3mkdepm
       '@prisma/client': 3.15.2_prisma@3.15.2
       '@types/formidable': 2.0.5
       formidable: 2.0.1
@@ -84,8 +85,8 @@ packages:
       '@jridgewell/gen-mapping': 0.1.1
       '@jridgewell/trace-mapping': 0.3.14
 
-  /@antify/antify-ui/0.0.56_7mznwn7en2tqb2j4vto3mkdepm:
-    resolution: {integrity: sha512-nVOh3OqOk4rINKrnYvlPag3oBabS7kAV0h7v7xjAuaSsqz4aARp+c6f/NCw0KzUcfYf7qSGJpI3iD6luUuUXTA==}
+  /@antify/antify-ui/0.0.57_7mznwn7en2tqb2j4vto3mkdepm:
+    resolution: {integrity: sha512-CqEuiKgP9V5liLTrkJh9ofSd5y9UYt5QDapHjvCpS2gWmNk3/u4y+TK6BJQW2j6U5llswuj+90Qjqo8OJJ5JRA==}
     engines: {node: '>=0.14'}
     dependencies:
       '@fortawesome/fontawesome-svg-core': 6.1.1
@@ -8693,18 +8694,21 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
 
-  /vitest/0.18.1_c8@7.12.0:
-    resolution: {integrity: sha512-4F/1K/Vn4AvJwe7i2YblR02PT5vMKcw9KN4unDq2KD0YcSxX0B/6D6Qu9PJaXwVuxXMFTQ5ovd4+CQaW3bwofA==}
+  /vitest/0.19.0_c8@7.12.0:
+    resolution: {integrity: sha512-nU80Gm95tMchigHpAMukxv1LoWbBGgknX/1MqrXCOoJoJL7/wfq4h2aow61o2jwf5szQrahoNqBqaGb+fYdYrQ==}
     engines: {node: '>=v14.16.0'}
     hasBin: true
     peerDependencies:
       '@edge-runtime/vm': '*'
+      '@vitest/browser': '*'
       '@vitest/ui': '*'
       c8: '*'
       happy-dom: '*'
       jsdom: '*'
     peerDependenciesMeta:
       '@edge-runtime/vm':
+        optional: true
+      '@vitest/browser':
         optional: true
       '@vitest/ui':
         optional: true
