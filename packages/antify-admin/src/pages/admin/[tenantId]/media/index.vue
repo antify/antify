@@ -3,6 +3,7 @@ import { Response } from '~~/glue/api/admin/[tenantId]/media/index.get';
 import Media from '~~/components/entity/media/Media.vue';
 
 const file = ref({});
+const loading = ref(false);
 const { $toaster } = useNuxtApp();
 const route = useRoute();
 const { data, refresh: reloadAllMedia } = await useFetch<Response>(
@@ -11,6 +12,7 @@ const { data, refresh: reloadAllMedia } = await useFetch<Response>(
 );
 
 const onSelectFile = async (event) => {
+  loading.value = true;
   let formData = new FormData();
 
   for (let i = 0; i < event.target.files.length; i++) {
@@ -25,7 +27,9 @@ const onSelectFile = async (event) => {
 
   $toaster.toastCreated();
 
-  reloadAllMedia();
+  await reloadAllMedia();
+
+  loading.value = false;
 };
 </script>
 
@@ -36,9 +40,11 @@ const onSelectFile = async (event) => {
 
       <AntUpload
         v-model:value="file"
-        @change="onSelectFile"
         :label-style="''"
         accept-type="image/*,application/pdf,text/plain"
+        :loading="loading"
+        @change="onSelectFile"
+        label-style="cursor-pointer flex space-x-4 items-center text-gray-400"
       >
         <template #preview><span></span></template>
         <template #label>

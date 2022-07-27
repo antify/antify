@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ROW_TYPES } from '@antify/antify-ui';
+import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
+import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
 
 const route = useRoute();
 
@@ -25,13 +26,13 @@ const _roles = computed(() => {
   });
 });
 
-const tableHeaders = [
+const tableHeaders = ref<Array<TableHeader>>([
   {
     title: 'Rollen',
     identifier: 'name',
-    type: ROW_TYPES.SLOT,
+    type: ANT_ROW_TYPES.SLOT,
   },
-];
+]);
 </script>
 
 <template>
