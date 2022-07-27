@@ -28,7 +28,7 @@ export default defineEventHandler<AuthLoginPostResponse>(async (event) => {
     return {
       invalidCredentials: {
         errors: [
-          'E-Mail oder Passwort falsch - Bitte prüfen Sie Ihre eingaben.',
+          'E-Mail oder Passwort falsch - Bitte prüfen Sie Ihre Eingaben.',
         ],
       },
     };

@@ -63,7 +63,7 @@ async function onSubmit() {
 
 async function banUser() {
   const { data: response } = await useFetch<PutResponse>(
-    `/api/users/ban/${useRoute().params.userId}`,
+    `/api/users/${useRoute().params.userId}/ban`,
     {
       ...useDefaultFetchOpts(),
       ...{
@@ -77,7 +77,7 @@ async function banUser() {
 }
 async function unbanUser() {
   const { data: response } = await useFetch<PutResponse>(
-    `/api/users/unban/${useRoute().params.userId}`,
+    `/api/users/${useRoute().params.userId}/unban`,
     {
       ...useDefaultFetchOpts(),
       ...{
