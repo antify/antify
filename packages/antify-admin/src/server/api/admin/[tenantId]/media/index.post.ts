@@ -7,6 +7,7 @@ import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { HttpForbiddenError } from '~~/server/errors';
 import { useMediaStorage } from '~~/server/service/useMediaService';
+import { HttpBadRequestError } from '../../../../errors';
 
 export default defineEventHandler(async (event) => {
   tenantContextMiddleware(event);
@@ -18,20 +19,27 @@ export default defineEventHandler(async (event) => {
     throw new HttpForbiddenError();
   }
 
+  // TODO:: virus scanner
   const mediaStorage = useMediaStorage();
   const form = formidable({
     multiples: true,
     uploadDir: mediaStorage.getAbsoluteUploadDir(),
     keepExtensions: true,
+    filter: function ({ name, originalFilename, mimetype }) {
+      // keep only images, text files and pdf's
+      return (
+        mimetype &&
+        (mimetype.includes('image') ||
+          mimetype.includes('application/pdf') ||
+          mimetype.includes('text/plain'))
+      );
+    },
   });
 
-  // TODO:: limit allowed file types
-
   const files: Files = await new Promise((resolve, reject) => {
-    // TODO:: if uploading multiple large files (>5MB) this here fails some times
     form.parse(event.req, async (err, fields, files) => {
       if (err) {
-        reject('could not parse form');
+        throw new HttpBadRequestError(`Upload failed: ${err}`);
       }
 
       resolve(files);

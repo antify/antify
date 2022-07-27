@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ROW_TYPES } from '@antify/antify-ui';
+import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
+import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
 
 const route = useRoute();
 const { data } = await useFetch(
@@ -23,13 +24,13 @@ const _data = computed(() => {
   });
 });
 
-const tableHeader = [
+const tableHeader = ref<Array<TableHeader>>([
   {
     title: 'Name',
     identifier: 'title',
-    type: ROW_TYPES.SLOT,
+    type: ANT_ROW_TYPES.SLOT,
   },
-];
+]);
 </script>
 
 <template>

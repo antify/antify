@@ -3,6 +3,7 @@ import { Response } from '~~/glue/api/admin/[tenantId]/media/index.get';
 import Media from '~~/components/entity/media/Media.vue';
 
 const file = ref({});
+const loading = ref(false);
 const { $toaster } = useNuxtApp();
 const route = useRoute();
 const dropzone = ref(null);
@@ -95,7 +96,9 @@ onUnmounted(() => {
         v-model:value="file"
         @upload="onSelectFile"
         :label-style="''"
-        :loading="false"
+        accept-type="image/*,application/pdf,text/plain"
+        :loading="loading"
+        label-style="cursor-pointer flex space-x-4 items-center text-gray-400"
       >
         <template #preview><span></span></template>
         <template #label>

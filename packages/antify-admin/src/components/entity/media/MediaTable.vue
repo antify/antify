@@ -15,10 +15,10 @@ const props = defineProps<{
   mediaFiles?: Default[];
 }>();
 
-const tableHeaders: TableHeader[] = [];
+const tableHeaders = ref<Array<TableHeader>>([]);
 
 if (props.showPreview) {
-  tableHeaders.push({
+  tableHeaders.value.push({
     title: 'Bild',
     identifier: 'url',
     type: ANT_ROW_TYPES.IMAGE,
@@ -27,7 +27,7 @@ if (props.showPreview) {
   });
 }
 
-tableHeaders.push({
+tableHeaders.value.push({
   title: 'Name',
   identifier: 'title',
   type: ANT_ROW_TYPES.SLOT,
