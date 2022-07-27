@@ -58,8 +58,6 @@ const userName = me.value.name;
 const profileHref = { name: 'admin-tenantId-profile' };
 
 const toasts = computed(() => {
-  console.log('toasts', $toaster.getToasts());
-
   const elem = $toaster.getToasts().map((toast) => ({
     id: toast.id,
     message: toast.text,
@@ -71,7 +69,6 @@ const toasts = computed(() => {
         : ANT_TOASTER_TYPE.NOTIFICATION,
   }));
 
-  console.log('elem', elem);
   return elem;
 });
 </script>
