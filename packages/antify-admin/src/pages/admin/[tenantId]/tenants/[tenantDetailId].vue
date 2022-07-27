@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { Response as GetResponse } from '~~/glue/api/tenants/[tenantDetailId].get';
 import {
   validator as baseValidator,
@@ -21,6 +24,7 @@ const { data } = await useFetch<GetResponse | PutResponse>(
 // }
 
 const { $toaster } = useNuxtApp();
+const route = useRoute();
 
 const errors = ref([]);
 const loading = ref<Boolean>(false);
@@ -81,7 +85,10 @@ const onSubmit = async () => {
         <li v-for="error in errors">{{ error }}</li>
       </ul>
 
-      <AntForm @submit.prevent="onSubmit" id="edit-tenant-form">
+      <AntForm
+        @submit.prevent="onSubmit"
+        id="edit-tenant-form"
+      >
         <div data-cy="name">
           <AntInput
             v-model:value="data.default.name"
@@ -106,7 +113,12 @@ const onSubmit = async () => {
 
     <template #mainFooter>
       <AntButton>
-        <TenantLink :to="{ name: 'admin-tenantId-tenants' }">
+        <TenantLink
+          :to="{
+            name: 'admin-tenantId-tenants',
+            query: route.query,
+          }"
+        >
           Zurück
         </TenantLink>
       </AntButton>
@@ -122,7 +134,10 @@ const onSubmit = async () => {
     </template>
 
     <template #asideHead>
-      <AntInput v-model:value="search" placeholder="Suche" />
+      <AntInput
+        v-model:value="search"
+        placeholder="Suche"
+      />
     </template>
 
     <template #asideBody><TenantTable /></template>

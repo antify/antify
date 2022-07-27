@@ -18,6 +18,8 @@ export enum PermissionId {
   CAN_CREATE_MEDIA = 'CAN_CREATE_MEDIA',
   CAN_EDIT_MEDIA = 'CAN_EDIT_MEDIA',
   CAN_DELETE_MEDIA = 'CAN_DELETE_MEDIA',
+
+  CAN_READ_TENANT = 'CAN_READ_TENANT'
 }
 
 export const permissions = [

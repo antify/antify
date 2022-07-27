@@ -1,12 +1,39 @@
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
+import { Response } from '~~/glue/api/tenants/tenants.get';
 
 const route = useRoute();
-const { data } = await useFetch('/api/tenants/tenants', useDefaultFetchOpts());
+const router = useRouter();
+
+const itemsPerPage = ref(20);
+
+const page = computed<number>({
+  get() {
+    return parseInt(route.query.page as string, 10) || 1;
+  },
+  set(val) {
+    router.push({
+      name: route.name,
+      query: {
+        ...route.query,
+        page: val,
+      },
+    });
+  },
+});
+
+const { data } = await useFetch<Response>(
+  () =>
+    `/api/tenants/tenants?page=${page.value}&itemsPerPage=${itemsPerPage.value}`,
+  useDefaultFetchOpts()
+);
 
 const _data = computed(() => {
-  return (data.value.default as Array<any>).map((tenant) => {
+  return data.value?.default.data.map((tenant) => {
     if (route.params?.tenantDetailId === tenant.id) {
       return {
         ...tenant,
@@ -28,19 +55,63 @@ const tableHeaders = [
     type: ROW_TYPES.SLOT,
   },
 ];
+
+function prev() {
+  if (page.value > 1) {
+    page.value--;
+  }
+}
+
+function next() {
+  if (page.value < data.value.default?.pagination.count) {
+    page.value++;
+  }
+}
 </script>
 
 <template>
-  <AntTable :headers="tableHeaders" :data="_data">
-    <template #cellContent="{ elem }">
-      <TenantLink
-        :to="{
-          name: 'admin-tenantId-tenants-tenantDetailId',
-          params: { tenantDetailId: elem.id },
-        }"
+  <div class="h-full flex flex-col justify-between">
+    <div class="overflow-auto">
+      <AntTable
+        :headers="tableHeaders"
+        :data="_data"
       >
-        {{ elem.name }}
-      </TenantLink>
-    </template>
-  </AntTable>
+        <template #cellContent="{ elem }">
+          <TenantLink
+            class="w-full block"
+            :to="{
+              name: 'admin-tenantId-tenants-tenantDetailId',
+              params: { tenantDetailId: elem.id },
+              query: { ...route.query },
+            }"
+          >
+            {{ elem.name }}
+          </TenantLink>
+        </template>
+      </AntTable>
+    </div>
+    <AntPagination>
+      <template #position
+        >Seite {{ page }} von {{ data.default.pagination.count }}</template
+      >
+
+      <template #buttons>
+        <AntButton
+          :disabled="page === 1"
+          class="disabled:cursor-not-allowed disabled:opacity-50"
+          @click="prev"
+        >
+          Zurück
+        </AntButton>
+
+        <AntButton
+          @click="next"
+          :disabled="page >= data.default?.pagination.count"
+          class="disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          Weiter
+        </AntButton>
+      </template>
+    </AntPagination>
+  </div>
 </template>
