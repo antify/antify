@@ -3,6 +3,8 @@ export enum PermissionId {
   CAN_READ_USER = 'CAN_READ_USER',
   CAN_UPDATE_USER = 'CAN_UPDATE_USER',
   CAN_DELETE_USER = 'CAN_DELETE_USER',
+  CAN_BAN_USER = 'CAN_BAN_USER',
+  CAN_UNBAN_USER = 'CAN_UNBAN_USER',
   CAN_UPDATE_SELF = 'CAN_UPDATE_SELF',
   CAN_UPLOAD_PROFILE_PICTURE = 'CAN_UPLOAD_PROFILE_PICTURE',
   CAN_REMOVE_PROFILE_PICTURE = 'CAN_REMOVE_PROFILE_PICTURE',
@@ -36,6 +38,14 @@ export const permissions = [
   {
     id: PermissionId.CAN_DELETE_USER,
     name: 'Kann Benutzer löschen',
+  },
+  {
+    id: PermissionId.CAN_BAN_USER,
+    name: 'Kann Benutzer Sperren',
+  },
+  {
+    id: PermissionId.CAN_UNBAN_USER,
+    name: 'Kann Sperre aufheben',
   },
   {
     id: PermissionId.CAN_UPDATE_SELF,

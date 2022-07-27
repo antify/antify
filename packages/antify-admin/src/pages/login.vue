@@ -54,9 +54,15 @@ const onLogin = async () => {
     await navigateTo({ name: 'admin' });
   }
 
-  if (data.value.badRequest || data.value.invalidCredentials) {
+  if (
+    data.value.badRequest ||
+    data.value.invalidCredentials ||
+    data.value.banned
+  ) {
     errors.value =
-      data.value.badRequest?.errors || data.value.invalidCredentials.errors;
+      data.value.badRequest?.errors ||
+      data.value.invalidCredentials?.errors ||
+      data.value.banned?.errors;
 
     // formData.value.email = "";
     formData.value.password = '';

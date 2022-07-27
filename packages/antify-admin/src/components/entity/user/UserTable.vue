@@ -51,6 +51,7 @@ if (!props.singleCol) {
   <AntTable :headers="tableHeaders" :data="_users">
     <template #cellContent="{ elem }">
       <TenantLink
+        class="w-full"
         :to="{
           name: 'admin-tenantId-users-userId',
           params: { userId: elem.id },
