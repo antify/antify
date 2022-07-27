@@ -15,6 +15,7 @@ const { data } = await useFetch<GetResponse | PutResponse>(
 const { $toaster } = useNuxtApp();
 const errors = ref([]);
 const loading = ref<Boolean>(false);
+const uploadInProgress = ref<Boolean>(false);
 const validator = ref(baseValidator);
 const profilePicture = ref({});
 
@@ -49,6 +50,7 @@ async function onSubmit() {
 }
 
 async function onSelectFile(event) {
+  uploadInProgress.value = true;
   let formData = new FormData();
 
   for (let i = 0; i < event.target.files.length; i++) {
@@ -61,12 +63,13 @@ async function onSelectFile(event) {
     body: formData,
   });
 
+  // TODO:: Error handling is missing
+
   $toaster.toastCreated();
+  uploadInProgress.value = false;
 }
 
 async function removeProfilePicture() {
-  console.log('DROP IT');
-
   await useFetch('/api/profile/profile_picture', {
     ...useDefaultFetchOpts(),
     method: 'DELETE',
@@ -135,6 +138,7 @@ async function removeProfilePicture() {
             accept-type="acceptType"
             :icon="faCamera"
             :show-preview="true"
+            :loading="uploadInProgress"
             @change="onSelectFile"
           >
             <template #label>Profil Bild hochladen</template>

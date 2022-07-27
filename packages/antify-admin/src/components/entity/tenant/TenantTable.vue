@@ -1,10 +1,8 @@
-<script
-  lang="ts"
-  setup
->
-import { ROW_TYPES } from '@antify/antify-ui';
+<script lang="ts" setup>
+import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
-import { Response } from '~~/glue/api/tenants/tenants.get';
+import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
+import { Response } from '../../../glue/api/tenants/tenants.get';
 
 const route = useRoute();
 const router = useRouter();
@@ -48,13 +46,13 @@ const _data = computed(() => {
   });
 });
 
-const tableHeaders = [
+const tableHeaders = ref<Array<TableHeader>>([
   {
     title: 'name',
     identifier: 'name',
-    type: ROW_TYPES.SLOT,
+    type: ANT_ROW_TYPES.SLOT,
   },
-];
+]);
 
 function prev() {
   if (page.value > 1) {
