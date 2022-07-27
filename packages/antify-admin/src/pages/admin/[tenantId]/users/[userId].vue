@@ -7,9 +7,7 @@ import {
 } from '~~/glue/api/users/[userId].put';
 import UserTable from '~~/components/entity/user/UserTable.vue';
 
-const search = ref('');
-
-const { data } = await useFetch<GetResponse | PutResponse>(
+const { data: user, refresh } = await useFetch<GetResponse | PutResponse>(
   `/api/users/${useRoute().params.userId}`,
   useDefaultFetchOpts()
 );
@@ -20,41 +18,9 @@ const { data: roles } = await useFetch(
 
 const { $toaster } = useNuxtApp();
 const errors = ref([]);
+const search = ref('');
 const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
-
-const onSubmit = async () => {
-  loading.value = true;
-  errors.value = [];
-
-  validator.value.validate(data.value.default, 1);
-
-  if (validator.value.hasErrors()) {
-    loading.value = false;
-    return;
-  }
-
-  const { data: response } = await useFetch<PutResponse>(
-    `/api/users/${useRoute().params.userId}`,
-    {
-      ...useDefaultFetchOpts(),
-      ...{
-        method: 'PUT',
-        body: data.value.default,
-      },
-    }
-  );
-  loading.value = false;
-
-  if (response.value.default) {
-    data.value = response.value;
-    $toaster.toastUpdated();
-  }
-
-  if (response.value.badRequest) {
-    $toaster.toastError(response.value.badRequest.errors.join('\n'));
-  }
-};
 
 const roleOptions = computed(() => {
   return (
@@ -69,13 +35,79 @@ const roleOptions = computed(() => {
     label: role.name,
   }));
 });
+
+async function onSubmit() {
+  loading.value = true;
+  errors.value = [];
+
+  validator.value.validate(user.value.default, 1);
+
+  if (validator.value.hasErrors()) {
+    loading.value = false;
+
+    return;
+  }
+
+  await useFetch<PutResponse>(`/api/users/${useRoute().params.userId}`, {
+    ...useDefaultFetchOpts(),
+    ...{
+      method: 'PUT',
+      body: user.value.default,
+    },
+  });
+  loading.value = false;
+
+  $toaster.toastUpdated();
+  refresh();
+}
+
+async function banUser() {
+  const { data: response } = await useFetch<PutResponse>(
+    `/api/users/${useRoute().params.userId}/ban`,
+    {
+      ...useDefaultFetchOpts(),
+      ...{
+        method: 'PUT',
+      },
+    }
+  );
+
+  $toaster.toastUpdated();
+  refresh();
+}
+async function unbanUser() {
+  const { data: response } = await useFetch<PutResponse>(
+    `/api/users/${useRoute().params.userId}/unban`,
+    {
+      ...useDefaultFetchOpts(),
+      ...{
+        method: 'PUT',
+      },
+    }
+  );
+
+  $toaster.toastUpdated();
+  refresh();
+}
 </script>
 
 <template>
   <AntDualContent>
     <template #mainHead>
       <AntHeader header-type="h1">Benutzer bearbeiten</AntHeader>
+
+      <DeleteButton
+        v-if="!user.default.isAdmin && !user.default.isBanned"
+        label="Sperren"
+        @click="banUser"
+      />
+      <DeleteButton
+        v-if="!user.default.isAdmin && user.default.isBanned"
+        label="Sperre aufheben"
+        @click="unbanUser"
+      />
     </template>
+
     <template #mainBody>
       <ul
         data-cy="response-errors"
@@ -97,10 +129,11 @@ const roleOptions = computed(() => {
       >
         <div data-cy="name">
           <AntInput
-            v-model:value="data.default.name"
+            v-model:value="user.default.name"
             label="Name"
             :errors="validator.errorMap['name']"
             :validator="(val: string) => validator.validateProperty('name', val, 1)"
+            disabled
           >
             <template #errorList="{ errors }">
               <div
@@ -116,10 +149,11 @@ const roleOptions = computed(() => {
 
         <div data-cy="email">
           <AntInput
-            v-model:value="data.default.email"
+            v-model:value="user.default.email"
             label="E-Mail"
             :errors="validator.errorMap['email']"
             :validator="(val: string) => validator.validateProperty('email', val, 1)"
+            disabled
           >
             <template #errorList="{ errors }">
               <div
@@ -137,24 +171,20 @@ const roleOptions = computed(() => {
           <AntSelect
             label="Rolle"
             :options="roleOptions"
-            v-model:value="data.default.roleId"
+            v-model:value="user.default.roleId"
             @change="
-              () => validator.validateProperty('roleId', data.default.roleId, 1)
+              () => validator.validateProperty('roleId', user.default.roleId, 1)
             "
           />
 
           <div
+            v-for="message in validator.errorMap['roleId']"
             class="text-red-600"
             data-cy="error"
-            v-for="message in validator.errorMap['roleId']"
           >
             {{ message }}
           </div>
         </div>
-
-        <div>TODO:: Profile photo</div>
-
-        <div>TODO:: Password</div>
       </AntForm>
     </template>
 
@@ -168,6 +198,7 @@ const roleOptions = computed(() => {
           Zurück
         </TenantLink>
       </AntButton>
+
       <AntButton
         type="submit"
         data-cy="submit"
@@ -181,8 +212,9 @@ const roleOptions = computed(() => {
     <template #asideHead>
       <AntInput v-model:value="search" placeholder="Suche" />
     </template>
+
     <template #asideBody>
-      <UserTable :single-col="true"></UserTable>
+      <UserTable :single-col="true" />
     </template>
   </AntDualContent>
 </template>
