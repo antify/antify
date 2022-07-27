@@ -40,6 +40,8 @@ const onSelectFile = async (event) => {
 
       <AntUpload
         v-model:value="file"
+        :label-style="''"
+        accept-type="image/*,application/pdf,text/plain"
         :loading="loading"
         @change="onSelectFile"
         label-style="cursor-pointer flex space-x-4 items-center text-gray-400"

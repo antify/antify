@@ -32,13 +32,18 @@ export default defineEventHandler(async (event) => {
     throw new HttpForbiddenError();
   }
 
-  // TODO:: Check filetype (virus scanner?)
+  // TODO:: virus scanner
 
   const mediaStorage = useMediaStorage();
   const form = formidable({
     multiples: true,
     uploadDir: mediaStorage.getAbsoluteUploadDir(),
     keepExtensions: true,
+    maxFileSize: 10 * 1024 * 1024, // 10 MB
+    filter: function ({ name, originalFilename, mimetype }) {
+      // keep only images
+      return mimetype && mimetype.includes('image');
+    },
   });
 
   const files: Files = await new Promise((resolve, reject) => {
