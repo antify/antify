@@ -34,7 +34,12 @@ const onSelectFile = async (event) => {
     <template #head>
       <AntHeader>Mediatheke</AntHeader>
 
-      <AntUpload v-model:value="file" @change="onSelectFile" :label-style="''">
+      <AntUpload
+        v-model:value="file"
+        @change="onSelectFile"
+        :label-style="''"
+        accept-type="image/*,application/pdf,text/plain"
+      >
         <template #preview><span></span></template>
         <template #label>
           <CreateButton label="Hochladen" class="pointer-events-none" />
