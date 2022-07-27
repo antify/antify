@@ -28,11 +28,10 @@ export default defineEventHandler(async (event) => {
   // TODO:: limit allowed file types
 
   const files: Files = await new Promise((resolve, reject) => {
-		// TODO:: if uploading multiple large files (>5MB) this here fails some times
+    // TODO:: if uploading multiple large files (>5MB) this here fails some times
     form.parse(event.req, async (err, fields, files) => {
       if (err) {
         reject('could not parse form');
-        console.log('FEHLER', err);
       }
 
       resolve(files);
@@ -41,7 +40,6 @@ export default defineEventHandler(async (event) => {
 
   await Promise.all(
     Object.values(files).map((file: File) => {
-      console.log('Make file: ', file.originalFilename);
       return prisma.media.create({
         data: {
           title: file.originalFilename,
