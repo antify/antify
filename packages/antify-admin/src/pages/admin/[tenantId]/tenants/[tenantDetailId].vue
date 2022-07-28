@@ -9,14 +9,7 @@ import {
 } from '~~/glue/api/tenants/[tenantDetailId].put';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import TenantTable from '~~/components/entity/tenant/TenantTable.vue';
-
-const { data } = await useFetch<GetResponse | PutResponse>(
-  `/api/tenants/${useRoute().params.tenantDetailId}`,
-  {
-    ...useDefaultFetchOpts(),
-    key: `/api/tenants/${useRoute().params.tenantDetailId}`,
-  }
-);
+import { AntTabsType } from '@antify/antify-ui';
 
 // if (!data.value?.default) {
 //   // TODO:: Handle it
@@ -30,8 +23,23 @@ const errors = ref([]);
 const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
 const search = ref('');
+const tabs = ref<AntTabsType[]>([
+  {
+    name: 'Stammdaten',
+    current: true,
+    to: '',
+  },
+]);
 
-const onSubmit = async () => {
+const { data } = await useFetch<GetResponse | PutResponse>(
+  `/api/tenants/${route.params.tenantDetailId}`,
+  {
+    ...useDefaultFetchOpts(),
+    key: `/api/tenants/${route.params.tenantDetailId}`,
+  }
+);
+
+async function onSubmit() {
   loading.value = true;
   errors.value = [];
 
@@ -62,13 +70,13 @@ const onSubmit = async () => {
   if (response.value.badRequest) {
     $toaster.toastError(response.value.badRequest.errors.join('\n'));
   }
-};
+}
 </script>
 
 <template>
   <AntDualContent>
     <template #mainHead>
-      <AntHeader>Mandant bearbeiten</AntHeader>
+      <AntTabs :tabs="tabs" />
     </template>
 
     <template #mainBody>

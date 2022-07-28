@@ -1,19 +1,35 @@
-<script setup>
+<script
+  setup
+  lang="ts"
+>
 import RoleTable from '~~/components/entity/role/RoleTable.vue';
 import TenantLink from '~~/components/fields/TenantLink.vue';
-const { data: role } = await useFetch(
-  `/api/roles/${useRoute().params.roleId}`,
+import { AntTabsType } from '@antify/antify-ui';
+import { Response } from '../../../../glue/api/admin/[tenantId]/roles/[roleId].get';
+
+const { $toaster } = useNuxtApp();
+const route = useRoute();
+
+const search = ref('');
+const tabs = ref<AntTabsType[]>([
+  {
+    name: 'Stammdaten',
+    current: true,
+    to: '',
+  },
+]);
+
+const { data: role } = await useFetch<Response>(
+  `/api/roles/${route.params.roleId}`,
   useDefaultFetchOpts()
 );
 const { data: permissions } = await useFetch(
   '/api/roles/permissions',
   useDefaultFetchOpts()
 );
-const { $toaster } = useNuxtApp();
 
-const search = ref('');
-const onDelete = async () => {
-  await useFetch(`/api/roles/${useRoute().params.roleId}`, {
+async function onDelete() {
+  await useFetch(`/api/roles/${route.params.roleId}`, {
     ...useDefaultFetchOpts(),
     method: 'DELETE',
   });
@@ -23,17 +39,17 @@ const onDelete = async () => {
   await navigateTo({
     name: 'admin-tenantId-roles',
     params: {
-      roleId: useRoute().params.roleId,
-      tenantId: useRoute().params.tenantId,
+      roleId: route.params.roleId,
+      tenantId: route.params.tenantId,
     },
   });
-};
+}
 </script>
 
 <template>
   <AntDualContent>
     <template #mainHead>
-      <AntHeader>Rolle {{ role ? role.name : '' }} bearbeiten</AntHeader>
+      <AntTabs :tabs="tabs" />
       <DeleteButton @click="onDelete">Löschen </DeleteButton>
     </template>
 
@@ -50,13 +66,20 @@ const onDelete = async () => {
         <TenantLink :to="{ name: 'admin-tenantId-roles' }">Zurück</TenantLink>
       </AntButton>
 
-      <AntButton :primary="true" type="submit" form="edit-role-form">
+      <AntButton
+        :primary="true"
+        type="submit"
+        form="edit-role-form"
+      >
         Speichern
       </AntButton>
     </template>
 
     <template #asideHead>
-      <AntInput v-model:value="search" placeholder="Suche" />
+      <AntInput
+        v-model:value="search"
+        placeholder="Suche"
+      />
     </template>
 
     <template #asideBody> <RoleTable /> </template>
