@@ -3,6 +3,8 @@ import { CompatibilityEvent, setCookie } from 'h3';
 import { TOKEN_COOKIE_KEY, CustomToken } from '~~/composables/useGuard';
 import prisma from '~~/server/datasources/auth/client';
 import crypto from 'crypto';
+import { InviteToken } from '../../composables/useGuard';
+import jwtDecode from 'jwt-decode';
 
 export const hashPassword = async (password: string): Promise<string> => {
   const config = useRuntimeConfig();
@@ -27,6 +29,16 @@ export const tokenValid = async (token: string): Promise<boolean> => {
     jwt.verify(token, JWT_SECRET, function (error) {
       resolve(!!!error);
     });
+  });
+};
+
+export const tokenContent = async (token: string): Promise<any> => {
+  // TODO:: Security dude?
+  // TODO:: env
+  const JWT_SECRET = 'secret';
+
+  return new Promise((resolve) => {
+    resolve(jwtDecode(token));
   });
 };
 
@@ -93,6 +105,22 @@ export const handleCreateToken = async (
 
   setCookie(event, TOKEN_COOKIE_KEY, token, {
     maxAge: TOKEN_MAX_AGE,
+  });
+
+  return token;
+};
+
+export const createInviteToken = async (email: string, tenantId: string) => {
+  const inviteToken: InviteToken = {
+    email,
+    tenantId,
+  };
+
+  const JWT_SECRET = 'secret';
+  const JWT_EXPIRATION = '4h';
+
+  const token = jwt.sign(inviteToken, JWT_SECRET, {
+    expiresIn: JWT_EXPIRATION,
   });
 
   return token;

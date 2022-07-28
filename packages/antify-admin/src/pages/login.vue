@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import {
   authLoginPostValidator,
   AuthLoginPostInput,
@@ -18,7 +21,7 @@ const errors = ref([]);
 const isDev = process.env.NODE_ENV === 'development';
 const formData = ref<AuthLoginPostInput>({
   email: isDev ? 'admin@admin.de' : '',
-  password: isDev && false ? 'admin' : '',
+  password: isDev ? 'admin' : '',
 });
 const loading = ref<Boolean>(false);
 
@@ -64,7 +67,6 @@ const onLogin = async () => {
       data.value.invalidCredentials?.errors ||
       data.value.banned?.errors;
 
-    // formData.value.email = "";
     formData.value.password = '';
   }
 };
@@ -84,7 +86,10 @@ onBeforeUnmount(() => {
       </AntHeader>
     </template>
 
-    <AntLoginWidget @submit.prevent="onLogin" :errors="validateErrors">
+    <AntLoginWidget
+      @submit.prevent="onLogin"
+      :errors="validateErrors"
+    >
       <template #emailField>
         <div data-cy="email">
           <AntInput
@@ -131,7 +136,11 @@ onBeforeUnmount(() => {
       </template>
 
       <template #submitButton>
-        <AntButton type="submit" data-cy="submit" :primary="true">
+        <AntButton
+          type="submit"
+          data-cy="submit"
+          :primary="true"
+        >
           Login
         </AntButton>
       </template>

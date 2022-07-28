@@ -43,6 +43,7 @@ export default defineEventHandler<AuthLoginPostResponse>(async (event) => {
       },
     };
   }
+
   return {
     default: {
       token,

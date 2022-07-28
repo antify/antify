@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { Response as GetResponse } from '~~/glue/api/users/[userId].get';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import {
@@ -119,7 +122,12 @@ async function unbanUser() {
           list-style-position: inside;
         "
       >
-        <li v-for="error in errors">{{ error }}</li>
+        <li
+          v-for="(error, index) in errors"
+          :key="`user-error-${index}`"
+        >
+          {{ error }}
+        </li>
       </ul>
 
       <AntForm
@@ -210,7 +218,10 @@ async function unbanUser() {
     </template>
 
     <template #asideHead>
-      <AntInput v-model:value="search" placeholder="Suche" />
+      <AntInput
+        v-model:value="search"
+        placeholder="Suche"
+      />
     </template>
 
     <template #asideBody>

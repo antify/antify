@@ -1,4 +1,5 @@
 import { TOKEN_COOKIE_KEY } from '../composables/useGuard';
+import { Response as RegisterResponse } from '../glue/api/auth/register.post';
 
 export default defineNuxtPlugin((nuxtApp) => {
   return {
@@ -10,6 +11,19 @@ export default defineNuxtPlugin((nuxtApp) => {
             body: {
               email: identifier,
               password,
+            },
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+        },
+        async register(email: String, password: String, token: String) {
+          return useFetch<RegisterResponse>('/api/auth/register', {
+            method: 'POST',
+            body: {
+              email,
+              password,
+              token,
             },
             headers: {
               'Content-Type': 'application/json',
