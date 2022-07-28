@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { Response as GetResponse } from '~~/glue/api/users/[userId].get';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import {
@@ -6,6 +9,7 @@ import {
   Response as PutResponse,
 } from '~~/glue/api/users/[userId].put';
 import UserTable from '~~/components/entity/user/UserTable.vue';
+import { AntTabsType } from '@antify/antify-ui';
 
 const { data: user, refresh } = await useFetch<GetResponse | PutResponse>(
   `/api/users/${useRoute().params.userId}`,
@@ -21,6 +25,13 @@ const errors = ref([]);
 const search = ref('');
 const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
+const tabs = ref<AntTabsType[]>([
+  {
+    name: 'Stammdaten',
+    current: true,
+    to: '',
+  },
+]);
 
 const roleOptions = computed(() => {
   return (
@@ -75,6 +86,7 @@ async function banUser() {
   $toaster.toastUpdated();
   refresh();
 }
+
 async function unbanUser() {
   const { data: response } = await useFetch<PutResponse>(
     `/api/users/${useRoute().params.userId}/unban`,
@@ -94,7 +106,7 @@ async function unbanUser() {
 <template>
   <AntDualContent>
     <template #mainHead>
-      <AntHeader header-type="h1">Benutzer bearbeiten</AntHeader>
+      <AntTabs :tabs="tabs"></AntTabs>
 
       <DeleteButton
         v-if="!user.default.isAdmin && !user.default.isBanned"
@@ -210,7 +222,10 @@ async function unbanUser() {
     </template>
 
     <template #asideHead>
-      <AntInput v-model:value="search" placeholder="Suche" />
+      <AntInput
+        v-model:value="search"
+        placeholder="Suche"
+      />
     </template>
 
     <template #asideBody>
