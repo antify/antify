@@ -1,4 +1,7 @@
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { Checkbox } from '@antify/antify-ui/dist/types/Checkbox.type';
 
 type Role = {
@@ -57,7 +60,10 @@ const checkboxes = computed<Checkbox[]>(() => {
 
 <template>
   <AntForm @submit.prevent="onSubmit">
-    <AntInput v-model:value="role.name" :label="'Rollen Bezeichnung'" />
+    <AntInput
+      v-model:value="role.name"
+      :label="'Rollen Bezeichnung'"
+    />
 
     <AntCheckboxWidget
       v-if="role.isAdmin"

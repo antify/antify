@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { Response as GetResponse } from '~~/glue/api/admin/[tenantId]/media/[mediaId].get';
 import { Response } from '~~/glue/api/admin/[tenantId]/media/index.get';
 import {
@@ -26,8 +29,24 @@ const { $toaster } = useNuxtApp();
 const errors = ref([]);
 const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
+const deleteDialogActive = ref(false);
 
-const onSubmit = async () => {
+const _search = computed({
+  get() {
+    return search.value;
+  },
+  set(val) {
+    router.push({
+      name: 'admin-tenantId-media',
+      query: {
+        ...route.query,
+        search: val,
+      },
+    });
+  },
+});
+
+async function onSubmit() {
   loading.value = true;
   errors.value = [];
 
@@ -65,9 +84,9 @@ const onSubmit = async () => {
   } else {
     // TODO:: toast success
   }
-};
+}
 
-const onDeleteMedia = async (mediaId: string) => {
+async function onDeleteMedia(mediaId: string) {
   // TODO:: "you sure?" Dialog
 
   await useFetch(`/api/admin/:tenantId/media/${mediaId}`, {
@@ -80,114 +99,128 @@ const onDeleteMedia = async (mediaId: string) => {
   reloadAllMedia();
 
   router.push({ name: 'admin-tenantId-media', query: route.query });
-};
-
-const _search = computed({
-  get() {
-    return search.value;
-  },
-  set(val) {
-    router.push({
-      name: 'admin-tenantId-media',
-      query: {
-        ...route.query,
-        search: val,
-      },
-    });
-  },
-});
+}
 </script>
 
 <template>
-  <AntDualContent>
-    <template #mainHead>
-      <AntHeader header-type="h1">Datei bearbeiten</AntHeader>
+  <div>
+    <AntDualContent>
+      <template #mainHead>
+        <AntHeader header-type="h1">Datei bearbeiten</AntHeader>
 
-      <DeleteButton
-        label="Löschen"
-        @click="() => onDeleteMedia(data.default.id)"
-      />
-    </template>
-
-    <template #mainBody>
-      <ul
-        data-cy="response-errors"
-        v-if="errors.length"
-        style="
-          background: #dc2626;
-          color: #fff;
-          padding: 20px;
-          list-style-position: inside;
-        "
-      >
-        <li v-for="error in errors">{{ error }}</li>
-      </ul>
-
-      <AntForm
-        v-if="data.default"
-        @submit.prevent="onSubmit"
-        class="flex flex-col bg-white"
-        id="update-media-form"
-      >
-        <img
-          v-if="data.default.url"
-          class="max-h-96 object-contain"
-          :alt="data.default.title"
-          :src="data.default.url"
+        <DeleteButton
+          label="Löschen"
+          @click="deleteDialogActive = true"
         />
+      </template>
 
-        <div data-cy="title">
-          <AntInput
-            v-model:value="data.default.title"
-            label="Name"
-            :errors="validator.errorMap['title']"
-            :validator="(val: string) => validator.validateProperty('title', val, 1)"
-          >
-            <template #errorList="{ errors }">
-              <div
-                data-cy="error"
-                v-for="message in errors"
-                class="text-red-600"
-              >
-                {{ message }}
-              </div>
-            </template>
-          </AntInput>
-        </div>
-      </AntForm>
-    </template>
-
-    <template #mainFooter>
-      <AntButton>
-        <TenantLink
-          :to="{
-            name: 'admin-tenantId-media',
-            query: route.query,
-          }"
+      <template #mainBody>
+        <ul
+          data-cy="response-errors"
+          v-if="errors.length"
+          style="
+            background: #dc2626;
+            color: #fff;
+            padding: 20px;
+            list-style-position: inside;
+          "
         >
-          Zurück
-        </TenantLink>
-      </AntButton>
+          <li v-for="error in errors">{{ error }}</li>
+        </ul>
 
-      <AntButton
-        type="submit"
-        data-cy="submit"
-        :primary="true"
-        form="update-media-form"
-      >
-        Speichern
-      </AntButton>
-    </template>
+        <AntForm
+          v-if="data.default"
+          @submit.prevent="onSubmit"
+          class="flex flex-col bg-white"
+          id="update-media-form"
+        >
+          <img
+            v-if="data.default.url"
+            class="max-h-96 object-contain"
+            :alt="data.default.title"
+            :src="data.default.url"
+          />
 
-    <template #asideHead>
-      <AntInput v-model:value="_search" placeholder="Suche" />
-    </template>
+          <div data-cy="title">
+            <AntInput
+              v-model:value="data.default.title"
+              label="Name"
+              :errors="validator.errorMap['title']"
+              :validator="(val: string) => validator.validateProperty('title', val, 1)"
+            >
+              <template #errorList="{ errors }">
+                <div
+                  data-cy="error"
+                  v-for="message in errors"
+                  class="text-red-600"
+                >
+                  {{ message }}
+                </div>
+              </template>
+            </AntInput>
+          </div>
+        </AntForm>
+      </template>
 
-    <template #asideBody>
-      <MediaTable
-        :media-files="mediaFiles.default"
-        @reload-media="reloadAllMedia"
-      />
-    </template>
-  </AntDualContent>
+      <template #mainFooter>
+        <AntButton>
+          <TenantLink
+            :to="{
+              name: 'admin-tenantId-media',
+              query: route.query,
+            }"
+          >
+            Zurück
+          </TenantLink>
+        </AntButton>
+
+        <AntButton
+          type="submit"
+          data-cy="submit"
+          :primary="true"
+          form="update-media-form"
+        >
+          Speichern
+        </AntButton>
+      </template>
+
+      <template #asideHead>
+        <AntInput
+          v-model:value="_search"
+          placeholder="Suche"
+        />
+      </template>
+
+      <template #asideBody>
+        <MediaTable
+          :media-files="mediaFiles.default"
+          @reload-media="reloadAllMedia"
+        />
+      </template>
+    </AntDualContent>
+
+    <AntModal
+      v-model:active="deleteDialogActive"
+      title="Datei löschen"
+    >
+      <div>
+        Sind sie sicher das Sie diese Datei wirklich, sicherlich und
+        unwiederruflich löschen wollen?
+      </div>
+
+      <template #buttons>
+        <AntButton
+          primary
+          @click="deleteDialogActive = false"
+        >
+          Abbrechen
+        </AntButton>
+
+        <DeleteButton
+          label="Löschen"
+          @click="() => onDeleteMedia(data.default.id)"
+        />
+      </template>
+    </AntModal>
+  </div>
 </template>

@@ -21,7 +21,8 @@ export enum PermissionId {
   CAN_EDIT_MEDIA = 'CAN_EDIT_MEDIA',
   CAN_DELETE_MEDIA = 'CAN_DELETE_MEDIA',
 
-  CAN_READ_TENANT = 'CAN_READ_TENANT'
+  CAN_READ_TENANT = 'CAN_READ_TENANT',
+  CAN_DELETE_TENANT = 'CAN_DELETE_TENANT',
 }
 
 export const permissions = [
@@ -81,4 +82,8 @@ export const permissions = [
     id: PermissionId.CAN_DELETE_MEDIA,
     name: 'Kann Dateien löschen',
   },
+  {
+    id: PermissionId.CAN_DELETE_TENANT,
+    name: 'Kann Mandant löschen'
+  }
 ];

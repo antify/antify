@@ -1,4 +1,7 @@
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
@@ -36,9 +39,13 @@ const tableHeaders = ref<Array<TableHeader>>([
 </script>
 
 <template>
-  <AntTable :headers="tableHeaders" :data="_roles">
+  <AntTable
+    :headers="tableHeaders"
+    :data="_roles"
+  >
     <template #cellContent="{ elem }">
       <TenantLink
+        class="block w-full"
         :to="{
           name: 'admin-tenantId-roles-roleId',
           params: { roleId: elem.id },
