@@ -10,6 +10,7 @@ import {
 import TenantLink from '../../../../components/fields/TenantLink.vue';
 import MailTemplatesTable from '~~/components/entity/mail-templates/MailTemplatesTable.vue';
 import { validator as sendTestMailValidator } from '~~/glue/api/mail_templates/[mailTemplateId]/send_test_mail.post';
+import { AntTabsType } from '@antify/antify-ui';
 
 const { data, refresh } = await useFetch<GetResponse | PutResponse>(
   `/api/mail_templates/${useRoute().params.mailTemplateId}`,
@@ -20,6 +21,13 @@ const errors = ref([]);
 const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
 const search = ref('');
+const tabs = ref<AntTabsType[]>([
+  {
+    name: 'Stammdaten',
+    current: true,
+    to: '',
+  },
+]);
 
 const onSubmit = async () => {
   loading.value = true;
@@ -79,7 +87,7 @@ const onSendTestMail = async () => {
 <template>
   <AntDualContent>
     <template #mainHead>
-      <AntHeader>E-Mail Template bearbeiten</AntHeader>
+      <AntTabs :tabs="tabs" />
     </template>
 
     <template #mainBody>

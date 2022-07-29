@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { Response as GetResponse } from '~~/glue/api/admin/[tenantId]/media/[mediaId].get';
 import { Response } from '~~/glue/api/admin/[tenantId]/media/index.get';
 import {
@@ -7,12 +10,26 @@ import {
 } from '~~/glue/api/admin/[tenantId]/media/[mediaId].put';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import MediaTable from '~~/components/entity/media/MediaTable.vue';
+import { AntTabsType } from '@antify/antify-ui';
 
 const route = useRoute();
 const router = useRouter();
 
+const search = ref(route.query?.search || '');
+const { $toaster } = useNuxtApp();
+const errors = ref([]);
+const loading = ref<Boolean>(false);
+const validator = ref(baseValidator);
+const tabs = ref<AntTabsType[]>([
+  {
+    name: 'Stammdaten',
+    current: true,
+    to: '',
+  },
+]);
+
 const { data } = await useFetch<GetResponse | PutResponse>(
-  `/api/admin/:tenantId/media/${useRoute().params.mediaId}`,
+  `/api/admin/:tenantId/media/${route.params.mediaId}`,
   useDefaultFetchOpts()
 );
 
@@ -20,12 +37,6 @@ const { data: mediaFiles, refresh: reloadAllMedia } = await useFetch<Response>(
   () => `/api/admin/:tenantId/media?search=${route.query.search || ''}`,
   useDefaultFetchOpts()
 );
-
-const search = ref(route.query?.search || '');
-const { $toaster } = useNuxtApp();
-const errors = ref([]);
-const loading = ref<Boolean>(false);
-const validator = ref(baseValidator);
 
 const onSubmit = async () => {
   loading.value = true;
@@ -101,7 +112,7 @@ const _search = computed({
 <template>
   <AntDualContent>
     <template #mainHead>
-      <AntHeader header-type="h1">Datei bearbeiten</AntHeader>
+      <AntTabs :tabs="tabs" />
 
       <DeleteButton
         label="Löschen"
@@ -180,7 +191,10 @@ const _search = computed({
     </template>
 
     <template #asideHead>
-      <AntInput v-model:value="_search" placeholder="Suche" />
+      <AntInput
+        v-model:value="_search"
+        placeholder="Suche"
+      />
     </template>
 
     <template #asideBody>

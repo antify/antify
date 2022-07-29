@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { Response } from '~~/glue/api/admin/[tenantId]/media/index.get';
 import Media from '~~/components/entity/media/Media.vue';
 
@@ -95,14 +98,16 @@ onUnmounted(() => {
       <AntUpload
         v-model:value="file"
         @upload="onSelectFile"
-        :label-style="''"
         accept-type="image/*,application/pdf,text/plain"
         :loading="loading"
         label-style="cursor-pointer flex space-x-4 items-center text-gray-400"
       >
         <template #preview><span></span></template>
         <template #label>
-          <CreateButton label="Hochladen" class="pointer-events-none" />
+          <CreateButton
+            label="Hochladen"
+            class="pointer-events-none"
+          />
         </template>
       </AntUpload>
     </template>
@@ -133,7 +138,10 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <Media :media-files="data.default" @reload-media="reloadAllMedia" />
+      <Media
+        :media-files="data.default"
+        @reload-media="reloadAllMedia"
+      />
     </template>
   </AntContent>
 </template>
