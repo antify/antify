@@ -6,7 +6,7 @@ import { Response } from '~~/glue/api/admin/[tenantId]/media/index.get';
 import Media from '~~/components/entity/media/Media.vue';
 
 const file = ref({});
-const loading = ref(false);
+const loading = ref(true);
 const { $toaster } = useNuxtApp();
 const route = useRoute();
 const dropzone = ref(null);
@@ -17,6 +17,8 @@ const { data, refresh: reloadAllMedia } = await useFetch<Response>(
   () => `/api/admin/:tenantId/media?search=${route.query.search || ''}`,
   useDefaultFetchOpts()
 );
+
+loading.value = false;
 
 const onSelectFile = async (files: File[]) => {
   uploading.value = true;
@@ -91,57 +93,62 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <AntContent>
-    <template #head>
-      <AntHeader>Mediatheke</AntHeader>
+  <div>
+    <AntContent>
+      <template #head>
+        <AntHeader>Mediatheke</AntHeader>
 
-      <AntUpload
-        v-model:value="file"
-        @upload="onSelectFile"
-        accept-type="image/*,application/pdf,text/plain"
-        :loading="loading"
-        label-style="cursor-pointer flex space-x-4 items-center text-gray-400"
-      >
-        <template #preview><span></span></template>
-        <template #label>
-          <CreateButton
-            label="Hochladen"
-            class="pointer-events-none"
-          />
-        </template>
-      </AntUpload>
-    </template>
-
-    <template #body>
-      <AntDropzone
-        id="media-dropzone"
-        data-cy="media-dropzone"
-        ref="dropzone"
-        class="hidden absolute h-screen w-screen inset-0 bg-primary bg-opacity-75 z-50 p-4"
-        @dropped="onDrop"
-      >
-        <div
-          class="flex justify-center items-center text-5xl text-white h-full border-4 border-dashed rounded-lg"
+        <AntUpload
+          v-model:value="file"
+          @upload="onSelectFile"
+          accept-type="image/*,application/pdf,text/plain"
+          :loading="uploading"
+          label-style="cursor-pointer flex space-x-4 items-center text-gray-400"
         >
-          Datei hochladen
-        </div>
-      </AntDropzone>
+          <template #preview><span></span></template>
 
-      <div
-        v-if="uploading"
-        class="absolute h-screen w-screen inset-0 bg-black bg-opacity-75 z-50 p-4"
-      >
-        <div
-          class="flex justify-center items-center text-5xl text-white h-full border-4 border-dashed rounded-lg"
+          <template #label>
+            <CreateButton
+              label="Hochladen"
+              class="pointer-events-none"
+            />
+          </template>
+        </AntUpload>
+      </template>
+
+      <template #body>
+        <AntDropzone
+          id="media-dropzone"
+          data-cy="media-dropzone"
+          ref="dropzone"
+          class="hidden absolute h-screen w-screen inset-0 bg-primary bg-opacity-75 z-50 p-4"
+          @dropped="onDrop"
         >
-          Bitte warten Sie bis die Datei(en) Hochgeladen wurden.
-        </div>
-      </div>
+          <div
+            class="flex justify-center items-center text-5xl text-white h-full border-4 border-dashed rounded-lg"
+          >
+            Datei hochladen
+          </div>
+        </AntDropzone>
 
-      <Media
-        :media-files="data.default"
-        @reload-media="reloadAllMedia"
-      />
-    </template>
-  </AntContent>
+        <div
+          v-if="uploading"
+          class="absolute h-screen w-screen inset-0 bg-black bg-opacity-75 z-50 p-4"
+        >
+          <div
+            class="flex justify-center items-center text-5xl text-white h-full border-4 border-dashed rounded-lg"
+          >
+            Bitte warten Sie bis die Datei(en) Hochgeladen wurden.
+          </div>
+        </div>
+
+        <Media
+          :media-files="data.default"
+          @reload-media="reloadAllMedia"
+        />
+      </template>
+    </AntContent>
+
+    <Loader :loading="loading" />
+  </div>
 </template>
