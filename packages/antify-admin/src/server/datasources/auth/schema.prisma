@@ -65,7 +65,7 @@ model UserTenantAccess {
   userId    String
   tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   tenantId  String
-  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Restrict)
   roleId    String
   createdAt DateTime @default(now())
 

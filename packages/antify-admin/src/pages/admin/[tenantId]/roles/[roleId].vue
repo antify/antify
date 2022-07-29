@@ -6,6 +6,7 @@ import RoleTable from '~~/components/entity/role/RoleTable.vue';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { AntTabsType } from '@antify/antify-ui';
 import { Response } from '../../../../glue/api/admin/[tenantId]/roles/[roleId].get';
+import { Response as DeleteResponse } from '../../../../glue/api/admin/[tenantId]/roles/[roleId].delete';
 
 const { $toaster } = useNuxtApp();
 const route = useRoute();
@@ -30,10 +31,23 @@ const { data: permissions } = await useFetch(
 );
 
 async function onDelete() {
-  await useFetch(`/api/roles/${route.params.roleId}`, {
-    ...useDefaultFetchOpts(),
-    method: 'DELETE',
-  });
+  const { data } = await useFetch<DeleteResponse>(
+    `/api/roles/${route.params.roleId}`,
+    {
+      ...useDefaultFetchOpts(),
+      method: 'DELETE',
+    }
+  );
+  console.log('error', data);
+
+  if (data.value && data.value.badRequest) {
+    console.log('error', data);
+    $toaster.toastError(
+      'Eine Rolle kann nur gelöscht werden wenn sie keinem Benutzer zugewiesen ist.'
+    );
+    deleteDialogActive.value = false;
+    return;
+  }
 
   deleteDialogActive.value = false;
   $toaster.toastDeleted();
