@@ -2,15 +2,32 @@
   lang="ts"
   setup
 >
+import { AntSelectOption } from '@antify/antify-ui';
 import { ref } from 'vue';
 import UserTable from '~~/components/entity/user/UserTable.vue';
+import { validator as _inviteValidator } from '~~/glue/api/users/invite_user.post';
 
 const route = useRoute();
 const router = useRouter();
 const { $toaster } = useNuxtApp();
 
+const inviteValidator = reactive(_inviteValidator);
+
 const inviteUserActive = ref(false);
 const inviteEmail = ref('');
+const inviteAs = ref('');
+
+const { data: roles } = await useFetch(
+  '/api/roles/roles',
+  useDefaultFetchOpts()
+);
+
+const options = computed<AntSelectOption[]>(() => {
+  return (roles.value as { id: string; name: string }[]).map((role) => ({
+    label: role.name,
+    value: role.id,
+  }));
+});
 
 const search = computed({
   get() {
@@ -28,12 +45,22 @@ const search = computed({
 });
 
 async function inviteUser() {
+  inviteValidator.validate(
+    { email: inviteEmail.value, roleId: inviteAs.value },
+    1
+  );
+
+  if (inviteValidator.getErrors()?.length > 0) {
+    return;
+  }
+
   await useFetch(`/api/users/invite_user`, {
     ...useDefaultFetchOpts(),
     ...{
       method: 'POST',
       body: {
         email: inviteEmail.value,
+        roleId: inviteAs.value,
       },
     },
   });
@@ -78,6 +105,24 @@ async function inviteUser() {
             v-model:value="inviteEmail"
             label="E-Mail Adresse"
             description="Geben Sie die E-Mail-Adresse des Nutzers ein den Sie einladen möchten"
+            :errors="inviteValidator.errorMap['email']"
+            :is-error="
+              inviteValidator.errorMap['email'] &&
+              inviteValidator.errorMap['email'].length > 0
+            "
+            :validator="(val: string) => inviteValidator.validateProperty('email', val, 1)"
+          />
+
+          <AntSelect
+            v-model:value="inviteAs"
+            :options="options"
+            label="Einladen als"
+            :errors="inviteValidator.errorMap['roleId']"
+            :is-error="
+              inviteValidator.errorMap['roleId'] &&
+              inviteValidator.errorMap['roleId'].length > 0
+            "
+            :validator="(val: string) => inviteValidator.validateProperty('roleId', val, 1)"
           />
         </AntForm>
 

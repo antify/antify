@@ -5,12 +5,13 @@ export default defineNuxtPlugin((nuxtApp) => {
   return {
     provide: {
       auth: {
-        async login(identifier: String, password: String) {
+        async login(identifier: String, password: String, token?: string) {
           return useFetch('/api/auth/login', {
             method: 'POST',
             body: {
               email: identifier,
               password,
+              token,
             },
             headers: {
               'Content-Type': 'application/json',

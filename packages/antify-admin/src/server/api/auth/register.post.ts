@@ -15,13 +15,13 @@ import {
 export default defineEventHandler<Response>(async (event) => {
   const requestData = await useBody<Input>(event);
   const isValid = await tokenValid(requestData.token);
-  const content = await tokenContent(requestData.token);
-
-  // is token for the same e-mail? (validate or forbidden?)
 
   if (!isValid) {
     throw new HttpForbiddenError();
   }
+
+  // is token for the same e-mail? (validate or forbidden?)
+  const content = await tokenContent(requestData.token);
 
   validator.validateProperty('email', requestData.email);
   validator.validateProperty('password', requestData.password);
@@ -37,20 +37,26 @@ export default defineEventHandler<Response>(async (event) => {
   console.log('how am i', content);
   const password = await hashPassword(requestData.password);
 
-  // create new user
-  const user = await prisma.user.create({
+  // set user password
+  const user = await prisma.user.update({
+    where: {
+      id: content.id,
+    },
     data: {
-      email: requestData.email,
       password: password,
-      name: requestData.email.split('@')[0],
-      isSuperAdmin: false,
-      isBanned: false,
-      tenantAccesses: {
-        create: {
-          roleId: 'e97f0766-3302-49eb-8e23-f61ffba6217a',
-          tenantId: content.tenantId,
-        },
+    },
+  });
+
+  // set isPending to false
+  await prisma.userTenantAccess.update({
+    where: {
+      userId_tenantId: {
+        userId: content.id,
+        tenantId: content.tenantId,
       },
+    },
+    data: {
+      isPending: false,
     },
   });
 

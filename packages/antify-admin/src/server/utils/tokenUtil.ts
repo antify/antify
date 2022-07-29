@@ -5,6 +5,7 @@ import prisma from '~~/server/datasources/auth/client';
 import crypto from 'crypto';
 import { InviteToken } from '../../composables/useGuard';
 import jwtDecode from 'jwt-decode';
+import { User } from '../../glue/api/global/me.get';
 
 export const hashPassword = async (password: string): Promise<string> => {
   const config = useRuntimeConfig();
@@ -33,10 +34,6 @@ export const tokenValid = async (token: string): Promise<boolean> => {
 };
 
 export const tokenContent = async (token: string): Promise<any> => {
-  // TODO:: Security dude?
-  // TODO:: env
-  const JWT_SECRET = 'secret';
-
   return new Promise((resolve) => {
     resolve(jwtDecode(token));
   });
@@ -110,9 +107,9 @@ export const handleCreateToken = async (
   return token;
 };
 
-export const createInviteToken = async (email: string, tenantId: string) => {
+export const createInviteToken = async (user: User, tenantId: string) => {
   const inviteToken: InviteToken = {
-    email,
+    id: user.id,
     tenantId,
   };
 

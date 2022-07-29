@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { Response as GetResponse } from '../../../../glue/api/mail_templates/[mailTemplateId].get';
 import {
   validator as baseValidator,
@@ -8,7 +11,7 @@ import TenantLink from '../../../../components/fields/TenantLink.vue';
 import MailTemplatesTable from '~~/components/entity/mail-templates/MailTemplatesTable.vue';
 import { validator as sendTestMailValidator } from '~~/glue/api/mail_templates/[mailTemplateId]/send_test_mail.post';
 
-const { data } = await useFetch<GetResponse | PutResponse>(
+const { data, refresh } = await useFetch<GetResponse | PutResponse>(
   `/api/mail_templates/${useRoute().params.mailTemplateId}`,
   useDefaultFetchOpts()
 );
@@ -39,12 +42,10 @@ const onSubmit = async () => {
       },
     }
   );
-  loading.value = false;
 
-  if (response.value.default) {
-    data.value = response.value;
-    $toaster.toastUpdated();
-  }
+  loading.value = false;
+  refresh();
+  $toaster.toastUpdated();
 
   if (response.value.badRequest) {
     $toaster.toastError(response.value.badRequest.errors.join('\n'));
@@ -95,7 +96,10 @@ const onSendTestMail = async () => {
         <li v-for="error in errors">{{ error }}</li>
       </ul>
 
-      <AntForm @submit.prevent="onSubmit" id="mail-template-form">
+      <AntForm
+        @submit.prevent="onSubmit"
+        id="mail-template-form"
+      >
         <div data-cy="title">
           <AntInput
             v-model:value="data.default.title"
@@ -125,7 +129,10 @@ const onSendTestMail = async () => {
             :validator="(val: string) => validator.validateProperty('content', val, 1)"
           >
             <template #errorList="{ errors }">
-              <div data-cy="error" v-for="message in errors">
+              <div
+                data-cy="error"
+                v-for="message in errors"
+              >
                 {{ message }}
               </div>
             </template>
@@ -135,7 +142,10 @@ const onSendTestMail = async () => {
 
       <AntForm @submit.prevent="onSendTestMail">
         <div class="flex space-x-4 items-center">
-          <div data-cy="test-mail" class="grow">
+          <div
+            data-cy="test-mail"
+            class="grow"
+          >
             <AntInput
               v-model:value="testMail"
               label="E-Mail Template testen"
@@ -195,7 +205,10 @@ const onSendTestMail = async () => {
     </template>
 
     <template #asideHead>
-      <AntInput v-model:value="search" placeholder="Suche" />
+      <AntInput
+        v-model:value="search"
+        placeholder="Suche"
+      />
     </template>
 
     <template #asideBody>

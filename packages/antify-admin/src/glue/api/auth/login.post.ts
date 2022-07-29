@@ -23,6 +23,7 @@ export type AuthLoginPostResponse = {
 export type AuthLoginPostInput = {
   email: string;
   password: string;
+  token?: string;
 };
 export const authLoginPostValidator = useValidator({
   email: [

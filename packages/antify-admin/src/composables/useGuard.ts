@@ -11,7 +11,7 @@ export type CustomToken = {
 };
 
 export type InviteToken = {
-  email: string;
+  id: string;
   tenantId: string;
 };
 

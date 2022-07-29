@@ -18,11 +18,6 @@ const { data } = await useFetch<GetResponse | PutResponse>(
   }
 );
 
-// if (!data.value?.default) {
-//   // TODO:: Handle it
-//   throw throwError('HANDLE ME');
-// }
-
 const { $toaster } = useNuxtApp();
 const route = useRoute();
 

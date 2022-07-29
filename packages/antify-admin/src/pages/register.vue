@@ -1,3 +1,4 @@
+import { InviteToken } from '../composables/useGuard';
 <script
   lang="ts"
   setup
@@ -14,7 +15,7 @@ const errors = ref([]);
 const formData = ref<Input>({
   email: '',
   password: '',
-  token: route.query.token as string,
+  token: route.query.inviteToken as string,
 });
 const repeatPassword = ref('');
 
