@@ -9,6 +9,7 @@ import {
   Response as PutResponse,
 } from '~~/glue/api/users/[userId].put';
 import UserTable from '~~/components/entity/user/UserTable.vue';
+import { AntTabsType } from '@antify/antify-ui';
 
 const route = useRoute();
 const router = useRouter();
@@ -28,6 +29,13 @@ const search = ref('');
 const loading = ref<Boolean>(false);
 const deleteDialogActive = ref<Boolean>(false);
 const validator = ref(baseValidator);
+const tabs = ref<AntTabsType[]>([
+  {
+    name: 'Stammdaten',
+    current: true,
+    to: '',
+  },
+]);
 
 const roleOptions = computed(() => {
   return (
@@ -111,7 +119,7 @@ async function unbanUser() {
   <div>
     <AntDualContent>
       <template #mainHead>
-        <AntHeader header-type="h1">Benutzer bearbeiten</AntHeader>
+        <AntTabs :tabs="tabs"></AntTabs>
 
         <div class="flex space-x-4">
           <DeleteButton

@@ -9,6 +9,7 @@ import {
 } from '~~/glue/api/tenants/[tenantDetailId].put';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import TenantTable from '~~/components/entity/tenant/TenantTable.vue';
+import { AntTabsType } from '@antify/antify-ui';
 
 // if (!data.value?.default) {
 //   // TODO:: Handle it
@@ -23,6 +24,13 @@ const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
 const search = ref('');
 const deleteDialogActive = ref(false);
+const tabs = ref<AntTabsType[]>([
+  {
+    name: 'Stammdaten',
+    current: true,
+    to: '',
+  },
+]);
 
 const { data } = await useFetch<GetResponse | PutResponse>(
   `/api/tenants/${route.params.tenantDetailId}`,
@@ -92,7 +100,7 @@ async function deleteTenant() {
   <div>
     <AntDualContent>
       <template #mainHead>
-        <AntHeader>Mandant bearbeiten</AntHeader>
+        <AntTabs :tabs="tabs" />
 
         <DeleteButton
           v-if="data.default.id !== route.params.tenantId"

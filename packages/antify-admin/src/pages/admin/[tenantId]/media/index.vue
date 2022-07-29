@@ -101,7 +101,6 @@ onUnmounted(() => {
       <AntUpload
         v-model:value="file"
         @upload="onSelectFile"
-        :label-style="''"
         accept-type="image/*,application/pdf,text/plain"
         :loading="loading"
         label-style="cursor-pointer flex space-x-4 items-center text-gray-400"

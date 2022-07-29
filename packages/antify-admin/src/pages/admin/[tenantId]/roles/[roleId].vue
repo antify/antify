@@ -1,11 +1,26 @@
-<script setup>
+<script
+  setup
+  lang="ts"
+>
 import RoleTable from '~~/components/entity/role/RoleTable.vue';
 import TenantLink from '~~/components/fields/TenantLink.vue';
+import { AntTabsType } from '@antify/antify-ui';
+import { Response } from '../../../../glue/api/admin/[tenantId]/roles/[roleId].get';
 
 const { $toaster } = useNuxtApp();
 const route = useRoute();
 
-const { data: role } = await useFetch(
+const search = ref('');
+const deleteDialogActive = ref(false);
+const tabs = ref<AntTabsType[]>([
+  {
+    name: 'Stammdaten',
+    current: true,
+    to: '',
+  },
+]);
+
+const { data: role } = await useFetch<Response>(
   `/api/roles/${route.params.roleId}`,
   useDefaultFetchOpts()
 );
@@ -13,9 +28,6 @@ const { data: permissions } = await useFetch(
   '/api/roles/permissions',
   useDefaultFetchOpts()
 );
-
-const search = ref('');
-const deleteDialogActive = ref(false);
 
 async function onDelete() {
   await useFetch(`/api/roles/${route.params.roleId}`, {
@@ -40,7 +52,7 @@ async function onDelete() {
   <div>
     <AntDualContent>
       <template #mainHead>
-        <AntHeader>Rolle {{ role ? role.name : '' }} bearbeiten</AntHeader>
+        <AntTabs :tabs="tabs" />
 
         <DeleteButton
           @click="deleteDialogActive = true"

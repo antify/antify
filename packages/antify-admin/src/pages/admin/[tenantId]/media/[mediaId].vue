@@ -10,19 +10,10 @@ import {
 } from '~~/glue/api/admin/[tenantId]/media/[mediaId].put';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import MediaTable from '~~/components/entity/media/MediaTable.vue';
+import { AntTabsType } from '@antify/antify-ui';
 
 const route = useRoute();
 const router = useRouter();
-
-const { data } = await useFetch<GetResponse | PutResponse>(
-  `/api/admin/:tenantId/media/${useRoute().params.mediaId}`,
-  useDefaultFetchOpts()
-);
-
-const { data: mediaFiles, refresh: reloadAllMedia } = await useFetch<Response>(
-  () => `/api/admin/:tenantId/media?search=${route.query.search || ''}`,
-  useDefaultFetchOpts()
-);
 
 const search = ref(route.query?.search || '');
 const { $toaster } = useNuxtApp();
@@ -30,6 +21,23 @@ const errors = ref([]);
 const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
 const deleteDialogActive = ref(false);
+const tabs = ref<AntTabsType[]>([
+  {
+    name: 'Stammdaten',
+    current: true,
+    to: '',
+  },
+]);
+
+const { data } = await useFetch<GetResponse | PutResponse>(
+  `/api/admin/:tenantId/media/${route.params.mediaId}`,
+  useDefaultFetchOpts()
+);
+
+const { data: mediaFiles, refresh: reloadAllMedia } = await useFetch<Response>(
+  () => `/api/admin/:tenantId/media?search=${route.query.search || ''}`,
+  useDefaultFetchOpts()
+);
 
 const _search = computed({
   get() {
@@ -106,11 +114,11 @@ async function onDeleteMedia(mediaId: string) {
   <div>
     <AntDualContent>
       <template #mainHead>
-        <AntHeader header-type="h1">Datei bearbeiten</AntHeader>
+        <AntTabs :tabs="tabs" />
 
         <DeleteButton
           label="Löschen"
-          @click="deleteDialogActive = true"
+          @click="() => onDeleteMedia(data.default.id)"
         />
       </template>
 
