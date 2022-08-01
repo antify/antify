@@ -37,15 +37,11 @@ export default defineEventHandler(async (event): Promise<Response> => {
     };
   }
 
-  try {
     await prisma.role.delete({
       where: {
         id: event.context.params.roleId,
       },
     });
-  } catch (err) {
-    throw new Error(err);
-  }
 
   return {};
 });
