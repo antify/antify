@@ -3,4 +3,5 @@ export type Response = {
   name: string;
   isAdmin: boolean;
   permissions: string[];
+  canDelete: boolean;
 };

@@ -17,6 +17,26 @@ export default defineEventHandler(async (event): Promise<Response> => {
     throw new HttpForbiddenError();
   }
 
+  const access = await prisma.userTenantAccess.findMany({
+    select: {
+      tenantId: true,
+      userId: true,
+      roleId: true,
+    },
+    where: {
+      roleId: event.context.params.roleId,
+    },
+  });
+
+  if (access && access.length > 0) {
+    return {
+      badRequest: {
+        message: 'ROLE_STILL_IN_USE',
+        info: access,
+      },
+    };
+  }
+
   try {
     await prisma.role.delete({
       where: {
@@ -24,11 +44,7 @@ export default defineEventHandler(async (event): Promise<Response> => {
       },
     });
   } catch (err) {
-    return {
-      badRequest: {
-        message: 'Not allowed',
-      },
-    };
+    throw new Error(err);
   }
 
   return {};

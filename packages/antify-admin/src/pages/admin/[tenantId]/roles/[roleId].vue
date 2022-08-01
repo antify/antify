@@ -25,6 +25,7 @@ const { data: role } = await useFetch<Response>(
   `/api/roles/${route.params.roleId}`,
   useDefaultFetchOpts()
 );
+
 const { data: permissions } = await useFetch(
   '/api/roles/permissions',
   useDefaultFetchOpts()
@@ -38,14 +39,18 @@ async function onDelete() {
       method: 'DELETE',
     }
   );
-  console.log('error', data);
 
-  if (data.value && data.value.badRequest) {
-    console.log('error', data);
+  if (
+    data.value &&
+    data.value.badRequest &&
+    data.value.badRequest.message === 'ROLE_STILL_IN_USE'
+  ) {
     $toaster.toastError(
       'Eine Rolle kann nur gelöscht werden wenn sie keinem Benutzer zugewiesen ist.'
     );
+
     deleteDialogActive.value = false;
+
     return;
   }
 
@@ -70,7 +75,7 @@ async function onDelete() {
 
         <DeleteButton
           @click="deleteDialogActive = true"
-          v-if="!role.isAdmin"
+          v-if="!role.isAdmin && role.canDelete"
         >
           Löschen
         </DeleteButton>
