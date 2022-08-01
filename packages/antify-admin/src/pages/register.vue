@@ -1,4 +1,3 @@
-import { InviteToken } from '../composables/useGuard';
 <script
   lang="ts"
   setup

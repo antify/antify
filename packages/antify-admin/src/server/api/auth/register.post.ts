@@ -34,7 +34,6 @@ export default defineEventHandler<Response>(async (event) => {
     };
   }
 
-  console.log('how am i', content);
   const password = await hashPassword(requestData.password);
 
   // set user password

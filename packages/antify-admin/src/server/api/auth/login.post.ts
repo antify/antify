@@ -27,7 +27,7 @@ export default defineEventHandler<AuthLoginPostResponse>(async (event) => {
     const isValid = await tokenValid(requestData.token);
 
     if (!isValid) {
-      throw new HttpForbiddenError('Given invalid token.');
+      throw new HttpForbiddenError();
     }
 
     const inviteTokenContent = await tokenContent(requestData.token);

@@ -12,7 +12,7 @@ CREATE TABLE `Tenant` (
 CREATE TABLE `User` (
     `id` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
-    `password` VARCHAR(191) NULL DEFAULT '',
+    `password` VARCHAR(191) NULL,
     `name` VARCHAR(191) NOT NULL,
     `isSuperAdmin` BOOLEAN NOT NULL DEFAULT false,
     `isBanned` BOOLEAN NOT NULL DEFAULT false,

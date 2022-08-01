@@ -14,7 +14,6 @@ export default defineEventHandler<Response>(async (event) => {
   const guard = useGuard(useAuthorizationHeader(event));
   const tenantId = useTenantHeader(event);
 
-  // TODO:: User should always have read access to tenants he is assigned to.
   if (!guard.hasPermissionTo(PermissionId.CAN_READ_TENANT, tenantId)) {
     throw new HttpForbiddenError();
   }

@@ -20,7 +20,7 @@ model Tenant {
 model User {
   id               String             @id @default(uuid())
   email            String             @unique
-  password         String?            @default("")
+  password         String?
   name             String
   isSuperAdmin     Boolean            @default(false)
   isBanned         Boolean            @default(false)
