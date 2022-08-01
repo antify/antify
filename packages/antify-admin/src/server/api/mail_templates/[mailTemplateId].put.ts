@@ -1,13 +1,14 @@
-import prisma from "~~/server/datasources/db/client";
-import { 
-  Input, 
+import prisma from '~~/server/datasources/db/client';
+import {
+  Input,
   validator,
-  Response
+  Response,
 } from '~~/glue/api/mail_templates/[mailTemplateId].put';
-import { useAuthorizationHeader } from "~~/server/utils/useAuthorizationHeader";
-import { HttpForbiddenError } from "~~/server/errors";
-import { useTenantHeader } from "~~/server/utils/useTenantHeader";
-import { PermissionId } from "~~/server/datasources/static/permissions";
+import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
+import { HttpForbiddenError } from '~~/server/errors';
+import { useTenantHeader } from '~~/server/utils/useTenantHeader';
+import { PermissionId } from '~~/server/datasources/static/permissions';
+import { useGuard } from '~~/composables/useGuard';
 
 export default defineEventHandler<Response>(async (event) => {
   const guard = useGuard(useAuthorizationHeader(event));
@@ -29,9 +30,9 @@ export default defineEventHandler<Response>(async (event) => {
   if (validator.hasErrors()) {
     return {
       badRequest: {
-        errors: validator.getErrors()
-      }
-    }
+        errors: validator.getErrors(),
+      },
+    };
   }
 
   // TODO:: what if not exists?
@@ -43,15 +44,15 @@ export default defineEventHandler<Response>(async (event) => {
       content: true,
     },
     where: {
-      id: event.context.params.mailTemplateId
+      id: event.context.params.mailTemplateId,
     },
     data: {
       title: requestData.title,
-      content: requestData.content
-    }
+      content: requestData.content,
+    },
   });
 
   return {
-    default: mailTemplate
-  }
+    default: mailTemplate,
+  };
 });

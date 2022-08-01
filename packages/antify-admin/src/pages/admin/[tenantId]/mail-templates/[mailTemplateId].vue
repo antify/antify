@@ -12,7 +12,7 @@ import MailTemplatesTable from '~~/components/entity/mail-templates/MailTemplate
 import { validator as sendTestMailValidator } from '~~/glue/api/mail_templates/[mailTemplateId]/send_test_mail.post';
 import { AntTabsType } from '@antify/antify-ui';
 
-const { data } = await useFetch<GetResponse | PutResponse>(
+const { data, refresh } = await useFetch<GetResponse | PutResponse>(
   `/api/mail_templates/${useRoute().params.mailTemplateId}`,
   useDefaultFetchOpts()
 );
@@ -50,12 +50,10 @@ const onSubmit = async () => {
       },
     }
   );
-  loading.value = false;
 
-  if (response.value.default) {
-    data.value = response.value;
-    $toaster.toastUpdated();
-  }
+  loading.value = false;
+  refresh();
+  $toaster.toastUpdated();
 
   if (response.value.badRequest) {
     $toaster.toastError(response.value.badRequest.errors.join('\n'));
