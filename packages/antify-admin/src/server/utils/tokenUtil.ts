@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { CompatibilityEvent, setCookie } from "h3";
 import { TOKEN_COOKIE_KEY, CustomToken } from "~~/composables/useGuard";
-import prisma from "~~/server/datasources/auth/client";
+import prisma from "~~/server/datasources/core/client";
 import crypto from 'crypto';
 
 export const hashPassword = async (password: string): Promise<string> => {

@@ -1,19 +1,19 @@
-import { PrismaClient } from '~~/node_modules/@internal/prisma/authClient/index.js'
+import { PrismaClient } from '~~/node_modules/@internal/prisma/core/index.js'
 // TODO:: https://github.com/nuxt/framework/issues/4797
 // import { PrismaClient } from './generated'
 
 // add prisma to the NodeJS global type
 interface CustomNodeJsGlobal extends NodeJS.Global {
-    authClient: PrismaClient
+    coreClient: PrismaClient
 }
 
 // Prevent multiple instances of Prisma Client in development
 declare const global: CustomNodeJsGlobal
 
-const authClient = global.authClient || new PrismaClient()
+const coreClient = global.coreClient || new PrismaClient()
 
 if (process.env.NODE_ENV === 'development') {
-    global.authClient = authClient
+    global.coreClient = coreClient
 }
 
-export default authClient
+export default coreClient

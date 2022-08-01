@@ -1,7 +1,7 @@
 generator client {
   provider = "prisma-client-js"
   // TODO:: https://github.com/nuxt/framework/issues/4797
-  output   = "../../../node_modules/@internal/prisma/tenantClient"
+  output   = "../../../node_modules/@internal/prisma/tenant"
 }
 
 datasource db {

@@ -1,4 +1,4 @@
-import prisma from "~~/server/datasources/db/client";
+import prisma from "~~/server/datasources/tenant/client";
 import { 
   Input, 
   validator,
