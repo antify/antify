@@ -3,10 +3,9 @@
   setup
 >
 import { ANT_ROW_TYPES } from '@antify/antify-ui';
-import TenantLink from '~~/components/fields/TenantLink.vue';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 
+const router = useRouter();
 const route = useRoute();
 
 const loading = ref<boolean>(true);
@@ -40,6 +39,15 @@ const _data = computed(() => {
     };
   });
 });
+
+function goToDetail(id: string) {
+  loading.value = true;
+
+  router.push({
+    name: 'admin-tenantId-mail-templates-mailTemplateId',
+    params: { mailTemplateId: id },
+  });
+}
 </script>
 
 <template>
@@ -49,14 +57,12 @@ const _data = computed(() => {
       :data="_data"
     >
       <template #cellContent="{ elem }">
-        <TenantLink
-          :to="{
-            name: 'admin-tenantId-mail-templates-mailTemplateId',
-            params: { mailTemplateId: elem.id },
-          }"
+        <div
+          @click="goToDetail(elem.id)"
+          class="cursor-pointer"
         >
           {{ elem.title }}
-        </TenantLink>
+        </div>
       </template>
 
       <template #emptyState>
