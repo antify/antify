@@ -38,7 +38,7 @@ export default defineEventHandler<Response>(async (event) => {
       return {
         id: mediaItem.id,
         title: mediaItem.title,
-        url: useMediaService(mediaItem).getUrl(),
+        url: useMediaService(mediaItem).getMediaUrl(tenantId),
         fileType: mediaItem.fileType,
       };
     }),

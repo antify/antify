@@ -35,6 +35,8 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
   ],
   privateRuntimeConfig: {
+    baseUrl: process.env.BASE_URL,
+    systemMail: process.env.SYSTEM_MAIL,
     passwordSalt: process.env.PASSWORD_SALT,
     smtpHost: process.env.SMTP_HOST,
     smtpPort: process.env.SMTP_PORT,

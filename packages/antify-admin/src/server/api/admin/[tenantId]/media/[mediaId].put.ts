@@ -71,7 +71,7 @@ export default defineEventHandler<Response>(async (event) => {
     default: {
       id: updatedMedia.id,
       title: updatedMedia.title,
-      url: useMediaService(updatedMedia).getUrl(),
+      url: useMediaService(updatedMedia).getMediaUrl(tenantId),
       fileType: updatedMedia.fileType,
     },
   };

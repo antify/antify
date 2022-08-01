@@ -1,6 +1,10 @@
 export type Response = {
-    default: {
-        id: string
-        name: string
-    }[]
-}
+  default: {
+    data: { id: string; name: string }[];
+    pagination?: {
+      page: number;
+      itemsPerPage: number;
+      count: number;
+    };
+  };
+};

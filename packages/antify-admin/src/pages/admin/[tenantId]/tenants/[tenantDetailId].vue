@@ -1,4 +1,7 @@
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
 import { Response as GetResponse } from '~~/glue/api/tenants/[tenantDetailId].get';
 import {
   validator as baseValidator,
@@ -6,28 +9,32 @@ import {
 } from '~~/glue/api/tenants/[tenantDetailId].put';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import TenantTable from '~~/components/entity/tenant/TenantTable.vue';
-
-const { data } = await useFetch<GetResponse | PutResponse>(
-  `/api/tenants/${useRoute().params.tenantDetailId}`,
-  {
-    ...useDefaultFetchOpts(),
-    key: `/api/tenants/${useRoute().params.tenantDetailId}`,
-  }
-);
-
-// if (!data.value?.default) {
-//   // TODO:: Handle it
-//   throw throwError('HANDLE ME');
-// }
+import { AntTabsType } from '@antify/antify-ui';
 
 const { $toaster } = useNuxtApp();
+const route = useRoute();
 
 const errors = ref([]);
 const loading = ref<Boolean>(false);
 const validator = ref(baseValidator);
 const search = ref('');
+const tabs = ref<AntTabsType[]>([
+  {
+    name: 'Stammdaten',
+    current: true,
+    to: '',
+  },
+]);
 
-const onSubmit = async () => {
+const { data } = await useFetch<GetResponse | PutResponse>(
+  `/api/tenants/${route.params.tenantDetailId}`,
+  {
+    ...useDefaultFetchOpts(),
+    key: `/api/tenants/${route.params.tenantDetailId}`,
+  }
+);
+
+async function onSubmit() {
   loading.value = true;
   errors.value = [];
 
@@ -58,13 +65,13 @@ const onSubmit = async () => {
   if (response.value.badRequest) {
     $toaster.toastError(response.value.badRequest.errors.join('\n'));
   }
-};
+}
 </script>
 
 <template>
   <AntDualContent>
     <template #mainHead>
-      <AntHeader>Mandant bearbeiten</AntHeader>
+      <AntTabs :tabs="tabs" />
     </template>
 
     <template #mainBody>
@@ -81,7 +88,10 @@ const onSubmit = async () => {
         <li v-for="error in errors">{{ error }}</li>
       </ul>
 
-      <AntForm @submit.prevent="onSubmit" id="edit-tenant-form">
+      <AntForm
+        @submit.prevent="onSubmit"
+        id="edit-tenant-form"
+      >
         <div data-cy="name">
           <AntInput
             v-model:value="data.default.name"
@@ -106,7 +116,12 @@ const onSubmit = async () => {
 
     <template #mainFooter>
       <AntButton>
-        <TenantLink :to="{ name: 'admin-tenantId-tenants' }">
+        <TenantLink
+          :to="{
+            name: 'admin-tenantId-tenants',
+            query: route.query,
+          }"
+        >
           Zurück
         </TenantLink>
       </AntButton>
@@ -122,7 +137,10 @@ const onSubmit = async () => {
     </template>
 
     <template #asideHead>
-      <AntInput v-model:value="search" placeholder="Suche" />
+      <AntInput
+        v-model:value="search"
+        placeholder="Suche"
+      />
     </template>
 
     <template #asideBody><TenantTable /></template>

@@ -71,7 +71,7 @@ importers:
       standard-version: 9.5.0
       typescript: 4.7.4
       unbuild: 0.7.6
-      vitest: 0.20.2_c8@7.12.0
+      vitest: 0.19.1_c8@7.12.0
 
   packages/antify-admin/e2e:
     specifiers:
@@ -84,7 +84,7 @@ importers:
       '@antify/ant-auth': 1.0.0
       '@antify/ant-database': 1.0.0
       '@antify/ant-validate': 1.0.0
-      '@antify/antify-ui': 0.0.56
+      '@antify/antify-ui': 0.0.63
       '@faker-js/faker': ^6.2.0
       '@nuxt/kit': 3.0.0-rc.6
       '@nuxtjs/tailwindcss': ^5.0.3
@@ -109,7 +109,7 @@ importers:
       '@antify/ant-auth': link:../../ant-auth
       '@antify/ant-database': link:../../ant-database
       '@antify/ant-validate': link:../../ant-validate
-      '@antify/antify-ui': 0.0.56_7mznwn7en2tqb2j4vto3mkdepm
+      '@antify/antify-ui': 0.0.63_7mznwn7en2tqb2j4vto3mkdepm
       '@prisma/client': 3.15.2_prisma@3.15.2
       '@types/formidable': 2.0.5
       formidable: 2.0.1
@@ -141,8 +141,8 @@ packages:
       '@jridgewell/gen-mapping': 0.1.1
       '@jridgewell/trace-mapping': 0.3.14
 
-  /@antify/antify-ui/0.0.56_7mznwn7en2tqb2j4vto3mkdepm:
-    resolution: {integrity: sha512-nVOh3OqOk4rINKrnYvlPag3oBabS7kAV0h7v7xjAuaSsqz4aARp+c6f/NCw0KzUcfYf7qSGJpI3iD6luUuUXTA==}
+  /@antify/antify-ui/0.0.63_7mznwn7en2tqb2j4vto3mkdepm:
+    resolution: {integrity: sha512-xT9OPwNn2xOMz1sdz9JgvNJRuMIEBieWGxQrreyJMVyBBPyt640CvYU8mLmWrj9hCdMArHfObVB4CjA2PoUj4w==}
     engines: {node: '>=0.14'}
     dependencies:
       '@fortawesome/fontawesome-svg-core': 6.1.1
@@ -9617,43 +9617,8 @@ packages:
     optionalDependencies:
       fsevents: 2.3.2
 
-  /vitest/0.15.2:
-    resolution: {integrity: sha512-cMabuUqu+nNHafkdN7H8Z20+UZTrrUfqjGwAoLwUwrqFGWBz3gXwxndjbLf6mgSFs9lF/JWjKeNM1CXKwtk26w==}
-    engines: {node: '>=v14.16.0'}
-    hasBin: true
-    peerDependencies:
-      '@vitest/ui': '*'
-      c8: '*'
-      happy-dom: '*'
-      jsdom: '*'
-    peerDependenciesMeta:
-      '@vitest/ui':
-        optional: true
-      c8:
-        optional: true
-      happy-dom:
-        optional: true
-      jsdom:
-        optional: true
-    dependencies:
-      '@types/chai': 4.3.1
-      '@types/chai-subset': 1.3.3
-      '@types/node': 18.0.4
-      chai: 4.3.6
-      debug: 4.3.4
-      local-pkg: 0.4.2
-      tinypool: 0.1.3
-      tinyspy: 0.3.3
-      vite: 2.9.14
-    transitivePeerDependencies:
-      - less
-      - sass
-      - stylus
-      - supports-color
-    dev: true
-
-  /vitest/0.20.2_c8@7.12.0:
-    resolution: {integrity: sha512-AFXTHrwG4d2OO6SAL8WP5ZkOwLtgeF4tlrHfXFqrHc+5chNegeR53pge0lv/C4316SqJ2DbYaUBH8vh3CdF+BQ==}
+  /vitest/0.19.1_c8@7.12.0:
+    resolution: {integrity: sha512-E/ZXpFMUahn731wzhMBNzWRp4mGgiZFT0xdHa32cbNO0CSaHpE9hTfteEU247Gi2Dula8uXo5vvrNB6dtszmQA==}
     engines: {node: '>=v14.16.0'}
     hasBin: true
     peerDependencies:

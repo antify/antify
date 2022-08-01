@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ROW_TYPES } from '@antify/antify-ui';
+import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { Default } from '~~/glue/api/admin/[tenantId]/media/index.get';
@@ -15,22 +15,22 @@ const props = defineProps<{
   mediaFiles?: Default[];
 }>();
 
-const tableHeaders: TableHeader[] = [];
+const tableHeaders = ref<Array<TableHeader>>([]);
 
 if (props.showPreview) {
-  tableHeaders.push({
+  tableHeaders.value.push({
     title: 'Bild',
     identifier: 'url',
-    type: ROW_TYPES.IMAGE,
+    type: ANT_ROW_TYPES.IMAGE,
     rowClassList: 'w-6 overflow-hidden overflow-ellipsis h-full',
     headerClassList: 'sr-only',
   });
 }
 
-tableHeaders.push({
+tableHeaders.value.push({
   title: 'Name',
   identifier: 'title',
-  type: ROW_TYPES.SLOT,
+  type: ANT_ROW_TYPES.SLOT,
 });
 
 const onDeleteMedia = async (mediaId: string) => {

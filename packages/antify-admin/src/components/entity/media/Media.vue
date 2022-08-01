@@ -1,4 +1,7 @@
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { faList, faTableCellsLarge } from '@fortawesome/free-solid-svg-icons';
 import MediaTable from './MediaTable.vue';
 import { Default } from '~~/glue/api/admin/[tenantId]/media/index.get';
@@ -77,7 +80,10 @@ const onSearch = (val) => {
         @click="openMediaDetails(item)"
       >
         <template #icon>
-          <img v-if="item.url" :src="item.url" />
+          <img
+            v-if="item.url"
+            :src="item.url"
+          />
           <!-- <fa-icon v-else :icon="item.icon" /> -->
         </template>
 
@@ -87,7 +93,10 @@ const onSearch = (val) => {
       </AntMediathekItem>
     </div>
 
-    <div class="w-full" v-if="activeListStyle === 'table'">
+    <div
+      class="w-full"
+      v-if="activeListStyle === 'table'"
+    >
       <MediaTable
         :media-files="mediaFiles"
         :show-delete="true"

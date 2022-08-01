@@ -1,4 +1,8 @@
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
+import { routeLocationKey } from 'vue-router';
 import {
   authLoginPostValidator,
   AuthLoginPostInput,
@@ -13,12 +17,14 @@ definePageMeta({
 });
 
 const { $auth } = useNuxtApp();
-const errors = ref([]);
+const route = useRoute();
 
 const isDev = process.env.NODE_ENV === 'development';
+const errors = ref([]);
 const formData = ref<AuthLoginPostInput>({
   email: isDev ? 'admin@admin.de' : '',
-  password: isDev && false ? 'admin' : '',
+  password: isDev ? 'admin' : '',
+  token: route.query?.inviteToken as string,
 });
 const loading = ref<Boolean>(false);
 
@@ -28,7 +34,7 @@ const validateErrors = computed<string[]>(() => {
   return [...validator.getErrors(), ...errors.value];
 });
 
-const onLogin = async () => {
+async function onLogin() {
   loading.value = true;
   errors.value = [];
 
@@ -42,26 +48,34 @@ const onLogin = async () => {
   // TODO:: handle server error (error property)
   const { data, error } = await $auth.login(
     formData.value.email,
-    formData.value.password
+    formData.value.password,
+    formData.value.token
   );
   loading.value = false;
 
   if (error.value) {
-    return throwError('Uuups something went wrong');
+    // return throwError('Uuups something went wrong');
+    errors.value.push(error.value);
+    return;
   }
 
   if (data.value.default) {
     await navigateTo({ name: 'admin' });
   }
 
-  if (data.value.badRequest || data.value.invalidCredentials) {
+  if (
+    data.value.badRequest ||
+    data.value.invalidCredentials ||
+    data.value.banned
+  ) {
     errors.value =
-      data.value.badRequest?.errors || data.value.invalidCredentials.errors;
+      data.value.badRequest?.errors ||
+      data.value.invalidCredentials?.errors ||
+      data.value.banned?.errors;
 
-    // formData.value.email = "";
     formData.value.password = '';
   }
-};
+}
 
 onBeforeUnmount(() => {
   // Reset error maps
@@ -78,7 +92,10 @@ onBeforeUnmount(() => {
       </AntHeader>
     </template>
 
-    <AntLoginWidget @submit.prevent="onLogin" :errors="validateErrors">
+    <AntLoginWidget
+      @submit.prevent="onLogin"
+      :errors="validateErrors"
+    >
       <template #emailField>
         <div data-cy="email">
           <AntInput
@@ -125,7 +142,11 @@ onBeforeUnmount(() => {
       </template>
 
       <template #submitButton>
-        <AntButton type="submit" data-cy="submit" :primary="true">
+        <AntButton
+          type="submit"
+          data-cy="submit"
+          :primary="true"
+        >
           Login
         </AntButton>
       </template>

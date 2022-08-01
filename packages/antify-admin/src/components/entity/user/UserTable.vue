@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { ROW_TYPES } from '@antify/antify-ui';
+import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
+import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
 
 const route = useRoute();
 const props = defineProps<{
@@ -28,21 +29,21 @@ const _users = computed(() => {
   });
 });
 
-const tableHeaders = [
+const tableHeaders = ref<Array<TableHeader>>([
   {
     title: 'Name',
     identifier: 'name',
-    headerClass: 'font-bold',
-    type: ROW_TYPES.SLOT,
+    headerClassList: 'font-bold',
+    type: ANT_ROW_TYPES.SLOT,
   },
-];
+]);
 
 if (!props.singleCol) {
-  tableHeaders.push({
+  tableHeaders.value.push({
     title: 'E-Mail',
     identifier: 'email',
-    headerClass: 'font-bold',
-    type: ROW_TYPES.TEXT,
+    headerClassList: 'font-bold',
+    type: ANT_ROW_TYPES.TEXT,
   });
 }
 </script>
@@ -51,6 +52,7 @@ if (!props.singleCol) {
   <AntTable :headers="tableHeaders" :data="_users">
     <template #cellContent="{ elem }">
       <TenantLink
+        class="w-full"
         :to="{
           name: 'admin-tenantId-users-userId',
           params: { userId: elem.id },
