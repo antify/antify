@@ -7,8 +7,8 @@ import { HttpForbiddenError, HttpBadRequestError } from '../../errors';
 import { Input } from '../../../glue/api/users/invite_user.post';
 import { useMailer } from '../../utils/useMailer';
 import { createInviteToken } from '../../utils/tokenUtil';
-import tenantPrisma from '~~/server/datasources/db/client';
-import authPrisma from '~~/server/datasources/auth/client';
+import tenantPrisma from '~~/server/datasources/tenant/client';
+import authPrisma from '~~/server/datasources/core/client';
 
 export default defineEventHandler(async (event) => {
   const requestData = await useBody<Input>(event);

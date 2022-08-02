@@ -3,7 +3,7 @@ import { useAuthorizationHeader } from '../../../utils/useAuthorizationHeader';
 import { useTenantHeader } from '../../../utils/useTenantHeader';
 import { PermissionId } from '../../../datasources/static/permissions';
 import { HttpForbiddenError } from '../../../errors';
-import prisma from '~~/server/datasources/auth/client';
+import prisma from '~~/server/datasources/core/client';
 import { useGuard } from '~~/composables/useGuard';
 
 export default defineEventHandler(async (event) => {
