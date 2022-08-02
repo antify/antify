@@ -1,5 +1,5 @@
 import { tenantContextMiddleware } from '../../guard/tenantContext.middleware';
-import prisma from '~~/server/datasources/auth/client';
+import prisma from '~~/server/datasources/core/client';
 import { useGuard } from '~~/composables/useGuard';
 import { useAuthorizationHeader } from '../../utils/useAuthorizationHeader';
 import { useTenantHeader } from '../../utils/useTenantHeader';

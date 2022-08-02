@@ -6,7 +6,7 @@ import { HttpBadRequestError, HttpForbiddenError } from '../../errors';
 import { useGuard } from '~~/composables/useGuard';
 import { useMediaStorage } from '../../service/useMediaService';
 import formidable, { Files, File } from 'formidable';
-import prisma from '~~/server/datasources/auth/client';
+import prisma from '~~/server/datasources/core/client';
 
 export default defineEventHandler(async (event) => {
   tenantContextMiddleware(event);

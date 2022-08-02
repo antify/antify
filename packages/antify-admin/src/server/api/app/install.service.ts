@@ -1,4 +1,4 @@
-import prisma from "~~/server/datasources/auth/client";
+import prisma from "~~/server/datasources/core/client";
 
 export const apiAppInstallService = {
     requireInstall: async () => {

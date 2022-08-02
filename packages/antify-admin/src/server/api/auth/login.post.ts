@@ -1,7 +1,7 @@
 import { handleCreateToken, hashPassword } from '~~/server/utils/tokenUtil';
 import { tokenValid, tokenContent } from '../../utils/tokenUtil';
 import { HttpForbiddenError } from '../../errors';
-import prisma from '~~/server/datasources/auth/client';
+import prisma from '~~/server/datasources/core/client';
 import {
   AuthLoginPostInput,
   authLoginPostValidator,

@@ -1,7 +1,7 @@
 (async () => {
   const {
     PrismaClient,
-  } = require('../../node_modules/@internal/prisma/tenantClient/index.js');
+  } = require('../../node_modules/@internal/prisma/tenant/index.js');
   const prisma = new PrismaClient({
     datasources: { db: { url: process.env.TENANT_DATABASE_URL } },
   });

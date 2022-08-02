@@ -1,6 +1,6 @@
 import { useAuthorizationHeader } from '../../../../../utils/useAuthorizationHeader';
 import { PermissionId } from '../../../../../datasources/static/permissions';
-import prisma from '~~/server/datasources/auth/client';
+import prisma from '~~/server/datasources/core/client';
 import { useTenantHeader } from '../../../../../utils/useTenantHeader';
 import { tenantContextMiddleware } from '../../../../../guard/tenantContext.middleware';
 import { HttpForbiddenError, HttpNotFoundError } from '../../../../../errors';

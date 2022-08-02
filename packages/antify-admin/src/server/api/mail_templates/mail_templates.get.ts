@@ -1,4 +1,4 @@
-import tenantClient from "~~/server/datasources/db/client";
+import tenantClient from "~~/server/datasources/tenant/client";
 import { useGuard } from "~~/composables/useGuard";
 import { createForbiddenError, HttpForbiddenError } from '~~/server/errors';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
