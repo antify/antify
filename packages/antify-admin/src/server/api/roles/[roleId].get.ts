@@ -1,7 +1,8 @@
-import prisma from "~~/server/datasources/core/client";
-import { useGuard } from "~~/composables/useGuard";
+import prisma from '~~/server/datasources/core/client';
+import { useGuard } from '~~/composables/useGuard';
 import { createForbiddenError, createNotFoundError } from '~~/server/errors';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
+import { checkUserTenantAccess } from '~~/server/service/roleService';
 
 export default defineEventHandler(async (event) => {
   const guard = useGuard(useAuthorizationHeader(event));
@@ -32,17 +33,7 @@ export default defineEventHandler(async (event) => {
     return createNotFoundError();
   }
 
-  // Role can not be deleted if it has a connection in userTenantAccess
-  const access = await prisma.userTenantAccess.findMany({
-    select: {
-      tenantId: true,
-      userId: true,
-      roleId: true,
-    },
-    where: {
-      roleId: event.context.params.roleId,
-    },
-  });
+  const access = await checkUserTenantAccess(event.context.params.roleId);
 
   return {
     ...role,
