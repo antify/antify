@@ -1,5 +1,5 @@
 export type Response = {
-  default?: Default;
+  default?: Default[];
 };
 
 export type Default = {
@@ -7,5 +7,4 @@ export type Default = {
   name?: string;
   isAdmin?: boolean;
   permissions?: string[];
-  canDelete: boolean;
 };

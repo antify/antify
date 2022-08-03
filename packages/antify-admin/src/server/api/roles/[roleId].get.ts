@@ -1,14 +1,15 @@
 import prisma from '~~/server/datasources/core/client';
 import { useGuard } from '~~/composables/useGuard';
-import { createForbiddenError, createNotFoundError } from '~~/server/errors';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
+import { Response } from '~~/glue/api/admin/[tenantId]/roles/[roleId].get';
+import { HttpNotFoundError, HttpForbiddenError } from '../../errors';
 import { checkUserTenantAccess } from '~~/server/service/roleService';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler<Response>(async (event) => {
   const guard = useGuard(useAuthorizationHeader(event));
 
   if (!guard.isUserLoggedIn) {
-    return createForbiddenError();
+    throw new HttpForbiddenError();
   }
 
   // TODO:: check permission
@@ -30,14 +31,18 @@ export default defineEventHandler(async (event) => {
   });
 
   if (!role) {
-    return createNotFoundError();
+    throw new HttpNotFoundError();
   }
 
   const access = await checkUserTenantAccess(event.context.params.roleId);
 
   return {
-    ...role,
-    permissions: role.permissions.map((permission) => permission.permissionId),
-    canDelete: access.length === 0,
+    default: {
+      ...role,
+      permissions: role.permissions.map(
+        (permission) => permission.permissionId
+      ),
+      canDelete: access.length === 0,
+    },
   };
 });

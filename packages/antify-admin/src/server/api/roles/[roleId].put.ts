@@ -1,23 +1,22 @@
-import prisma from "~~/server/datasources/core/client";
-import { useGuard } from "~~/composables/useGuard";
+import prisma from '~~/server/datasources/core/client';
+import { useGuard } from '~~/composables/useGuard';
 import { PermissionId } from '~~/server/datasources/static/permissions';
-import { HttpBadRequestError, HttpForbiddenError, HttpNotFoundError } from '~~/server/errors';
+import {
+  HttpBadRequestError,
+  HttpForbiddenError,
+  HttpNotFoundError,
+} from '~~/server/errors';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
+import { Response } from '~~/glue/api/admin/[tenantId]/roles/[roleId].get';
 
-export type RoleResponse = {
-  id: string,
-  name: string,
-  isAdmin: boolean,
-  permissions: string[]
-}
 export type RoleInput = {
-  name: string,
-  permissions: string[]
-}
+  name: string;
+  permissions: string[];
+};
 
-export const validate = (data: Record<string, string>): RoleInput => {
+export const validate = (data: RoleInput): RoleInput => {
   if (!data.name) {
     throw new HttpBadRequestError('Missing required name');
   }
@@ -27,9 +26,9 @@ export const validate = (data: Record<string, string>): RoleInput => {
   }
 
   return data as RoleInput;
-}
+};
 
-export default defineEventHandler<RoleResponse>(async (event) => {
+export default defineEventHandler<Response>(async (event) => {
   tenantContextMiddleware(event);
 
   const guard = useGuard(useAuthorizationHeader(event));
@@ -41,11 +40,11 @@ export default defineEventHandler<RoleResponse>(async (event) => {
 
   const role = await prisma.role.findUnique({
     select: {
-      id: true
+      id: true,
     },
     where: {
-      id: event.context.params.roleId
-    }
+      id: event.context.params.roleId,
+    },
   });
 
   if (!role) {
@@ -61,12 +60,12 @@ export default defineEventHandler<RoleResponse>(async (event) => {
       isAdmin: true,
       permissions: {
         select: {
-          permissionId: true
-        }
-      }
+          permissionId: true,
+        },
+      },
     },
     where: {
-      id: event.context.params.roleId
+      id: event.context.params.roleId,
     },
     data: {
       name: requestData.name,
@@ -74,16 +73,19 @@ export default defineEventHandler<RoleResponse>(async (event) => {
         deleteMany: {},
         create: requestData.permissions.map((permissionId: string) => {
           return {
-            permissionId: permissionId
-          }
-        })
-      }
-    }
+            permissionId: permissionId,
+          };
+        }),
+      },
+    },
   });
 
   return {
-    ...updatedRole,
-    permissions: updatedRole.permissions
-      .map(permission => permission.permissionId)
+    default: {
+      ...updatedRole,
+      permissions: updatedRole.permissions.map(
+        (permission) => permission.permissionId
+      ),
+    },
   };
 });

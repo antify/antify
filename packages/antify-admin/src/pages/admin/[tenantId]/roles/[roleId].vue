@@ -7,12 +7,14 @@ import TenantLink from '~~/components/fields/TenantLink.vue';
 import { AntTabsType } from '@antify/antify-ui';
 import { Response } from '../../../../glue/api/admin/[tenantId]/roles/[roleId].get';
 import { Response as DeleteResponse } from '../../../../glue/api/admin/[tenantId]/roles/[roleId].delete';
+import { Response as PermissionsResponse } from '~~/glue/api/admin/[tenantId]/roles/permissions.get';
 
 const { $toaster } = useNuxtApp();
 const route = useRoute();
 
 const search = ref('');
 const deleteDialogActive = ref(false);
+const loading = ref(true);
 const tabs = ref<AntTabsType[]>([
   {
     name: 'Stammdaten',
@@ -20,16 +22,27 @@ const tabs = ref<AntTabsType[]>([
     to: '',
   },
 ]);
+const role = ref<Response>({ default: {} });
+const permissions = ref<PermissionsResponse>({ default: [] });
 
-const { data: role } = await useFetch<Response>(
-  `/api/roles/${route.params.roleId}`,
-  useDefaultFetchOpts()
-);
+onMounted(async () => {
+  const { data: permissionsData } = await useFetch<PermissionsResponse>(
+    '/api/roles/permissions',
+    useDefaultFetchOpts()
+  );
 
-const { data: permissions } = await useFetch(
-  '/api/roles/permissions',
-  useDefaultFetchOpts()
-);
+  permissions.value = permissionsData.value as PermissionsResponse;
+  console.log('loaded', permissions.value);
+
+  const { data: roleData } = await useFetch<Response>(
+    `/api/roles/${route.params.roleId}`,
+    useDefaultFetchOpts()
+  );
+
+  role.value = roleData.value;
+
+  loading.value = false;
+});
 
 async function onDelete() {
   const { data } = await useFetch<DeleteResponse>(
@@ -68,19 +81,14 @@ async function onDelete() {
     <AntDualContent>
       <template #mainHead>
         <AntTabs :tabs="tabs" />
-
-        <DeleteButton
-          @click="deleteDialogActive = true"
-          v-if="!role.isAdmin && role.canDelete"
-        >
-          Löschen
-        </DeleteButton>
+        <DeleteButton @click="onDelete">Löschen </DeleteButton>
       </template>
 
       <template #mainBody>
         <EntityRoleEditRoleForm
-          :role="role"
-          :permissions="permissions"
+          :role="role.default"
+          :permissions="permissions.default"
+          :loading="loading"
           id="edit-role-form"
         />
       </template>

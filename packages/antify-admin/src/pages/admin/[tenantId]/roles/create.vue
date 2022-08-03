@@ -1,15 +1,29 @@
-<script setup>
+<script
+  setup
+  lang="ts"
+>
+import { permissions } from '../../../../server/datasources/static/permissions';
 import TenantLink from '~~/components/fields/TenantLink.vue';
+
+const loading = ref(true);
+const role = ref<{
+  id?: string;
+  name: string;
+  isAdmin: boolean;
+  permissions: string[];
+  canDelete: boolean;
+}>({
+  name: '',
+  isAdmin: false,
+  permissions: [],
+  canDelete: false,
+});
 
 const { data: permissions } = await useFetch(
   '/api/roles/permissions',
   useDefaultFetchOpts()
 );
-
-const role = ref({
-  name: '',
-  permissions: [],
-});
+loading.value = false;
 </script>
 
 <template>
@@ -21,7 +35,8 @@ const role = ref({
     <template #body>
       <EntityRoleEditRoleForm
         :role="role"
-        :permissions="permissions"
+        :permissions="permissions.default"
+        :loading="loading"
         id="create-role-form"
       />
     </template>

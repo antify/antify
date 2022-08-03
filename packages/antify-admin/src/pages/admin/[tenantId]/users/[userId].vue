@@ -10,24 +10,19 @@ import {
 } from '~~/glue/api/users/[userId].put';
 import UserTable from '~~/components/entity/user/UserTable.vue';
 import { AntTabsType } from '@antify/antify-ui';
+import { Response as RoleResponse } from '~~/glue/api/admin/[tenantId]/roles/roles.get';
+
 
 const route = useRoute();
 const router = useRouter();
 const { $toaster } = useNuxtApp();
 
-const { data: user, refresh } = await useFetch<GetResponse | PutResponse>(
-  `/api/users/${route.params.userId}`,
-  useDefaultFetchOpts()
-);
-const { data: roles } = await useFetch(
-  '/api/roles/roles',
-  useDefaultFetchOpts()
-);
-
 const errors = ref([]);
 const search = ref('');
-const loading = ref<Boolean>(false);
+const loading = ref<Boolean>(true);
+const saving = ref<Boolean>(false);
 const deleteDialogActive = ref<Boolean>(false);
+
 const validator = ref(baseValidator);
 const tabs = ref<AntTabsType[]>([
   {
@@ -36,29 +31,45 @@ const tabs = ref<AntTabsType[]>([
     to: '',
   },
 ]);
+const user = ref<GetResponse>({ default: {} });
+const roles = ref<RoleResponse>({ default: [] });
 
 const roleOptions = computed(() => {
   return (
-    roles.value as {
-      permissions: string[];
-      name: string;
-      id: string;
-      isAdmin: boolean;
-    }[]
-  ).map((role) => ({
-    value: role.id,
-    label: role.name,
-  }));
+    roles.value.default.map((role) => ({
+      value: role.id,
+      label: role.name,
+    })) || []
+  );
+});
+
+let refresh: Function;
+
+onMounted(async () => {
+  const { data: userData, refresh: userRefresh } = await useFetch<
+    GetResponse | PutResponse
+  >(`/api/users/${useRoute().params.userId}`, useDefaultFetchOpts());
+
+  user.value = userData.value as GetResponse;
+  refresh = userRefresh;
+
+  const { data: rolesData } = await useFetch<RoleResponse>(
+    '/api/roles/roles',
+    useDefaultFetchOpts()
+  );
+
+  roles.value = rolesData.value;
+  loading.value = false;
 });
 
 async function onSubmit() {
-  loading.value = true;
+  saving.value = true;
   errors.value = [];
 
   validator.value.validate(user.value.default, 1);
 
   if (validator.value.hasErrors()) {
-    loading.value = false;
+    saving.value = false;
 
     return;
   }
@@ -70,7 +81,8 @@ async function onSubmit() {
       body: user.value.default,
     },
   });
-  loading.value = false;
+
+  saving.value = false;
 
   $toaster.toastUpdated();
   refresh();
@@ -91,6 +103,7 @@ async function deleteUser() {
 }
 
 async function banUser() {
+  saving.value = true;
   await useFetch<PutResponse>(`/api/users/${route.params.userId}/ban`, {
     ...useDefaultFetchOpts(),
     ...{
@@ -98,17 +111,23 @@ async function banUser() {
     },
   });
 
+  saving.value = false;
+
   $toaster.toastUpdated();
   refresh();
 }
 
 async function unbanUser() {
+  saving.value = true;
+  
   await useFetch<PutResponse>(`/api/users/${route.params.userId}/unban`, {
     ...useDefaultFetchOpts(),
     ...{
       method: 'PUT',
     },
   });
+
+  saving.value = false;
 
   $toaster.toastUpdated();
   refresh();

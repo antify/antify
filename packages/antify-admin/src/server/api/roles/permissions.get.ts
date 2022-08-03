@@ -1,16 +1,17 @@
-import { useGuard } from "~~/composables/useGuard";
+import { useGuard } from '~~/composables/useGuard';
 import { permissions } from '~~/server/datasources/static/permissions';
-import { createForbiddenError } from '~~/server/errors';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
+import { Response } from '~~/glue/api/admin/[tenantId]/roles/permissions.get';
+import { HttpForbiddenError } from '../../errors';
 
-export default defineEventHandler(async (event) => {
-    const guard = useGuard(useAuthorizationHeader(event));
+export default defineEventHandler<Response>(async (event) => {
+  const guard = useGuard(useAuthorizationHeader(event));
 
-    if (!guard.isUserLoggedIn) {
-        return createForbiddenError();
-    }
+  if (!guard.isUserLoggedIn) {
+    throw new HttpForbiddenError();
+  }
 
-    // TODO:: check permission
+  // TODO:: check permission
 
-    return permissions;
+  return { default: permissions };
 });
