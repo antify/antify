@@ -1,10 +1,10 @@
-import prisma from "~~/server/datasources/core/client";
-import { useGuard } from "~~/composables/useGuard";
+import prisma from '~~/server/datasources/core/client';
+import { useGuard } from '~~/composables/useGuard';
 import { HttpForbiddenError, HttpNotFoundError } from '~~/server/errors';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { useTenantHeader } from "~~/server/utils/useTenantHeader";
-import { PermissionId } from "~~/server/datasources/static/permissions";
-import { Response } from "~~/glue/api/tenants/[tenantDetailId].get";
+import { useTenantHeader } from '~~/server/utils/useTenantHeader';
+import { PermissionId } from '~~/server/datasources/static/permissions';
+import { Response } from '~~/glue/api/tenants/[tenantDetailId].get';
 
 export default defineEventHandler<Response>(async (event) => {
   const guard = useGuard(useAuthorizationHeader(event));
@@ -25,8 +25,8 @@ export default defineEventHandler<Response>(async (event) => {
       name: true,
     },
     where: {
-      id: event.context.params.tenantDetailId
-    }
+      id: event.context.params.tenantDetailId,
+    },
   });
 
   if (!tenant) {

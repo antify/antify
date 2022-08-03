@@ -1,13 +1,14 @@
 import prisma from "~~/server/datasources/core/client";
-import { useGuard } from "~~/composables/useGuard";
-import { createForbiddenError, createNotFoundError } from '~~/server/errors';
+import { useGuard } from '~~/composables/useGuard';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
+import { Response } from '~~/glue/api/admin/[tenantId]/roles/[roleId].get';
+import { HttpNotFoundError, HttpForbiddenError } from '../../errors';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler<Response>(async (event) => {
   const guard = useGuard(useAuthorizationHeader(event));
 
   if (!guard.isUserLoggedIn) {
-    return createForbiddenError();
+    throw new HttpForbiddenError();
   }
 
   // TODO:: check permission
@@ -19,22 +20,25 @@ export default defineEventHandler(async (event) => {
       isAdmin: true,
       permissions: {
         select: {
-          permissionId: true
-        }
-      }
+          permissionId: true,
+        },
+      },
     },
     where: {
-      id: event.context.params.roleId
-    }
+      id: event.context.params.roleId,
+    },
   });
 
   if (!role) {
-    return createNotFoundError();
+    throw new HttpNotFoundError();
   }
 
   return {
-    ...role,
-    permissions: role.permissions
-      .map(permission => permission.permissionId)
+    default: {
+      ...role,
+      permissions: role.permissions.map(
+        (permission) => permission.permissionId
+      ),
+    },
   };
 });

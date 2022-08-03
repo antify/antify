@@ -15,7 +15,8 @@ const { $toaster } = useNuxtApp();
 const route = useRoute();
 
 const errors = ref([]);
-const loading = ref<Boolean>(false);
+const loading = ref<Boolean>(true);
+const saving = ref<Boolean>(false);
 const validator = ref(baseValidator);
 const search = ref('');
 const tabs = ref<AntTabsType[]>([
@@ -26,22 +27,31 @@ const tabs = ref<AntTabsType[]>([
   },
 ]);
 
-const { data } = await useFetch<GetResponse | PutResponse>(
-  `/api/tenants/${route.params.tenantDetailId}`,
-  {
+const tenant = ref<GetResponse>({ default: {} });
+let refresh: Function;
+
+onMounted(async () => {
+  const { data, refresh: tenantRefresh } = await useFetch<
+    GetResponse | PutResponse
+  >(`/api/tenants/${route.params.tenantDetailId}`, {
     ...useDefaultFetchOpts(),
     key: `/api/tenants/${route.params.tenantDetailId}`,
-  }
-);
+  });
+
+  refresh = tenantRefresh;
+
+  tenant.value = data.value as GetResponse;
+  loading.value = false;
+});
 
 async function onSubmit() {
-  loading.value = true;
+  saving.value = true;
   errors.value = [];
 
-  validator.value.validate(data.value.default, 1);
+  validator.value.validate(tenant.value.default, 1);
 
   if (validator.value.hasErrors()) {
-    loading.value = false;
+    saving.value = false;
     return;
   }
 
@@ -51,20 +61,20 @@ async function onSubmit() {
       ...useDefaultFetchOpts(),
       ...{
         method: 'PUT',
-        body: data.value.default,
+        body: tenant.value.default,
       },
     }
   );
-  loading.value = false;
 
-  if (response.value.default) {
-    data.value = response.value;
-    $toaster.toastUpdated();
-  }
+  saving.value = false;
 
   if (response.value.badRequest) {
     $toaster.toastError(response.value.badRequest.errors.join('\n'));
+    return;
   }
+
+  await refresh();
+  $toaster.toastUpdated();
 }
 </script>
 
@@ -94,11 +104,13 @@ async function onSubmit() {
       >
         <div data-cy="name">
           <AntInput
-            v-model:value="data.default.name"
+            v-model:value="tenant.default.name"
             label="Bezeichnung"
             autofocus
             :validator="(val: string) => validator.validateProperty('name', val, 1)"
             :errors="validator.errorMap['name']"
+            :loading="loading"
+            :disabled="saving"
           >
             <template #errorList="{ errors }">
               <div
@@ -131,6 +143,7 @@ async function onSubmit() {
         type="submit"
         data-cy="submit"
         form="edit-tenant-form"
+        :disabled="saving || loading"
       >
         Speichern
       </AntButton>

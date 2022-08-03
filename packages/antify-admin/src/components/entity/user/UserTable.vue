@@ -1,4 +1,7 @@
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
@@ -49,10 +52,13 @@ if (!props.singleCol) {
 </script>
 
 <template>
-  <AntTable :headers="tableHeaders" :data="_users">
+  <AntTable
+    :headers="tableHeaders"
+    :data="_users"
+  >
     <template #cellContent="{ elem }">
       <TenantLink
-        class="w-full"
+        class="w-full block"
         :to="{
           name: 'admin-tenantId-users-userId',
           params: { userId: elem.id },

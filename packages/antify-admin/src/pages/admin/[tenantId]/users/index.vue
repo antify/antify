@@ -6,6 +6,7 @@ import { AntSelectOption } from '@antify/antify-ui';
 import { ref } from 'vue';
 import UserTable from '~~/components/entity/user/UserTable.vue';
 import { validator as _inviteValidator } from '~~/glue/api/users/invite_user.post';
+import { Response as RolesResponse } from '~~/glue/api/admin/[tenantId]/roles/roles.get';
 
 const route = useRoute();
 const router = useRouter();
@@ -17,13 +18,13 @@ const inviteUserActive = ref(false);
 const inviteEmail = ref('');
 const inviteAs = ref('');
 
-const { data: roles } = await useFetch(
+const { data: roles } = await useFetch<RolesResponse>(
   '/api/roles/roles',
   useDefaultFetchOpts()
 );
 
 const options = computed<AntSelectOption[]>(() => {
-  return (roles.value as { id: string; name: string }[]).map((role) => ({
+  return roles.value.default.map((role) => ({
     label: role.name,
     value: role.id,
   }));

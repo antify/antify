@@ -1,77 +1,102 @@
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { Checkbox } from '@antify/antify-ui/dist/types/Checkbox.type';
+import { Default as RoleDefault } from '~~/glue/api/admin/[tenantId]/roles/[roleId].get';
+import { permissions } from '../../../server/datasources/static/permissions';
 
-type Role = {
-  id: string;
-  name: string;
-  isAdmin: boolean;
-  permissions: string[];
-};
 type Permission = {
   id: string;
   name: string;
 };
 
 const { $toaster } = useNuxtApp();
-const { role, permissions } = defineProps<{
-  role: Role;
+const props = defineProps<{
+  role: RoleDefault;
   permissions: Permission[];
+  loading?: boolean;
 }>();
-const onSubmit = () => (role.id ? onUpdate() : onCreate());
-const onUpdate = async () => {
-  const { data: response } = await useFetch(`/api/roles/${role.id}`, {
+
+const saving = ref(false);
+const allPermissions = ref([]);
+
+const checkboxes = computed<Checkbox[]>(() => {
+  return (
+    props.permissions?.map((permission) => {
+      console.log('Perm', permission);
+      allPermissions.value.push(permission.id);
+
+      return {
+        label: permission.name,
+        value: permission.id,
+      };
+    }) || []
+  );
+});
+
+function onSubmit() {
+  return props.role.id ? onUpdate() : onCreate();
+}
+
+async function onUpdate() {
+  saving.value = true;
+
+  await useFetch(`/api/roles/${props.role.id}`, {
     ...useDefaultFetchOpts(),
     ...{
       method: 'PUT',
-      body: role,
+      body: props.role,
     },
   });
 
   // TODO:: override role with response data
   $toaster.toastUpdated();
-};
-const onCreate = async () => {
-  const { data: response } = await useFetch(`/api/roles/roles`, {
+  saving.value = false;
+}
+
+async function onCreate() {
+  saving.value = true;
+
+  await useFetch(`/api/roles/roles`, {
     ...useDefaultFetchOpts(),
     ...{
       method: 'POST',
-      body: role,
+      body: props.role,
     },
   });
 
-  // TODO:: override role with response data
+  // TODO:: go to edit page
   $toaster.toastCreated();
-};
-
-const allPermissions = ref([]);
-const checkboxes = computed<Checkbox[]>(() => {
-  return permissions.map((permission) => {
-    allPermissions.value.push(permission.id);
-    return {
-      label: permission.name,
-      value: permission.id,
-    };
-  });
-});
+  saving.value = false;
+}
 </script>
 
 <template>
   <AntForm @submit.prevent="onSubmit">
-    <AntInput v-model:value="role.name" :label="'Rollen Bezeichnung'" />
+    <AntInput
+      v-model:value="(role as RoleDefault).name"
+      :label="'Rollen Bezeichnung'"
+      :loading="loading"
+      :disabled="saving"
+    />
 
     <AntCheckboxWidget
-      v-if="role.isAdmin"
+      v-if="(role as RoleDefault).isAdmin"
       label="Rechte dieser Rolle"
       v-model:value="allPermissions"
       :checkboxes="checkboxes"
       disabled="true"
+      :loading="loading"
     />
 
     <AntCheckboxWidget
       v-else
       label="Rechte dieser Rolle"
-      v-model:value="role.permissions"
+      v-model:value="(role as RoleDefault).permissions"
       :checkboxes="checkboxes"
+      :loading="loading"
+      :disabled="saving"
     />
   </AntForm>
 </template>

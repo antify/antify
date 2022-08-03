@@ -1,6 +1,6 @@
 export type Response = {
-    default: {
-        id: string
-        name: string
-    }
-}
+  default: {
+    id?: string;
+    name?: string;
+  };
+};

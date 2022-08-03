@@ -10,20 +10,14 @@ import {
 } from '~~/glue/api/users/[userId].put';
 import UserTable from '~~/components/entity/user/UserTable.vue';
 import { AntTabsType } from '@antify/antify-ui';
-
-const { data: user, refresh } = await useFetch<GetResponse | PutResponse>(
-  `/api/users/${useRoute().params.userId}`,
-  useDefaultFetchOpts()
-);
-const { data: roles } = await useFetch(
-  '/api/roles/roles',
-  useDefaultFetchOpts()
-);
+import { Response as RoleResponse } from '~~/glue/api/admin/[tenantId]/roles/roles.get';
 
 const { $toaster } = useNuxtApp();
+
 const errors = ref([]);
 const search = ref('');
-const loading = ref<Boolean>(false);
+const loading = ref<Boolean>(true);
+const saving = ref<Boolean>(false);
 const validator = ref(baseValidator);
 const tabs = ref<AntTabsType[]>([
   {
@@ -32,29 +26,45 @@ const tabs = ref<AntTabsType[]>([
     to: '',
   },
 ]);
+const user = ref<GetResponse>({ default: {} });
+const roles = ref<RoleResponse>({ default: [] });
 
 const roleOptions = computed(() => {
   return (
-    roles.value as {
-      permissions: string[];
-      name: string;
-      id: string;
-      isAdmin: boolean;
-    }[]
-  ).map((role) => ({
-    value: role.id,
-    label: role.name,
-  }));
+    roles.value.default.map((role) => ({
+      value: role.id,
+      label: role.name,
+    })) || []
+  );
+});
+
+let refresh: Function;
+
+onMounted(async () => {
+  const { data: userData, refresh: userRefresh } = await useFetch<
+    GetResponse | PutResponse
+  >(`/api/users/${useRoute().params.userId}`, useDefaultFetchOpts());
+
+  user.value = userData.value as GetResponse;
+  refresh = userRefresh;
+
+  const { data: rolesData } = await useFetch<RoleResponse>(
+    '/api/roles/roles',
+    useDefaultFetchOpts()
+  );
+
+  roles.value = rolesData.value;
+  loading.value = false;
 });
 
 async function onSubmit() {
-  loading.value = true;
+  saving.value = true;
   errors.value = [];
 
   validator.value.validate(user.value.default, 1);
 
   if (validator.value.hasErrors()) {
-    loading.value = false;
+    saving.value = false;
 
     return;
   }
@@ -66,37 +76,38 @@ async function onSubmit() {
       body: user.value.default,
     },
   });
-  loading.value = false;
+
+  saving.value = false;
 
   $toaster.toastUpdated();
   refresh();
 }
 
 async function banUser() {
-  const { data: response } = await useFetch<PutResponse>(
-    `/api/users/${useRoute().params.userId}/ban`,
-    {
-      ...useDefaultFetchOpts(),
-      ...{
-        method: 'PUT',
-      },
-    }
-  );
+  saving.value = true;
+  await useFetch<PutResponse>(`/api/users/${useRoute().params.userId}/ban`, {
+    ...useDefaultFetchOpts(),
+    ...{
+      method: 'PUT',
+    },
+  });
+
+  saving.value = false;
 
   $toaster.toastUpdated();
   refresh();
 }
 
 async function unbanUser() {
-  const { data: response } = await useFetch<PutResponse>(
-    `/api/users/${useRoute().params.userId}/unban`,
-    {
-      ...useDefaultFetchOpts(),
-      ...{
-        method: 'PUT',
-      },
-    }
-  );
+  saving.value = true;
+  await useFetch<PutResponse>(`/api/users/${useRoute().params.userId}/unban`, {
+    ...useDefaultFetchOpts(),
+    ...{
+      method: 'PUT',
+    },
+  });
+
+  saving.value = false;
 
   $toaster.toastUpdated();
   refresh();
@@ -113,6 +124,7 @@ async function unbanUser() {
         label="Sperren"
         @click="banUser"
       />
+
       <DeleteButton
         v-if="!user.default.isAdmin && user.default.isBanned"
         label="Sperre aufheben"
@@ -150,6 +162,7 @@ async function unbanUser() {
             label="Name"
             :errors="validator.errorMap['name']"
             :validator="(val: string) => validator.validateProperty('name', val, 1)"
+            :loading="loading"
             disabled
           >
             <template #errorList="{ errors }">
@@ -170,6 +183,7 @@ async function unbanUser() {
             label="E-Mail"
             :errors="validator.errorMap['email']"
             :validator="(val: string) => validator.validateProperty('email', val, 1)"
+            :loading="loading"
             disabled
           >
             <template #errorList="{ errors }">
@@ -192,6 +206,8 @@ async function unbanUser() {
             @change="
               () => validator.validateProperty('roleId', user.default.roleId, 1)
             "
+            :loading="loading"
+            :disabled="saving"
           />
 
           <div
@@ -221,6 +237,7 @@ async function unbanUser() {
         data-cy="submit"
         :primary="true"
         form="user-create-form"
+        :disabled="saving"
       >
         Speichern
       </AntButton>

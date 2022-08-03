@@ -18,7 +18,8 @@ const router = useRouter();
 const search = ref(route.query?.search || '');
 const { $toaster } = useNuxtApp();
 const errors = ref([]);
-const loading = ref<Boolean>(false);
+const loading = ref<Boolean>(true);
+const saving = ref<Boolean>(false);
 const validator = ref(baseValidator);
 const tabs = ref<AntTabsType[]>([
   {
@@ -27,71 +28,6 @@ const tabs = ref<AntTabsType[]>([
     to: '',
   },
 ]);
-
-const { data } = await useFetch<GetResponse | PutResponse>(
-  `/api/admin/:tenantId/media/${route.params.mediaId}`,
-  useDefaultFetchOpts()
-);
-
-const { data: mediaFiles, refresh: reloadAllMedia } = await useFetch<Response>(
-  () => `/api/admin/:tenantId/media?search=${route.query.search || ''}`,
-  useDefaultFetchOpts()
-);
-
-const onSubmit = async () => {
-  loading.value = true;
-  errors.value = [];
-
-  validator.value.validate(data.value.default);
-
-  if (validator.value.hasErrors()) {
-    loading.value = false;
-    return;
-  }
-
-  const { data: response } = await useFetch<PutResponse>(
-    `/api/admin/:tenantId/media/${useRoute().params.mediaId}`,
-    {
-      ...useDefaultFetchOpts(),
-      ...{
-        method: 'PUT',
-        body: data.value.default,
-      },
-    }
-  );
-  loading.value = false;
-
-  if (response.value.default) {
-    data.value = response.value;
-    $toaster.toastUpdated();
-  }
-  reloadAllMedia();
-
-  if (response.value.badRequest || response.value.notFound) {
-    $toaster.toastError(
-      (
-        response.value?.badRequest.errors || response.value?.notFound.errors
-      ).join('\n')
-    );
-  } else {
-    // TODO:: toast success
-  }
-};
-
-const onDeleteMedia = async (mediaId: string) => {
-  // TODO:: "you sure?" Dialog
-
-  await useFetch(`/api/admin/:tenantId/media/${mediaId}`, {
-    ...useDefaultFetchOpts(),
-    method: 'DELETE',
-  });
-
-  $toaster.toastCreated();
-
-  reloadAllMedia();
-
-  router.push({ name: 'admin-tenantId-media', query: route.query });
-};
 
 const _search = computed({
   get() {
@@ -107,6 +43,82 @@ const _search = computed({
     });
   },
 });
+
+const mediaFiles = ref<Response>({ default: [] });
+const media = ref<GetResponse>({ default: {} });
+let reloadAllMedia: Function;
+
+onMounted(async () => {
+  const { data: mediaFilesData, refresh } = await useFetch<Response>(
+    () => `/api/admin/:tenantId/media?search=${route.query.search || ''}`,
+    useDefaultFetchOpts()
+  );
+  reloadAllMedia = refresh;
+  mediaFiles.value = mediaFilesData.value;
+
+  const { data } = await useFetch<GetResponse | PutResponse>(
+    `/api/admin/:tenantId/media/${route.params.mediaId}`,
+    useDefaultFetchOpts()
+  );
+
+  if (data.value.notFound) {
+    //TODO:: Go to 404 page
+    return;
+  }
+
+  media.value = data.value as GetResponse;
+  loading.value = false;
+});
+
+async function onSubmit() {
+  saving.value = true;
+  errors.value = [];
+
+  validator.value.validate(media.value.default);
+
+  if (validator.value.hasErrors()) {
+    saving.value = false;
+    return;
+  }
+
+  const { data: response } = await useFetch<PutResponse>(
+    `/api/admin/:tenantId/media/${useRoute().params.mediaId}`,
+    {
+      ...useDefaultFetchOpts(),
+      ...{
+        method: 'PUT',
+        body: media.value.default,
+      },
+    }
+  );
+  saving.value = false;
+
+  if (response.value.badRequest || response.value.notFound) {
+    $toaster.toastError(
+      (
+        response.value?.badRequest.errors || response.value?.notFound.errors
+      ).join('\n')
+    );
+  } else {
+    $toaster.toastUpdated();
+    reloadAllMedia();
+  }
+}
+
+async function onDeleteMedia(mediaId: string) {
+  // TODO:: "you sure?" Dialog
+
+  await useFetch(`/api/admin/:tenantId/media/${mediaId}`, {
+    ...useDefaultFetchOpts(),
+    method: 'DELETE',
+  });
+
+  $toaster.toastCreated();
+
+  reloadAllMedia();
+
+  router.push({ name: 'admin-tenantId-media', query: route.query });
+}
 </script>
 
 <template>
@@ -116,7 +128,7 @@ const _search = computed({
 
       <DeleteButton
         label="Löschen"
-        @click="() => onDeleteMedia(data.default.id)"
+        @click="() => onDeleteMedia(media.default.id)"
       />
     </template>
 
@@ -135,24 +147,26 @@ const _search = computed({
       </ul>
 
       <AntForm
-        v-if="data.default"
+        v-if="media.default"
         @submit.prevent="onSubmit"
         class="flex flex-col bg-white"
         id="update-media-form"
       >
         <img
-          v-if="data.default.url"
+          v-if="media.default.url"
           class="max-h-96 object-contain"
-          :alt="data.default.title"
-          :src="data.default.url"
+          :alt="media.default.title"
+          :src="media.default.url"
         />
 
         <div data-cy="title">
           <AntInput
-            v-model:value="data.default.title"
+            v-model:value="media.default.title"
             label="Name"
             :errors="validator.errorMap['title']"
             :validator="(val: string) => validator.validateProperty('title', val, 1)"
+            :loading="loading"
+            :disabled="saving"
           >
             <template #errorList="{ errors }">
               <div
@@ -185,6 +199,7 @@ const _search = computed({
         data-cy="submit"
         :primary="true"
         form="update-media-form"
+        :disabled="saving || loading"
       >
         Speichern
       </AntButton>
@@ -200,7 +215,7 @@ const _search = computed({
     <template #asideBody>
       <MediaTable
         :media-files="mediaFiles.default"
-        @reload-media="reloadAllMedia"
+        @reload-media="() => reloadAllMedia()"
       />
     </template>
   </AntDualContent>

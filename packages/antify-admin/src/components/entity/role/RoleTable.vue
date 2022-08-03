@@ -1,17 +1,21 @@
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
+import { Response } from '~~/glue/api/admin/[tenantId]/roles/roles.get';
 
 const route = useRoute();
 
-const { data: roles } = await useFetch(
+const { data: roles } = await useFetch<Response>(
   '/api/roles/roles',
   useDefaultFetchOpts()
 );
 
 const _roles = computed(() => {
-  return (roles.value as Array<any>).map((role) => {
+  return roles.value.default.map((role) => {
     if (route.params?.roleId === role.id) {
       return {
         ...role,
@@ -36,7 +40,10 @@ const tableHeaders = ref<Array<TableHeader>>([
 </script>
 
 <template>
-  <AntTable :headers="tableHeaders" :data="_roles">
+  <AntTable
+    :headers="tableHeaders"
+    :data="_roles"
+  >
     <template #cellContent="{ elem }">
       <TenantLink
         :to="{

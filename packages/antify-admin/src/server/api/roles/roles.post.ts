@@ -7,17 +7,17 @@ import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 
 export type RoleResponse = {
-  id: string,
-  name: string,
-  isAdmin: boolean,
-  permissions: string[]
-}
+  id: string;
+  name: string;
+  isAdmin: boolean;
+  permissions: string[];
+};
 export type RoleInput = {
-  name: string,
-  permissions: string[]
-}
+  name: string;
+  permissions: string[];
+};
 
-export const validate = (data: Record<string, string>): RoleInput => {
+export const validate = (data: RoleInput): RoleInput => {
   if (!data.name) {
     throw new HttpBadRequestError('Missing required name');
   }
@@ -26,8 +26,8 @@ export const validate = (data: Record<string, string>): RoleInput => {
     throw new HttpBadRequestError('Missing required permissions');
   }
 
-  return data as RoleInput;
-}
+  return data;
+};
 
 export default defineEventHandler<RoleResponse>(async (event) => {
   tenantContextMiddleware(event);
@@ -48,9 +48,9 @@ export default defineEventHandler<RoleResponse>(async (event) => {
       isAdmin: true,
       permissions: {
         select: {
-          permissionId: true
-        }
-      }
+          permissionId: true,
+        },
+      },
     },
     data: {
       name: requestData.name,
@@ -58,16 +58,17 @@ export default defineEventHandler<RoleResponse>(async (event) => {
       permissions: {
         create: requestData.permissions.map((permissionId: string) => {
           return {
-            permissionId: permissionId
-          }
-        })
-      }
-    }
+            permissionId: permissionId,
+          };
+        }),
+      },
+    },
   });
 
   return {
     ...createdRole,
-    permissions: createdRole.permissions
-      .map(permission => permission.permissionId)
+    permissions: createdRole.permissions.map(
+      (permission) => permission.permissionId
+    ),
   };
 });

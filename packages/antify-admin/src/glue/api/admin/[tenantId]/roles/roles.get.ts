@@ -1,5 +1,5 @@
 export type Response = {
-  default?: Default;
+  default?: Default[];
 };
 
 export type Default = {
