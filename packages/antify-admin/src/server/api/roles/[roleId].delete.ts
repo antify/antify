@@ -30,18 +30,17 @@ export default defineEventHandler(async (event): Promise<Response> => {
 
   if (access && access.length > 0) {
     return {
-      badRequest: {
-        message: 'ROLE_STILL_IN_USE',
-        info: access,
-      },
+      errors: [
+        'Eine Rolle kann nur gelöscht werden wenn sie keinem Benutzer zugewiesen ist.',
+      ],
     };
   }
 
-    await prisma.role.delete({
-      where: {
-        id: event.context.params.roleId,
-      },
-    });
+  await prisma.role.delete({
+    where: {
+      id: event.context.params.roleId,
+    },
+  });
 
   return {};
 });

@@ -40,14 +40,10 @@ async function onDelete() {
     }
   );
 
-  if (
-    data.value &&
-    data.value.badRequest &&
-    data.value.badRequest.message === 'ROLE_STILL_IN_USE'
-  ) {
-    $toaster.toastError(
-      'Eine Rolle kann nur gelöscht werden wenn sie keinem Benutzer zugewiesen ist.'
-    );
+  if (data.value && data.value.errors) {
+    data.value.errors.forEach((error) => {
+      $toaster.toastError(error);
+    });
 
     deleteDialogActive.value = false;
 
