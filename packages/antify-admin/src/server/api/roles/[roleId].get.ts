@@ -33,10 +33,6 @@ export default defineEventHandler<Response>(async (event) => {
     throw new HttpNotFoundError();
   }
 
-  await new Promise((resolve) => {
-    setTimeout(() => resolve(true), 2000);
-  });
-
   return {
     default: {
       ...role,

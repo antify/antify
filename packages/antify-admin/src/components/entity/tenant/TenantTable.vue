@@ -1,4 +1,7 @@
-<script lang="ts" setup>
+<script
+  lang="ts"
+  setup
+>
 import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
@@ -88,6 +91,7 @@ function next() {
         </template>
       </AntTable>
     </div>
+
     <AntPagination>
       <template #position
         >Seite {{ page }} von {{ data.default.pagination.count }}</template
