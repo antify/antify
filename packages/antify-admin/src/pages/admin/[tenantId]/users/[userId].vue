@@ -127,7 +127,12 @@ async function unbanUser() {
           list-style-position: inside;
         "
       >
-        <li v-for="error in errors">{{ error }}</li>
+        <li
+          v-for="(error, index) in errors"
+          :key="`user-error-${index}`"
+        >
+          {{ error }}
+        </li>
       </ul>
 
       <AntForm

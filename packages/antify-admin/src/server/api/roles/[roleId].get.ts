@@ -1,4 +1,4 @@
-import prisma from '~~/server/datasources/auth/client';
+import prisma from "~~/server/datasources/core/client";
 import { useGuard } from '~~/composables/useGuard';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { Response } from '~~/glue/api/admin/[tenantId]/roles/[roleId].get';

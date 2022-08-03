@@ -11,11 +11,6 @@ import TenantLink from '~~/components/fields/TenantLink.vue';
 import TenantTable from '~~/components/entity/tenant/TenantTable.vue';
 import { AntTabsType } from '@antify/antify-ui';
 
-// if (!data.value?.default) {
-//   // TODO:: Handle it
-//   throw throwError('HANDLE ME');
-// }
-
 const { $toaster } = useNuxtApp();
 const route = useRoute();
 

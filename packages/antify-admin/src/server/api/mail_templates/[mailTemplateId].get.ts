@@ -1,8 +1,6 @@
-import prisma from '~~/server/datasources/db/client';
+import prisma from '~~/server/datasources/tenant/client';
 import { useGuard } from '~~/composables/useGuard';
-import {
-  HttpForbiddenError,
-} from '~~/server/errors';
+import { HttpForbiddenError } from '~~/server/errors';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { PermissionId } from '~~/server/datasources/static/permissions';

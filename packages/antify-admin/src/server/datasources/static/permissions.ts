@@ -1,5 +1,6 @@
 export enum PermissionId {
   CAN_CREATE_USER = 'CAN_CREATE_USER',
+  CAN_INVITE_USER = 'CAN_INVITE_USER',
   CAN_READ_USER = 'CAN_READ_USER',
   CAN_UPDATE_USER = 'CAN_UPDATE_USER',
   CAN_DELETE_USER = 'CAN_DELETE_USER',
@@ -21,13 +22,17 @@ export enum PermissionId {
   CAN_EDIT_MEDIA = 'CAN_EDIT_MEDIA',
   CAN_DELETE_MEDIA = 'CAN_DELETE_MEDIA',
 
-  CAN_READ_TENANT = 'CAN_READ_TENANT'
+  CAN_READ_TENANT = 'CAN_READ_TENANT',
 }
 
 export const permissions = [
   {
     id: PermissionId.CAN_CREATE_USER,
     name: 'Kann Benutzer erstellen',
+  },
+  {
+    id: PermissionId.CAN_INVITE_USER,
+    name: 'Kann neuen Benutzer einladen',
   },
   {
     id: PermissionId.CAN_READ_USER,
@@ -80,5 +85,9 @@ export const permissions = [
   {
     id: PermissionId.CAN_DELETE_MEDIA,
     name: 'Kann Dateien löschen',
+  },
+  {
+    id: PermissionId.CAN_READ_TENANT,
+    name: 'Kann Mandanten sehen',
   },
 ];

@@ -66,9 +66,8 @@ async function onSubmit() {
     }
   );
 
-  if (response.value.default) {
-    $toaster.toastUpdated();
-  }
+  refresh();
+  $toaster.toastUpdated();
 
   if (response.value.badRequest) {
     $toaster.toastError(response.value.badRequest.errors.join('\n'));
