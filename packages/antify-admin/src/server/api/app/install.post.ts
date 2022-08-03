@@ -1,7 +1,7 @@
 import { appInstallPostValidator, AppInstallPostInput, AppInstallPostResponse } from '~~/glue/api/app/install.post';
 import { handleCreateToken, hashPassword } from '~~/server/utils/tokenUtil';
 import { apiAppInstallService } from './install.service';
-import prisma from "~~/server/datasources/auth/client";
+import prisma from "~~/server/datasources/core/client";
 
 export default defineEventHandler<AppInstallPostResponse>(async (event) => {
     const requireInstall = await apiAppInstallService.requireInstall();

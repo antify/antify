@@ -6,6 +6,7 @@ export const useMailer = () => {
     host: smtpHost,
     port: smtpPort,
     secure: false, // true for 465, false for other ports
+    auth: {},
   };
 
   if (smtpUser && smtpPassword) {
@@ -15,5 +16,5 @@ export const useMailer = () => {
     };
   }
 
-  return nodemailer.createTransport(options);
+  return nodemailer.createTransport(options as unknown);
 };

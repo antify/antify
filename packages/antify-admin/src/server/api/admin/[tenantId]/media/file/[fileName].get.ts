@@ -1,5 +1,5 @@
 import { sendStream } from 'h3';
-import prisma from '~~/server/datasources/db/client';
+import prisma from '~~/server/datasources/tenant/client';
 import { useGuard } from '~~/composables/useGuard';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';

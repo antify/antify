@@ -1,8 +1,11 @@
 import jwt from 'jsonwebtoken';
 import { CompatibilityEvent, setCookie } from 'h3';
 import { TOKEN_COOKIE_KEY, CustomToken } from '~~/composables/useGuard';
-import prisma from '~~/server/datasources/auth/client';
+import prisma from '~~/server/datasources/core/client';
 import crypto from 'crypto';
+import { InviteToken } from '../../composables/useGuard';
+import jwtDecode from 'jwt-decode';
+import { User } from '../../glue/api/global/me.get';
 
 export const hashPassword = async (password: string): Promise<string> => {
   const config = useRuntimeConfig();
@@ -27,6 +30,12 @@ export const tokenValid = async (token: string): Promise<boolean> => {
     jwt.verify(token, JWT_SECRET, function (error) {
       resolve(!!!error);
     });
+  });
+};
+
+export const tokenContent = async (token: string): Promise<any> => {
+  return new Promise((resolve) => {
+    resolve(jwtDecode(token));
   });
 };
 
@@ -93,6 +102,22 @@ export const handleCreateToken = async (
 
   setCookie(event, TOKEN_COOKIE_KEY, token, {
     maxAge: TOKEN_MAX_AGE,
+  });
+
+  return token;
+};
+
+export const createInviteToken = async (user: User, tenantId: string) => {
+  const inviteToken: InviteToken = {
+    id: user.id,
+    tenantId,
+  };
+
+  const JWT_SECRET = 'secret';
+  const JWT_EXPIRATION = '4h';
+
+  const token = jwt.sign(inviteToken, JWT_SECRET, {
+    expiresIn: JWT_EXPIRATION,
   });
 
   return token;
