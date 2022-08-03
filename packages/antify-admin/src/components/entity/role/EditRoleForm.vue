@@ -75,7 +75,7 @@ async function onCreate() {
 <template>
   <AntForm @submit.prevent="onSubmit">
     <AntInput
-      v-model:value="(role as RoleDefault).name"
+      v-model:value="role.name"
       :label="'Rollen Bezeichnung'"
       :loading="loading"
       :disabled="saving"

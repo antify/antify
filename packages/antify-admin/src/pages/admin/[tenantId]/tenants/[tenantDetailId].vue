@@ -19,6 +19,7 @@ const loading = ref<Boolean>(true);
 const saving = ref<Boolean>(false);
 const validator = ref(baseValidator);
 const search = ref('');
+const deleteDialogActive = ref(false);
 const tabs = ref<AntTabsType[]>([
   {
     name: 'Stammdaten',
@@ -76,86 +77,138 @@ async function onSubmit() {
   await refresh();
   $toaster.toastUpdated();
 }
+
+async function deleteTenant() {
+  await useFetch<PutResponse>(
+    `/api/tenants/${useRoute().params.tenantDetailId}`,
+    {
+      ...useDefaultFetchOpts(),
+      ...{
+        method: 'DELETE',
+      },
+    }
+  );
+
+  deleteDialogActive.value = false;
+  $toaster.toastDeleted();
+
+  await navigateTo({
+    name: 'admin-tenantId-tenants',
+    params: {
+      tenantId: route.params.tenantId,
+    },
+  });
+}
 </script>
 
 <template>
-  <AntDualContent>
-    <template #mainHead>
-      <AntTabs :tabs="tabs" />
-    </template>
+  <div>
+    <AntDualContent>
+      <template #mainHead>
+        <AntTabs :tabs="tabs" />
 
-    <template #mainBody>
-      <ul
-        data-cy="response-errors"
-        v-if="errors.length"
-        style="
-          background: #dc2626;
-          color: #fff;
-          padding: 20px;
-          list-style-position: inside;
-        "
-      >
-        <li v-for="error in errors">{{ error }}</li>
-      </ul>
+        <DeleteButton
+          v-if="tenant.default.id !== route.params.tenantId"
+          label="Löschen"
+          @click="deleteDialogActive = true"
+        />
+      </template>
 
-      <AntForm
-        @submit.prevent="onSubmit"
-        id="edit-tenant-form"
-      >
-        <div data-cy="name">
-          <AntInput
-            v-model:value="tenant.default.name"
-            label="Bezeichnung"
-            autofocus
-            :validator="(val: string) => validator.validateProperty('name', val, 1)"
-            :errors="validator.errorMap['name']"
-            :loading="loading"
-            :disabled="saving"
-          >
-            <template #errorList="{ errors }">
-              <div
-                data-cy="error"
-                v-for="message in errors"
-                class="text-red-600"
-              >
-                {{ message }}
-              </div>
-            </template>
-          </AntInput>
-        </div>
-      </AntForm>
-    </template>
-
-    <template #mainFooter>
-      <AntButton>
-        <TenantLink
-          :to="{
-            name: 'admin-tenantId-tenants',
-            query: route.query,
-          }"
+      <template #mainBody>
+        <ul
+          data-cy="response-errors"
+          v-if="errors.length"
+          style="
+            background: #dc2626;
+            color: #fff;
+            padding: 20px;
+            list-style-position: inside;
+          "
         >
-          Zurück
-        </TenantLink>
-      </AntButton>
+          <li v-for="error in errors">{{ error }}</li>
+        </ul>
 
-      <AntButton
-        :primary="true"
-        type="submit"
-        data-cy="submit"
-        form="edit-tenant-form"
-        :disabled="saving || loading"
-      >
-        Speichern
-      </AntButton>
-    </template>
+        <AntForm
+          @submit.prevent="onSubmit"
+          id="edit-tenant-form"
+        >
+          <div data-cy="name">
+            <AntInput
+              v-model:value="tenant.default.name"
+              label="Bezeichnung"
+              autofocus
+              :validator="(val: string) => validator.validateProperty('name', val, 1)"
+              :errors="validator.errorMap['name']"
+            >
+              <template #errorList="{ errors }">
+                <div
+                  data-cy="error"
+                  v-for="message in errors"
+                  class="text-red-600"
+                >
+                  {{ message }}
+                </div>
+              </template>
+            </AntInput>
+          </div>
+        </AntForm>
+      </template>
 
-    <template #asideHead>
-      <AntInput
-        v-model:value="search"
-        placeholder="Suche"
-      />
-    </template>
+      <template #mainFooter>
+        <AntButton>
+          <TenantLink
+            :to="{
+              name: 'admin-tenantId-tenants',
+              query: route.query,
+            }"
+          >
+            Zurück
+          </TenantLink>
+        </AntButton>
 
-    <template #asideBody><TenantTable /></template>
-  </AntDualContent>
+        <AntButton
+          :primary="true"
+          type="submit"
+          data-cy="submit"
+          form="edit-tenant-form"
+          :disabled="saving || loading"
+        >
+          Speichern
+        </AntButton>
+      </template>
+
+      <template #asideHead>
+        <AntInput
+          v-model:value="search"
+          placeholder="Suche"
+        />
+      </template>
+
+      <template #asideBody><TenantTable /></template>
+    </AntDualContent>
+
+    <AntModal
+      v-model:active="deleteDialogActive"
+      title="Mandant löschen"
+    >
+      <div>
+        Sind sie sicher das Sie diesen Mandanten wirklich, sicherlich und
+        unwiederruflich löschen wollen?
+      </div>
+
+      <template #buttons>
+        <AntButton
+          primary
+          @click="deleteDialogActive = false"
+        >
+          Abbrechen
+        </AntButton>
+
+        <DeleteButton
+          label="Löschen"
+          @click="deleteTenant"
+        />
+      </template>
+    </AntModal>
+  </div>
 </template>

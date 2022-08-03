@@ -7,4 +7,5 @@ export type Default = {
   name?: string;
   isAdmin?: boolean;
   permissions?: string[];
+  canDelete: boolean;
 };

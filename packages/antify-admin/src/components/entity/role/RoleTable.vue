@@ -46,6 +46,7 @@ const tableHeaders = ref<Array<TableHeader>>([
   >
     <template #cellContent="{ elem }">
       <TenantLink
+        class="block w-full"
         :to="{
           name: 'admin-tenantId-roles-roleId',
           params: { roleId: elem.id },

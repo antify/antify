@@ -22,14 +22,17 @@ loading.value = false;
 
 const onSelectFile = async (files: File[]) => {
   uploading.value = true;
+
   let formData = new FormData();
 
   for (let i = 0; i < 5; i++) {
-    formData.append(`file-${i}`, files[0]);
-    files.splice(0, 1);
+    if (files.length > 0) {
+      formData.append(`file-${i}`, files[0]);
+      files.splice(0, 1);
+    }
   }
 
-  const result = await useFetch('/api/admin/:tenantId/media', {
+  await useFetch('/api/admin/:tenantId/media', {
     ...useDefaultFetchOpts(),
     method: 'POST',
     body: formData,
