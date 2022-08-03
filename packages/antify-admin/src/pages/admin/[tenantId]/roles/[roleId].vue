@@ -6,11 +6,13 @@ import RoleTable from '~~/components/entity/role/RoleTable.vue';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { AntTabsType } from '@antify/antify-ui';
 import { Response } from '../../../../glue/api/admin/[tenantId]/roles/[roleId].get';
+import { Response as PermissionsResponse } from '~~/glue/api/admin/[tenantId]/roles/permissions.get';
 
 const { $toaster } = useNuxtApp();
 const route = useRoute();
 
 const search = ref('');
+const loading = ref(true);
 const tabs = ref<AntTabsType[]>([
   {
     name: 'Stammdaten',
@@ -18,15 +20,27 @@ const tabs = ref<AntTabsType[]>([
     to: '',
   },
 ]);
+const role = ref<Response>({ default: {} });
+const permissions = ref<PermissionsResponse>({ default: [] });
 
-const { data: role } = await useFetch<Response>(
-  `/api/roles/${route.params.roleId}`,
-  useDefaultFetchOpts()
-);
-const { data: permissions } = await useFetch(
-  '/api/roles/permissions',
-  useDefaultFetchOpts()
-);
+onMounted(async () => {
+  const { data: permissionsData } = await useFetch<PermissionsResponse>(
+    '/api/roles/permissions',
+    useDefaultFetchOpts()
+  );
+
+  permissions.value = permissionsData.value as PermissionsResponse;
+  console.log('loaded', permissions.value);
+
+  const { data: roleData } = await useFetch<Response>(
+    `/api/roles/${route.params.roleId}`,
+    useDefaultFetchOpts()
+  );
+
+  role.value = roleData.value;
+
+  loading.value = false;
+});
 
 async function onDelete() {
   await useFetch(`/api/roles/${route.params.roleId}`, {
@@ -55,8 +69,9 @@ async function onDelete() {
 
     <template #mainBody>
       <EntityRoleEditRoleForm
-        :role="role"
-        :permissions="permissions"
+        :role="role.default"
+        :permissions="permissions.default"
+        :loading="loading"
         id="edit-role-form"
       />
     </template>

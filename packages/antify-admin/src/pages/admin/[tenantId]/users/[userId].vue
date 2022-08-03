@@ -10,20 +10,12 @@ import {
 } from '~~/glue/api/users/[userId].put';
 import UserTable from '~~/components/entity/user/UserTable.vue';
 import { AntTabsType } from '@antify/antify-ui';
-
-const { data: user, refresh } = await useFetch<GetResponse | PutResponse>(
-  `/api/users/${useRoute().params.userId}`,
-  useDefaultFetchOpts()
-);
-const { data: roles } = await useFetch(
-  '/api/roles/roles',
-  useDefaultFetchOpts()
-);
+import { Response as RoleResponse } from '~~/glue/api/admin/[tenantId]/roles/roles.get';
 
 const { $toaster } = useNuxtApp();
 const errors = ref([]);
 const search = ref('');
-const loading = ref<Boolean>(false);
+const loading = ref<Boolean>(true);
 const validator = ref(baseValidator);
 const tabs = ref<AntTabsType[]>([
   {
@@ -34,18 +26,22 @@ const tabs = ref<AntTabsType[]>([
 ]);
 
 const roleOptions = computed(() => {
-  return (
-    roles.value as {
-      permissions: string[];
-      name: string;
-      id: string;
-      isAdmin: boolean;
-    }[]
-  ).map((role) => ({
+  return roles.value.default.map((role) => ({
     value: role.id,
     label: role.name,
   }));
 });
+
+const { data: user, refresh } = await useFetch<GetResponse | PutResponse>(
+  `/api/users/${useRoute().params.userId}`,
+  useDefaultFetchOpts()
+);
+
+const { data: roles } = await useFetch<RoleResponse>(
+  '/api/roles/roles',
+  useDefaultFetchOpts()
+);
+loading.value = false;
 
 async function onSubmit() {
   loading.value = true;

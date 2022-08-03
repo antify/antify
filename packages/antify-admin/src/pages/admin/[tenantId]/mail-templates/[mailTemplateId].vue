@@ -10,15 +10,17 @@ import {
 import TenantLink from '../../../../components/fields/TenantLink.vue';
 import MailTemplatesTable from '~~/components/entity/mail-templates/MailTemplatesTable.vue';
 import { validator as sendTestMailValidator } from '~~/glue/api/mail_templates/[mailTemplateId]/send_test_mail.post';
-import { AntTabsType } from '@antify/antify-ui';
+import { AntTabsType, AntSkeleton } from '@antify/antify-ui';
 
-const { $toaster } = useNuxtApp();
+const { $toaster, hook } = useNuxtApp();
 
 const errors = ref([]);
 const search = ref('');
 const testMail = ref('');
-const loading = ref<boolean>(true);
 const validator = ref(baseValidator);
+const loading = ref(true);
+const saving = ref(false);
+const sendingTestMail = ref(false);
 const sendTestMailValidatorRef = ref(sendTestMailValidator);
 const tabs = ref<AntTabsType[]>([
   {
@@ -27,22 +29,29 @@ const tabs = ref<AntTabsType[]>([
     to: '',
   },
 ]);
+const mailTemplates = ref<GetResponse>({
+  default: {},
+});
 
-const { data } = await useFetch<GetResponse | PutResponse>(
-  `/api/mail_templates/${useRoute().params.mailTemplateId}`,
-  useDefaultFetchOpts()
-);
+onMounted(async () => {
+  const { data, refresh } = await useFetch<GetResponse | PutResponse>(
+    `/api/mail_templates/${useRoute().params.mailTemplateId}`,
+    useDefaultFetchOpts()
+  );
 
-loading.value = false;
+  mailTemplates.value = data.value as GetResponse;
+
+  loading.value = false;
+});
 
 async function onSubmit() {
-  loading.value = true;
+  saving.value = true;
   errors.value = [];
 
-  validator.value.validate(data.value.default, 1);
+  validator.value.validate(mailTemplates.value.default, 1);
 
   if (validator.value.hasErrors()) {
-    loading.value = false;
+    saving.value = false;
     return;
   }
 
@@ -52,26 +61,28 @@ async function onSubmit() {
       ...useDefaultFetchOpts(),
       ...{
         method: 'PUT',
-        body: data.value.default,
+        body: mailTemplates.value.default,
       },
     }
   );
-  loading.value = false;
 
   if (response.value.default) {
-    data.value = response.value;
     $toaster.toastUpdated();
   }
 
   if (response.value.badRequest) {
     $toaster.toastError(response.value.badRequest.errors.join('\n'));
   }
+
+  saving.value = false;
 }
 
 async function onSendTestMail() {
+  sendingTestMail.value = true;
   sendTestMailValidatorRef.value.validate({ testMail: testMail.value }, 1);
 
   if (sendTestMailValidatorRef.value.hasErrors()) {
+    sendingTestMail.value = false;
     return;
   }
 
@@ -87,7 +98,12 @@ async function onSendTestMail() {
   );
 
   $toaster.toastSuccess('E-Mail versendet');
+  sendingTestMail.value = false;
 }
+
+hook('page:start', () => {
+  loading.value = true;
+});
 </script>
 
 <template>
@@ -113,68 +129,25 @@ async function onSendTestMail() {
 
         <AntForm
           @submit.prevent="onSubmit"
+          class="space-y-0"
           id="mail-template-form"
         >
-          <div data-cy="title">
-            <AntInput
-              v-model:value="data.default.title"
-              label="Bezeichnung"
-              :errors="validator.errorMap['title']"
-              :validator="
-                () => validator.validateProperty('title', data.default.title, 1)
-              "
-            >
-              <template #errorList="{ errors }">
-                <div
-                  data-cy="error"
-                  class="text-red-600"
-                  v-for="message in errors"
-                >
-                  {{ message }}
-                </div>
-              </template>
-            </AntInput>
-          </div>
-
-          <div data-cy="content">
-            <AntRichTextEditor
-              v-model:data="data.default.content"
-              label="Inhalt"
-              :errors="validator.errorMap['content']"
-              :validator="(val: string) => validator.validateProperty('content', val, 1)"
-            >
-              <template #errorList="{ errors }">
-                <div
-                  data-cy="error"
-                  v-for="message in errors"
-                >
-                  {{ message }}
-                </div>
-              </template>
-            </AntRichTextEditor>
-          </div>
-        </AntForm>
-
-        <AntForm @submit.prevent="onSendTestMail">
-          <div class="flex space-x-4 items-center">
-            <div
-              data-cy="test-mail"
-              class="grow"
-            >
+          <div class="transition-opacity space-y-4 mt-0">
+            <div data-cy="title">
               <AntInput
-                v-model:value="testMail"
-                label="E-Mail Template testen"
-                :errors="sendTestMailValidatorRef.errorMap['testMail']"
-                description="Mehrere E-Mails mit Komma separiert angeben"
-                placeholder="E-Mail"
+                v-model:value="mailTemplates.default.title"
+                label="Bezeichnung"
+                :errors="validator.errorMap['title']"
                 :validator="
                   () =>
-                    sendTestMailValidatorRef.validateProperty(
-                      'testMail',
-                      testMail,
+                    validator.validateProperty(
+                      'title',
+                      mailTemplates.default.title,
                       1
                     )
                 "
+                :loading="loading"
+                :disabled="saving"
               >
                 <template #errorList="{ errors }">
                   <div
@@ -188,15 +161,74 @@ async function onSendTestMail() {
               </AntInput>
             </div>
 
-            <div>
-              <AntButton
-                :primary="false"
-                type="submit"
-                data-cy="testn"
-                class="mb-2"
+            <div
+              data-cy="content"
+              v-if="!loading"
+            >
+              <AntRichTextEditor
+                v-model:data="mailTemplates.default.content"
+                label="Inhalt"
+                :errors="validator.errorMap['content']"
+                :validator="(val: string) => validator.validateProperty('content', val, 1)"
+                :loading="loading"
+                :disabled="saving"
               >
-                Senden
-              </AntButton>
+                <template #errorList="{ errors }">
+                  <div
+                    data-cy="error"
+                    v-for="message in errors"
+                  >
+                    {{ message }}
+                  </div>
+                </template>
+              </AntRichTextEditor>
+            </div>
+          </div>
+        </AntForm>
+
+        <AntForm @submit.prevent="onSendTestMail">
+          <div class="flex items-center transition-opacity">
+            <div
+              data-cy="test-mail"
+              class="grow"
+            >
+              <AntInput
+                v-model:value="testMail"
+                label="E-Mail Template testen"
+                :errors="sendTestMailValidatorRef.errorMap['testMail']"
+                description="Mehrere E-Mails mit Komma separiert angeben"
+                placeholder="E-Mail"
+                class="rounded-none rounded-bl-md rounded-tl-md"
+                :validator="
+                  () =>
+                    sendTestMailValidatorRef.validateProperty(
+                      'testMail',
+                      testMail,
+                      1
+                    )
+                "
+                :loading="loading"
+                :disabled="sendingTestMail"
+              >
+                <template #errorList="{ errors }">
+                  <div
+                    data-cy="error"
+                    class="text-red-600"
+                    v-for="message in errors"
+                  >
+                    {{ message }}
+                  </div>
+                </template>
+
+                <AntButton
+                  :primary="false"
+                  type="submit"
+                  data-cy="testing"
+                  class="!rounded-none !rounded-br-md !rounded-tr-md -ml-px w-20"
+                >
+                  Senden
+                </AntButton>
+              </AntInput>
             </div>
           </div>
         </AntForm>
@@ -230,7 +262,5 @@ async function onSendTestMail() {
         <MailTemplatesTable />
       </template>
     </AntDualContent>
-
-    <Loader :loading="loading" />
   </div>
 </template>

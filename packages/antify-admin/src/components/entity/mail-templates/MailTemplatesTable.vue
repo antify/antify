@@ -41,8 +41,6 @@ const _data = computed(() => {
 });
 
 function goToDetail(id: string) {
-  loading.value = true;
-
   router.push({
     name: 'admin-tenantId-mail-templates-mailTemplateId',
     params: { mailTemplateId: id },
@@ -77,7 +75,5 @@ function goToDetail(id: string) {
         <td v-else></td>
       </template>
     </AntTable>
-
-    <Loader :loading="loading" />
   </div>
 </template>

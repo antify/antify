@@ -1,8 +1,6 @@
 import prisma from '~~/server/datasources/db/client';
 import { useGuard } from '~~/composables/useGuard';
 import {
-  createForbiddenError,
-  createNotFoundError,
   HttpForbiddenError,
 } from '~~/server/errors';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
@@ -22,10 +20,6 @@ export default defineEventHandler<Response>(async (event) => {
   if (!guard.hasPermissionTo(PermissionId.CAN_READ_MAIL_TEMPLATES, tenantId)) {
     throw new HttpForbiddenError();
   }
-
-  await new Promise((resolve) => {
-    setTimeout(() => resolve(true), 2000);
-  });
 
   const mailTemplate = await prisma.mailTemplate.findUnique({
     select: {
