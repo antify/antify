@@ -6,9 +6,4 @@ describe('Test index page', () => {
 
     cy.location('pathname').should('eq', '/login');
   });
-
-  it('Should redirect an unauthenticated client to restricted area', () => {
-    // TODO:: implement
-    throw new Error('Not implemented')
-  });
 });

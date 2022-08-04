@@ -7,6 +7,8 @@ describe('Test mail templates detail page', () => {
       '/admin/1039fc07-7be9-4dd4-b299-26addb875111/mail-templates/RESET_PASSWORD'
     );
 
+    cy.wait(200);
+
     cy.get('[data-cy=title] input').clear().type(' ').blur();
     cy.get('[data-cy=title] [data-cy=error]').should(
       'have.text',

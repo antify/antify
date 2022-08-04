@@ -4,7 +4,7 @@ import { useTenantHeader } from '../../utils/useTenantHeader';
 import { useAuthorizationHeader } from '../../utils/useAuthorizationHeader';
 import { tenantContextMiddleware } from '../../guard/tenantContext.middleware';
 import { useGuard } from '~~/composables/useGuard';
-import prisma from '~~/server/datasources/auth/client';
+import prisma from '~~/server/datasources/core/client';
 
 export default defineEventHandler(async (event) => {
   tenantContextMiddleware(event);

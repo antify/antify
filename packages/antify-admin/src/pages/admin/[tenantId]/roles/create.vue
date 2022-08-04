@@ -2,7 +2,6 @@
   setup
   lang="ts"
 >
-import { permissions } from '../../../../server/datasources/static/permissions';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 
 const loading = ref(true);

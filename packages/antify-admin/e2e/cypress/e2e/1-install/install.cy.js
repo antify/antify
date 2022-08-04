@@ -2,7 +2,7 @@
 
 describe('Test install page', () => {
   before(() => {
-    cy.exec('cd ../src && pnpm auth:migration:reset', { timeout: 10000 });
+    cy.exec('cd ../src && pnpm core:migration:reset', { timeout: 10000 });
   });
 
   it('Should show errors on empty from', () => {

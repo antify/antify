@@ -33,11 +33,17 @@ const mailTemplates = ref<GetResponse>({
   default: {},
 });
 
+let refresh: Function;
+
 onMounted(async () => {
-  const { data, refresh } = await useFetch<GetResponse | PutResponse>(
+  const { data, refresh: mailTemplateRefresh } = await useFetch<
+    GetResponse | PutResponse
+  >(
     `/api/mail_templates/${useRoute().params.mailTemplateId}`,
     useDefaultFetchOpts()
   );
+
+  refresh = mailTemplateRefresh;
 
   mailTemplates.value = data.value as GetResponse;
 
