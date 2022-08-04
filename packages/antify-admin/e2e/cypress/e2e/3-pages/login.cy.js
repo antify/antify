@@ -33,7 +33,7 @@ describe('Test login page', () => {
 
     cy.get('[data-cy=login-errors]').should(
       'have.text',
-      'Invalid credentials - please try again'
+      'E-Mail oder Passwort falsch - Bitte prüfen Sie Ihre Eingaben.'
     );
   });
 

@@ -1,15 +1,23 @@
-<script setup lang="ts">
+<script
+  setup
+  lang="ts"
+>
+import { AppInstallRequiredResponse } from '../server/api/app/install_required.get';
+import { AppInstallPostResponse } from '../glue/api/app/install.post';
 import {
   appInstallPostValidator,
   AppInstallPostInput,
 } from '~~/glue/api/app/install.post';
 
 // Check if there is something to insall
-const { data } = await useFetch('/api/app/install_required', {
-  headers: {
-    'content-type': 'application/json',
-  },
-});
+const { data } = await useFetch<AppInstallRequiredResponse>(
+  '/api/app/install_required',
+  {
+    headers: {
+      'content-type': 'application/json',
+    },
+  }
+);
 
 if (!data.value.requireInstall) {
   await navigateTo({ name: 'login' });
@@ -20,7 +28,12 @@ const loading = ref<Boolean>(false);
 const validator = ref(appInstallPostValidator);
 const user = ref<AppInstallPostInput>({ name: '', email: '', password: '' });
 const repeatPassword = ref('');
-const onSubmit = async () => {
+
+const passwordErrors = computed(() => {
+  return validator.value.errorMap['password'] || [];
+});
+
+async function onSubmit() {
   loading.value = true;
   errors.value = [];
 
@@ -31,13 +44,16 @@ const onSubmit = async () => {
     return;
   }
 
-  const { data, error } = await useFetch('/api/app/install', {
-    method: 'POST',
-    body: user.value,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  const { data, error } = await useFetch<AppInstallPostResponse>(
+    '/api/app/install',
+    {
+      method: 'POST',
+      body: user.value,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
   loading.value = false;
 
   if (data.value.default) {
@@ -52,11 +68,7 @@ const onSubmit = async () => {
     user.value.email = '';
     user.value.password = '';
   }
-};
-
-const passwordErrors = computed(() => {
-  return validator.value.errorMap['password'] || [];
-});
+}
 </script>
 
 <template>
@@ -147,7 +159,11 @@ const passwordErrors = computed(() => {
         </div>
 
         <template #footer>
-          <AntButton :primary="true" data-cy="submit" type="submit">
+          <AntButton
+            :primary="true"
+            data-cy="submit"
+            type="submit"
+          >
             Speichern
           </AntButton>
         </template>

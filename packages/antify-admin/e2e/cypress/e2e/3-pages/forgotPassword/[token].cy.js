@@ -11,7 +11,7 @@ describe('Test set new password page', () => {
     cy.get('[data-cy=repeatPassword] input').clear();
     cy.get('[data-cy=submit]').click();
 
-    cy.get('[data-cy=error]').should('have.text', 'Should not be blank');
+    cy.get('[data-cy=error]').should('have.text', 'Should not be blankShould not be blank');
   });
 
   it('Should show errors on typing invalid input', () => {
