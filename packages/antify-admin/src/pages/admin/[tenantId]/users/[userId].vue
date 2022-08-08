@@ -12,7 +12,6 @@ import UserTable from '~~/components/entity/user/UserTable.vue';
 import { AntTabsType } from '@antify/antify-ui';
 import { Response as RoleResponse } from '~~/glue/api/admin/[tenantId]/roles/roles.get';
 
-
 const route = useRoute();
 const router = useRouter();
 const { $toaster } = useNuxtApp();
@@ -119,7 +118,7 @@ async function banUser() {
 
 async function unbanUser() {
   saving.value = true;
-  
+
   await useFetch<PutResponse>(`/api/users/${route.params.userId}/unban`, {
     ...useDefaultFetchOpts(),
     ...{
@@ -225,11 +224,12 @@ async function unbanUser() {
             </AntInput>
           </div>
 
-          <div data-cy="roles">
+          <div>
             <AntSelect
               label="Rolle"
               :options="roleOptions"
               v-model:value="user.default.roleId"
+              data-cy="roles"
               @change="
                 () =>
                   validator.validateProperty('roleId', user.default.roleId, 1)

@@ -23,20 +23,24 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+import 'cypress-file-upload';
 
-Cypress.Commands.add('login', (email = 'admin@admin.de', password = 'admin') => {
+Cypress.Commands.add(
+  'login',
+  (email = 'admin@admin.de', password = 'admin') => {
     cy.request({
-        method: 'post',
-        url: '/api/auth/login',
-        body: {
-            email,
-            password
-        }
+      method: 'post',
+      url: '/api/auth/login',
+      body: {
+        email,
+        password,
+      },
     }).then((response) => {
-        cy.setCookie('antt', response.body.default.token);
-        cy.setCookie('anttid', '1039fc07-7be9-4dd4-b299-26addb875111');
-        cy.wrap(response.body.default.token + '').as('token');
+      cy.setCookie('antt', response.body.default.token);
+      cy.setCookie('anttid', '1039fc07-7be9-4dd4-b299-26addb875111');
+      cy.wrap(response.body.default.token + '').as('token');
 
-        return cy.wrap(response.body.default.token, { log: false });
+      return cy.wrap(response.body.default.token, { log: false });
     });
-})
+  }
+);

@@ -47,6 +47,7 @@ const _search = computed({
 
 const mediaFiles = ref<Response>({ default: [] });
 const media = ref<GetResponse>({ default: {} });
+const toDelete = ref<string>();
 let reloadAllMedia: Function;
 
 onMounted(async () => {
@@ -106,10 +107,13 @@ async function onSubmit() {
   }
 }
 
-async function onDeleteMedia(mediaId: string) {
-  // TODO:: "you sure?" Dialog
+function onDeleteMedia(mediaId: string) {
+  deleteDialogActive.value = true;
+  toDelete.value = mediaId;
+}
 
-  await useFetch(`/api/admin/:tenantId/media/${mediaId}`, {
+async function deleteMedia() {
+  await useFetch(`/api/admin/:tenantId/media/${toDelete.value}`, {
     ...useDefaultFetchOpts(),
     method: 'DELETE',
   });
@@ -129,6 +133,7 @@ async function onDeleteMedia(mediaId: string) {
         <AntTabs :tabs="tabs" />
 
         <DeleteButton
+          data-cy="media-detail-delete"
           label="Löschen"
           @click="() => onDeleteMedia(media.default.id)"
         />
@@ -237,8 +242,9 @@ async function onDeleteMedia(mediaId: string) {
         </AntButton>
 
         <DeleteButton
+          data-cy="media-detail-delete-dialog-button"
           label="Löschen"
-          @click="() => onDeleteMedia(media.default.id)"
+          @click="() => deleteMedia()"
         />
       </template>
     </AntModal>

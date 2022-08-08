@@ -84,6 +84,7 @@ async function inviteUser() {
         <AntButton
           :primary="true"
           class="whitespace-nowrap"
+          data-cy="invite-user-button"
           @click="inviteUserActive = true"
         >
           Benutzer einladen
@@ -105,6 +106,7 @@ async function inviteUser() {
           <AntInput
             v-model:value="inviteEmail"
             label="E-Mail Adresse"
+            data-cy="invite-email"
             description="Geben Sie die E-Mail-Adresse des Nutzers ein den Sie einladen möchten"
             :errors="inviteValidator.errorMap['email']"
             :is-error="
@@ -112,18 +114,29 @@ async function inviteUser() {
               inviteValidator.errorMap['email'].length > 0
             "
             :validator="(val: string) => inviteValidator.validateProperty('email', val, 1)"
-          />
+          >
+            <template #errorList="{ errors }">
+              <div
+                data-cy="error"
+                v-for="message in errors"
+                class="text-red-600"
+              >
+                {{ message }}
+              </div>
+            </template>
+          </AntInput>
 
           <AntSelect
             v-model:value="inviteAs"
             :options="options"
-            label="Einladen als"
             :errors="inviteValidator.errorMap['roleId']"
             :is-error="
               inviteValidator.errorMap['roleId'] &&
               inviteValidator.errorMap['roleId'].length > 0
             "
             :validator="(val: string) => inviteValidator.validateProperty('roleId', val, 1)"
+            label="Einladen als"
+            data-cy="role-select"
           />
         </AntForm>
 
@@ -135,6 +148,7 @@ async function inviteUser() {
 
           <AntButton
             type="submit"
+            data-cy="invite-user-submit"
             form="invite-user-form"
             primary
           >

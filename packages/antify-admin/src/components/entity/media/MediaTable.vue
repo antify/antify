@@ -86,6 +86,7 @@ async function deleteMedia() {
       <template #cellContent="{ elem }">
         <TenantLink
           class="block w-full h-full"
+          data-cy="media-link"
           :to="{
             name: 'admin-tenantId-media-mediaId',
             params: { mediaId: elem.id },
@@ -103,6 +104,7 @@ async function deleteMedia() {
         >
           <div class="flex items-center h-full justify-end">
             <DeleteButton
+              data-cy="media-delete"
               @click="() => onDeleteMedia(elem.id)"
               size="small"
             >
@@ -117,7 +119,7 @@ async function deleteMedia() {
       v-model:active="deleteDialogActive"
       title="Datei löschen"
     >
-      <div>
+      <div data-cy="media-delete-dialog-text">
         Sind sie sicher das Sie diese Datei wirklich, sicherlich und
         unwiederruflich löschen wollen?
       </div>
@@ -131,6 +133,7 @@ async function deleteMedia() {
         </AntButton>
 
         <DeleteButton
+          data-cy="media-delete-button"
           label="Löschen"
           @click="deleteMedia"
         />

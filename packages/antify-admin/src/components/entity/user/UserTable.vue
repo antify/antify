@@ -58,6 +58,7 @@ if (!props.singleCol) {
   >
     <template #cellContent="{ elem }">
       <TenantLink
+        data-cy="user-link"
         class="w-full block"
         :to="{
           name: 'admin-tenantId-users-userId',

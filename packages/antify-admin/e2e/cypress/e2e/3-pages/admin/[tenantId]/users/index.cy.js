@@ -7,15 +7,12 @@ describe('Test user listing page', () => {
     cy.visit('/admin/1039fc07-7be9-4dd4-b299-26addb875111/users');
     cy.get('table > tbody > tr:first-child').should(
       'have.text',
-      'Demo Benutzeradmin@admin.de'
+      'Test Useradmin@admin.de'
     );
 
     cy.get('table > tbody > tr:first-child > td:first-child a').click();
 
-    cy.location('pathname').should(
-      'eq',
-      '/admin/1039fc07-7be9-4dd4-b299-26addb875111/users/1039fc07-7be9-4dd4-b299-26addb875771'
-    );
+    cy.location('pathname').should('match', /\/admin\/.*\/users\/.*/);
   });
 
   it('Should invite new user', () => {
@@ -31,8 +28,22 @@ describe('Test user listing page', () => {
 
     cy.wait(200);
 
-    // cy.get('[data-cy=invite-user-modal]').should('have.class', 'h-full');
+    cy.get('[data-cy=invite-email').clear().type(' ').blur();
+    cy.get('[data-cy=error]').should('have.text', 'Should not be blank');
 
-    cy.get('[data-cy=invite-email').blur();
+    cy.get('[data-cy=invite-email').clear().type('qsldfkjajöj.de').blur();
+    cy.get('[data-cy=error]').should('have.text', 'Invalid email');
+
+    cy.get('[data-cy=invite-email').clear().type('a@b.de').blur();
+    cy.get('[data-cy=role-select]').select('Administrator');
+
+    cy.get('[data-cy=invite-user-submit]').click();
+
+    cy.wait(100);
+
+    cy.get('[data-cy=toaster]').should(
+      'have.text',
+      'Einladung wurde versendet'
+    );
   });
 });

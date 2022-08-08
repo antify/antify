@@ -127,7 +127,11 @@ hook('page:finish', () => {
 
       <slot />
 
-      <AntToaster :toasts="toasts"></AntToaster>
+      <AntToaster :toasts="toasts">
+        <template #default="{ toast }">
+          <div data-cy="toaster">{{ toast.message }}</div>
+        </template>
+      </AntToaster>
     </template>
   </AntLayout>
 </template>

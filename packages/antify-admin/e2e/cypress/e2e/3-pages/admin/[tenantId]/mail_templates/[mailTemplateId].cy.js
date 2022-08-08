@@ -15,10 +15,10 @@ describe('Test mail templates detail page', () => {
       'Should not be blank'
     );
 
-    cy.get('[data-cy=title] input').clear().type('Passwort zurücksetzen');
+    cy.get('[data-cy=title] input').clear().type('Neuen Benutzer einladen');
     cy.get('[data-cy=content] div.ProseMirror')
       .clear()
-      .type('Passwort zurücksetzten');
+      .type('Neuen Benutzer einladen');
 
     cy.get('[data-cy=submit]').click();
 

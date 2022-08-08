@@ -25,10 +25,14 @@ const onSelectFile = async (files: File[]) => {
 
   let formData = new FormData();
 
-  for (let i = 0; i < 5; i++) {
-    if (files.length > 0) {
-      formData.append(`file-${i}`, files[0]);
-      files.splice(0, 1);
+  if (!Array.isArray(files)) {
+    formData.append(`file`, files[0]);
+  } else {
+    for (let i = 0; i < 5; i++) {
+      if (files.length > 0) {
+        formData.append(`file-${i}`, files[0]);
+        files.splice(0, 1);
+      }
     }
   }
 
@@ -40,7 +44,7 @@ const onSelectFile = async (files: File[]) => {
 
   await reloadAllMedia();
 
-  if (files.length > 0) {
+  if (Array.isArray(files) && files.length > 0) {
     return await onSelectFile(files);
   }
 
@@ -50,7 +54,6 @@ const onSelectFile = async (files: File[]) => {
 };
 
 function onDrop(files: File[]) {
-  console.log('dropped', files);
   onSelectFile(files);
 
   counter.value = 0;
@@ -107,14 +110,17 @@ onUnmounted(() => {
           accept-type="image/*,application/pdf,text/plain"
           :loading="uploading"
           label-style="cursor-pointer flex space-x-4 items-center text-gray-400"
+          data-cy="media-upload-input"
         >
           <template #preview><span></span></template>
 
           <template #label>
-            <CreateButton
-              label="Hochladen"
-              class="pointer-events-none"
-            />
+            <div data-cy="media-upload-button">
+              <CreateButton
+                label="Hochladen"
+                class="pointer-events-none"
+              />
+            </div>
           </template>
         </AntUpload>
       </template>
