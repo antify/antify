@@ -12,48 +12,50 @@ import {
   faPhotoFilm,
 } from '@fortawesome/free-solid-svg-icons';
 const { $auth, hook, $toaster } = useNuxtApp();
+const route = useRoute();
 
-const navItems = [
+const navItems = computed(() => [
   {
     label: 'Dashboard',
     route: { name: 'admin-tenantId-dashboard' },
     icon: faHouse,
-    active: true,
+    active: route.name === 'admin-tenantId-dashboard',
   },
   {
     label: 'Benutzer',
     route: { name: 'admin-tenantId-users' },
     icon: faUser,
-    active: false,
+    active: route.name === 'admin-tenantId-users',
   },
   {
     label: 'Rollen',
     route: { name: 'admin-tenantId-roles' },
     icon: faUsers,
-    active: false,
+    active: route.name === 'admin-tenantId-roles',
   },
   {
     label: 'E-Mail Templates',
     route: { name: 'admin-tenantId-mail-templates' },
     icon: faTrophy,
-    active: false,
+    active: route.name === 'admin-tenantId-mail-templates',
   },
   {
     label: 'Mandanten',
     route: { name: 'admin-tenantId-tenants' },
-    active: false,
+    active: route.name === 'admin-tenantId-tenants',
   },
   {
     label: 'Mediatheke',
     route: { name: 'admin-tenantId-media' },
     icon: faPhotoFilm,
+    active: route.name === 'admin-tenantId-media',
   },
   {
     label: 'Logout',
     active: false,
     clickHandler: () => $auth.logout(),
   },
-];
+]);
 
 const me = useMeState();
 const userName = me.value.name;
