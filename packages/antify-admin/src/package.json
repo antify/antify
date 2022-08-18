@@ -23,7 +23,8 @@
     "tenant:load:install": "npx ts-node ./command/install/tenant.install.ts",
     "tenant:load:fixtures": "npx ts-node ./command/fixtures/tenant.fixtures.ts",
     "tenant:rebuild": "pnpm tenant:migration:reset && pnpm tenant:load:install && pnpm tenant:load:fixtures",
-    "app:rebuild": "pnpm tenant:rebuild && pnpm core:rebuild"
+    "app:rebuild": "pnpm tenant:rebuild && pnpm core:rebuild",
+    "docker:start": "pnpm app:rebuild && nuxi dev"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.2.0",

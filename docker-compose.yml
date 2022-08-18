@@ -1,0 +1,51 @@
+version: '3'
+
+services:
+  core:
+    image: mysql:8
+    ports:
+      - '3307:3307'
+    environment:
+      - MYSQL_USE=core
+      - MYSQL_PASSWORD=core
+      - MYSQL_DATABASE=core
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_TCP_PORT=3307
+    expose:
+      - 3307
+  
+  tenant:
+    image: mysql:8
+    ports:
+      - '3306:3306'
+    environment:
+      - MYSQL_USE=tenant
+      - MYSQL_PASSWORD=tenant
+      - MYSQL_DATABASE=tenant
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_TCP_PORT=3306
+    expose:
+      - 3306
+
+  mailhog:
+    image: mailhog/mailhog
+    logging:
+      driver: 'none'  # disable saving logs
+    ports:
+      - "8025:8025" # web ui
+      - "1025:1025" # smtp server
+
+  antify-admin:
+    depends_on:
+      - core
+      - tenant
+    build: ./
+    # volumes:
+    #   - ./packages/antify-admin/src/:/app/packages/antify-admin/src
+    # image
+    container_name: antify-admin
+    restart: unless-stopped
+    env_file: ./packages/antify-admin/src/.env
+    ports:
+      - 3000:3000
+      - 24678:24678

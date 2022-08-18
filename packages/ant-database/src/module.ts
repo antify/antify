@@ -80,26 +80,26 @@ export default defineNuxtModule<ModuleOptions>({
     await nuxt.callHook('antDatabase:before:loadSchemas', options.schemas);
 
     // TODO:: keep https://github.com/prisma-utils/prisma-utils/issues/22 in eye
-    fs.writeFile(
-      // Important: this file need to stay where the command is executed
-      './prismerge.json',
-      JSON.stringify(options.schemas),
-      (error) => {
-        if (error) {
-          throw error;
-        }
+    // fs.writeFile(
+    //   // Important: this file need to stay where the command is executed
+    //   './prismerge.json',
+    //   JSON.stringify(options.schemas),
+    //   (error) => {
+    //     if (error) {
+    //       throw error;
+    //     }
 
-        // Stitch schemas
-        shelljs.exec(`npx prismerge`);
+    //     // Stitch schemas
+    //     shelljs.exec(`npx prismerge`);
 
-        Object.values(options.schemas).forEach(
-          (value: DatabaseConfiguration) => {
-            generate(value.output);
-            // reinit(value.output);
-            migrate(value.output);
-          }
-        );
-      }
-    );
+    //     Object.values(options.schemas).forEach(
+    //       (value: DatabaseConfiguration) => {
+    //         generate(value.output);
+    //         // reinit(value.output);
+    //         migrate(value.output);
+    //       }
+    //     );
+    //   }
+    // );
   },
 });
