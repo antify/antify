@@ -11,5 +11,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag antify:$(date +%s)
+        run: DOCKER_BUILDKIT=1 docker build . --file Dockerfile --tag antify:$(date +%s)
   
