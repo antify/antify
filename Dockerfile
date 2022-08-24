@@ -33,6 +33,12 @@ RUN pnpm build
 
 WORKDIR /app/packages/antify-admin/src
 
+RUN pnpm core:generate
+RUN pnpm tenant:generate
+RUN pnpm core:load:install
+RUN pnpm core:laod:fixtures
+RUN pnpm tenant:load:install
+RUN pnpm tenant:load:fixtures
 RUN pnpm build
 
 FROM builder as prod
