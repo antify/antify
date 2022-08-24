@@ -45,7 +45,7 @@ services:
     # image
     container_name: antify-admin
     restart: unless-stopped
-    env_file: ../../packages/antify-admin/src/.env
+    env_file: ./packages/antify-admin/src/.env
     ports:
       - 3000:3000
       - 24678:24678
