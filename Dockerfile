@@ -27,7 +27,14 @@ WORKDIR /app/packages/ant-auth
 
 RUN pnpm dev:prepare
 
+WORKDIR /app/packages/ant-validate
+
+RUN pnpm build
+
 WORKDIR /app/packages/antify-admin/src
+
+RUN pnpm core:generate
+RUN pnpm tenant:generate
 
 RUN pnpm build
 

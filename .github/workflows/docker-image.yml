@@ -10,6 +10,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Copy env's
+        run: |
+          find ./packages/antify-admin/src/ -type f -name ".env.dist" | while read fname; do
+            dirname=`dirname "$fname"`
+            foldername=`basename "$dirname"`
+            filename=`basename "$fname"`
+            newname=`echo "$dirname" | sed -e "s/ /_/g"`
+            cp "${dirname}/$filename" "./packages/antify-admin/src/.env"
+          done
       - name: Build the Docker image
-        run: DOCKER_BUILDKIT=1 docker build . --file Dockerfile --tag antify:$(date +%s)
-  
+        run: docker compose build
