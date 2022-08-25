@@ -21,5 +21,7 @@ jobs:
           done
       - name: Build the Docker image
         run: docker compose build
+      - name: How am I?
+        run: docker ps
       - name: Tag Docker container
         run: docker tag antify-admin ghcr.io/antify/antify-admin:latest
