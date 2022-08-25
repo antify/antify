@@ -21,3 +21,5 @@ jobs:
           done
       - name: Build the Docker image
         run: docker compose build
+      - name: Tag Docker container
+        run: docker tag antify-admin ghcr.io/antify/antify-admin:latest
