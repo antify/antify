@@ -6,6 +6,7 @@ import { authenticatedMiddleware } from '~~/server/guard/authenticated.middlewar
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { Response } from '~~/glue/api/tenants/tenants.get';
+import { useMediaService } from '../../service/useMediaService';
 
 export default defineEventHandler<Response>(async (event) => {
   authenticatedMiddleware(event);
@@ -34,12 +35,22 @@ export default defineEventHandler<Response>(async (event) => {
     select: {
       id: true,
       name: true,
+      logo: true,
     },
     where,
     orderBy: { name: 'asc' },
   });
 
   return {
-    default: { data: tenants },
+    default: {
+      data: tenants.map((tenant) => {
+        return {
+          ...tenant,
+          url: tenant.logo
+            ? useMediaService(tenant.logo).getLogoUrl(tenant.id)
+            : null,
+        };
+      }),
+    },
   };
 });

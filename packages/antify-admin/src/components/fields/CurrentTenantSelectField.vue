@@ -3,12 +3,15 @@ import type { SelectOption } from '@antify/antify-ui/dist/types/SelectOption.typ
 
 const tenants = useTenantState();
 const route = useRoute();
+const currentTenant = useCurrentTenantState();
 
 const tenantId = computed({
   get: () => {
-    return route.params.tenantId;
+    return currentTenant.value.id;
   },
   set: (val) => {
+    currentTenant.value = tenants.value.find((t) => t.id === val);
+
     navigateTo({
       ...useRoute(),
       ...{ params: { tenantId: val } },

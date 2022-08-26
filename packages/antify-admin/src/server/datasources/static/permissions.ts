@@ -24,6 +24,8 @@ export enum PermissionId {
 
   CAN_READ_TENANT = 'CAN_READ_TENANT',
   CAN_DELETE_TENANT = 'CAN_DELETE_TENANT',
+  CAN_UPLOAD_TENANT_LOGO = 'CAN_UPLOAD_TENANT_LOGO',
+  CAN_REMOVE_TENANT_LOGO = 'CAN_REMOVE_TENANT_LOGO',
 }
 
 export const permissions = [
@@ -94,5 +96,13 @@ export const permissions = [
   {
     id: PermissionId.CAN_READ_TENANT,
     name: 'Kann Mandanten sehen',
+  },
+  {
+    id: PermissionId.CAN_UPLOAD_TENANT_LOGO,
+    name: 'Kann Mandanten Logo hochladen',
+  },
+  {
+    id: PermissionId.CAN_REMOVE_TENANT_LOGO,
+    name: 'Kann Mandanten Logo entfernen',
   },
 ];

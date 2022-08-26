@@ -14,6 +14,9 @@ export const useMediaService = (media: Media) => {
     getProfileUrl() {
       return `http://localhost:3000/api/admin/034747e1-8913-482f-9ecc-0154195ba783/profile/file/${media?.fileName}`;
     },
+    getLogoUrl(tenantId: string) {
+      return `http://localhost:3000/api/tenants/file/${tenantId}/${media?.fileName}`;
+    },
     getAbsoluteUploadPath() {
       return useMediaStorage().getAbsoluteUploadPath(media?.fileName);
     },
@@ -24,11 +27,13 @@ export const useMediaService = (media: Media) => {
       return fs.createReadStream(this.getAbsoluteUploadPath());
     },
     async deleteFile() {
-      return new Promise((reject) => {
+      return new Promise<void>((resolve, reject) => {
         fs.unlink(this.getAbsoluteUploadPath(), (error) => {
           if (error) {
             reject(error);
           }
+
+          resolve();
         });
       });
     },

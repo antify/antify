@@ -1,7 +1,4 @@
-<script
-  setup
-  lang="ts"
->
+<script setup lang="ts">
 import { AntToaster, ANT_TOASTER_TYPE } from '@antify/antify-ui';
 import { ToastType } from '../composables/states';
 import {
@@ -11,8 +8,17 @@ import {
   faUsers,
   faPhotoFilm,
 } from '@fortawesome/free-solid-svg-icons';
+
 const { $auth, hook, $toaster } = useNuxtApp();
 const route = useRoute();
+const me = useMeState();
+const tenant = useCurrentTenantState();
+
+const loading = ref<boolean>(false);
+const throttle = ref(200);
+const duration = ref(2000);
+const userName = ref(me.value.name);
+const profileHref = ref({ name: 'admin-tenantId-profile' });
 
 const navItems = computed(() => [
   {
@@ -57,10 +63,6 @@ const navItems = computed(() => [
   },
 ]);
 
-const me = useMeState();
-const userName = me.value.name;
-const profileHref = { name: 'admin-tenantId-profile' };
-
 const toasts = computed(() => {
   const elem = $toaster.getToasts().map((toast) => ({
     id: toast.id,
@@ -75,10 +77,6 @@ const toasts = computed(() => {
 
   return elem;
 });
-
-const loading = ref<boolean>(false);
-const throttle = ref(200);
-const duration = ref(2000);
 
 hook('page:start', () => {
   loading.value = true;
@@ -98,6 +96,13 @@ hook('page:finish', () => {
     <template #logo>
       <AntLogo>
         <img
+          v-if="tenant.url"
+          class="h-full"
+          :src="tenant.url"
+          alt="Logo"
+        />
+        <img
+          v-else
           class="h-full"
           src="~~~/assets/img/logo.svg"
           alt="Logo"
