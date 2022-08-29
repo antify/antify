@@ -2,7 +2,8 @@
 export default {
   server: {
     hmr: {
-      clientPort: 3000,
+      protocol: 'ws',
+      clientPort: 443,
     },
   },
 };
