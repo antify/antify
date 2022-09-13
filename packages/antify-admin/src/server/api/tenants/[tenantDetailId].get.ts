@@ -5,6 +5,7 @@ import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { Response } from '~~/glue/api/tenants/[tenantDetailId].get';
+import { useMediaService } from '../../service/useMediaService';
 
 export default defineEventHandler<Response>(async (event) => {
   const guard = useGuard(useAuthorizationHeader(event));
@@ -23,6 +24,7 @@ export default defineEventHandler<Response>(async (event) => {
     select: {
       id: true,
       name: true,
+      logo: true,
     },
     where: {
       id: event.context.params.tenantDetailId,
@@ -33,5 +35,10 @@ export default defineEventHandler<Response>(async (event) => {
     throw new HttpNotFoundError();
   }
 
-  return { default: tenant };
+  return {
+    default: {
+      ...tenant,
+      url: tenant.logo ? useMediaService(tenant.logo).getLogoUrl(event.context.params.tenantDetailId) : null,
+    },
+  };
 });

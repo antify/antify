@@ -1,6 +1,8 @@
 export type Response = {
-  default: {
-    id?: string;
-    name?: string;
-  };
+  default: TenantDefault;
+};
+export type TenantDefault = {
+  id?: string;
+  name?: string;
+  url?: string;
 };
