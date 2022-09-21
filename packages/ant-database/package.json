@@ -46,7 +46,7 @@
     "app:rebuild": "pnpm build && pnpm tenant:rebuild && pnpm auth:rebuild"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.0.0-rc.6",
+    "@nuxt/kit": "^3.0.0-rc.8",
     "@prisma/client": "^3.15.1",
     "prisma": "^3.15.1",
     "shelljs": "^0.8.5"
@@ -57,6 +57,6 @@
     "@prisma-utils/prismerge": "^1.6.2",
     "@types/shelljs": "^0.8.11",
     "eslint": "latest",
-    "nuxt": "^3.0.0-rc.6"
+    "nuxt": "^3.0.0-rc.8"
   }
 }

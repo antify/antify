@@ -27,6 +27,10 @@ WORKDIR /app/packages/ant-auth
 
 RUN pnpm dev:prepare
 
+WORKDIR /app/packages/ant-ui
+
+RUN pnpm prepack
+
 WORKDIR /app/packages/ant-validate
 
 RUN pnpm build

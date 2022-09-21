@@ -1,16 +1,13 @@
 {
-  "name": "@antify/ant-auth",
+  "name": "@antify/ant-ui",
   "version": "1.0.0",
-  "private": true,
   "license": "MIT",
   "type": "module",
   "exports": {
     ".": {
       "import": "./dist/module.mjs",
       "require": "./dist/module.cjs"
-    },
-    "./package.json": "./package.json",
-    "./dist/*": "./dist/*"
+    }
   },
   "main": "./dist/module.cjs",
   "types": "./dist/types.d.ts",
@@ -21,21 +18,17 @@
     "prepack": "nuxt-module-build",
     "dev": "nuxi dev playground",
     "dev:build": "nuxi build playground",
-    "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
-    "test:unit": "vitest run src/runtime/**/*.test.*"
+    "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground"
   },
   "dependencies": {
-    "@antify/ant-database": "1.0.0",
-    "@nuxt/kit": "^3.0.0-rc.8",
-    "pathe": "^0.3.0"
+    "@antify/antify-ui": "^0.0.69",
+    "@nuxt/kit": "^3.0.0-rc.8"
   },
   "devDependencies": {
     "@nuxt/module-builder": "latest",
-    "@nuxt/test-utils-edge": "^3.0.0-rc.6-27651720.5dc864d",
     "@nuxtjs/eslint-config-typescript": "latest",
     "eslint": "latest",
     "nuxt": "^3.0.0-rc.8",
-    "typescript": "^4.7.4",
-    "vitest": "^0.15.1"
+    "@nuxtjs/tailwindcss": "^5.3.2"
   }
 }
