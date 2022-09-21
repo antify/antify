@@ -9,7 +9,7 @@ import {
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
-import { Response } from '~~/glue/api/admin/[tenantId]/roles/[roleId].get';
+import { Response } from '~~/glue/api/backoffice/[tenantId]/roles/[roleId].get';
 
 export type RoleInput = {
   name: string;

@@ -1,9 +1,6 @@
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { Checkbox } from '@antify/antify-ui/dist/types/Checkbox.type';
-import { Default as RoleDefault } from '~~/glue/api/admin/[tenantId]/roles/[roleId].get';
+import { Default as RoleDefault } from '~~/glue/api/backoffice/[tenantId]/roles/[roleId].get';
 import { permissions } from '../../../server/datasources/static/permissions';
 
 type Permission = {

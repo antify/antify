@@ -1,11 +1,8 @@
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
-import { Response } from '~~/glue/api/admin/[tenantId]/roles/roles.get';
+import { Response } from '~~/glue/api/backoffice/[tenantId]/roles/roles.get';
 
 const route = useRoute();
 
@@ -48,7 +45,7 @@ const tableHeaders = ref<Array<TableHeader>>([
       <TenantLink
         class="block w-full"
         :to="{
-          name: 'admin-tenantId-roles-roleId',
+          name: 'backoffice-tenantId-roles-roleId',
           params: { roleId: elem.id },
         }"
       >

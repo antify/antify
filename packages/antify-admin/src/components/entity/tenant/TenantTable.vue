@@ -1,7 +1,4 @@
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
@@ -81,7 +78,7 @@ function next() {
           <TenantLink
             class="w-full block"
             :to="{
-              name: 'admin-tenantId-tenants-tenantDetailId',
+              name: 'backoffice-tenantId-tenants-tenantDetailId',
               params: { tenantDetailId: elem.id },
               query: { ...route.query },
             }"

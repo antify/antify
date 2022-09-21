@@ -1,7 +1,4 @@
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
 
@@ -42,7 +39,7 @@ const _data = computed(() => {
 
 function goToDetail(id: string) {
   router.push({
-    name: 'admin-tenantId-mail-templates-mailTemplateId',
+    name: 'backoffice-tenantId-mail-templates-mailTemplateId',
     params: { mailTemplateId: id },
   });
 }

@@ -18,43 +18,43 @@ const loading = ref<boolean>(false);
 const throttle = ref(200);
 const duration = ref(2000);
 const userName = ref(me.value.name);
-const profileHref = ref({ name: 'admin-tenantId-profile' });
+const profileHref = ref({ name: 'backoffice-tenantId-profile' });
 
 const navItems = computed(() => [
   {
     label: 'Dashboard',
-    route: { name: 'admin-tenantId-dashboard' },
+    route: { name: 'backoffice-tenantId-dashboard' },
     icon: faHouse,
-    active: route.name === 'admin-tenantId-dashboard',
+    active: route.name === 'backoffice-tenantId-dashboard',
   },
   {
     label: 'Benutzer',
-    route: { name: 'admin-tenantId-users' },
+    route: { name: 'backoffice-tenantId-users' },
     icon: faUser,
-    active: route.name === 'admin-tenantId-users',
+    active: route.name === 'backoffice-tenantId-users',
   },
   {
     label: 'Rollen',
-    route: { name: 'admin-tenantId-roles' },
+    route: { name: 'backoffice-tenantId-roles' },
     icon: faUsers,
-    active: route.name === 'admin-tenantId-roles',
+    active: route.name === 'backoffice-tenantId-roles',
   },
   {
     label: 'E-Mail Templates',
-    route: { name: 'admin-tenantId-mail-templates' },
+    route: { name: 'backoffice-tenantId-mail-templates' },
     icon: faTrophy,
-    active: route.name === 'admin-tenantId-mail-templates',
+    active: route.name === 'backoffice-tenantId-mail-templates',
   },
   {
     label: 'Mandanten',
-    route: { name: 'admin-tenantId-tenants' },
-    active: route.name === 'admin-tenantId-tenants',
+    route: { name: 'backoffice-tenantId-tenants' },
+    active: route.name === 'backoffice-tenantId-tenants',
   },
   {
     label: 'Mediatheke',
-    route: { name: 'admin-tenantId-media' },
+    route: { name: 'backoffice-tenantId-media' },
     icon: faPhotoFilm,
-    active: route.name === 'admin-tenantId-media',
+    active: route.name === 'backoffice-tenantId-media',
   },
   {
     label: 'Logout',

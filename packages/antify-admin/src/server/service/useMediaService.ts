@@ -9,10 +9,10 @@ export const useMediaService = (media: Media) => {
   return {
     getMediaUrl(tenantId: string) {
       // TODO:: dynamic url
-      return `http://localhost:3000/api/admin/${tenantId}/media/file/${media?.fileName}`;
+      return `http://localhost:3000/api/backoffice/${tenantId}/media/file/${media?.fileName}`;
     },
     getProfileUrl() {
-      return `http://localhost:3000/api/admin/034747e1-8913-482f-9ecc-0154195ba783/profile/file/${media?.fileName}`;
+      return `http://localhost:3000/api/backoffice/034747e1-8913-482f-9ecc-0154195ba783/profile/file/${media?.fileName}`;
     },
     getLogoUrl(tenantId: string) {
       return `http://localhost:3000/api/tenants/file/${tenantId}/${media?.fileName}`;

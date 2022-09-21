@@ -1,7 +1,4 @@
-<script
-  setup
-  lang="ts"
->
+<script setup lang="ts">
 import { AppInstallRequiredResponse } from '../server/api/app/install_required.get';
 import { AppInstallPostResponse } from '../glue/api/app/install.post';
 import {
@@ -57,7 +54,7 @@ async function onSubmit() {
   loading.value = false;
 
   if (data.value.default) {
-    await navigateTo({ name: 'admin' });
+    await navigateTo({ name: 'backoffice' });
   }
 
   if (data.value.badRequest || data.value.installNotPossible) {

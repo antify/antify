@@ -1,10 +1,7 @@
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { faList, faTableCellsLarge } from '@fortawesome/free-solid-svg-icons';
 import MediaTable from './MediaTable.vue';
-import { Default } from '~~/glue/api/admin/[tenantId]/media/index.get';
+import { Default } from '~~/glue/api/backoffice/[tenantId]/media/index.get';
 
 defineEmits(['reloadMedia']);
 defineProps<{
@@ -23,7 +20,7 @@ const changeMediaListStyle = (value) => {
   activeListStyle.value = value;
 
   router.push({
-    name: 'admin-tenantId-media',
+    name: 'backoffice-tenantId-media',
     query: {
       ...route.query,
       activeListStyle: value,
@@ -33,7 +30,7 @@ const changeMediaListStyle = (value) => {
 
 const openMediaDetails = (item: Default) => {
   router.push({
-    name: 'admin-tenantId-media-mediaId',
+    name: 'backoffice-tenantId-media-mediaId',
     params: { mediaId: item.id },
     query: route.query,
   });
@@ -41,7 +38,7 @@ const openMediaDetails = (item: Default) => {
 
 const onSearch = (val) => {
   router.push({
-    name: 'admin-tenantId-media',
+    name: 'backoffice-tenantId-media',
     query: {
       ...route.query,
       search: val,

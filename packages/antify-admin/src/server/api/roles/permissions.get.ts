@@ -1,7 +1,7 @@
 import { useGuard } from '~~/composables/useGuard';
 import { permissions } from '~~/server/datasources/static/permissions';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { Response } from '~~/glue/api/admin/[tenantId]/roles/permissions.get';
+import { Response } from '~~/glue/api/backoffice/[tenantId]/roles/permissions.get';
 import { HttpForbiddenError } from '../../errors';
 
 export default defineEventHandler<Response>(async (event) => {

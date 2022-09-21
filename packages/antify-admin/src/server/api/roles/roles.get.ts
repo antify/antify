@@ -1,7 +1,7 @@
 import prisma from '~~/server/datasources/core/client';
 import { useGuard } from '~~/composables/useGuard';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { Response as RolesResponse } from '~~/glue/api/admin/[tenantId]/roles/roles.get';
+import { Response as RolesResponse } from '~~/glue/api/backoffice/[tenantId]/roles/roles.get';
 import { HttpForbiddenError } from '../../errors';
 
 export default defineEventHandler<RolesResponse>(async (event) => {

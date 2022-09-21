@@ -43,6 +43,6 @@ describe('Test login page', () => {
     cy.get('[data-cy=password] input').clear().type('admin');
     cy.get('[data-cy=submit]').click();
 
-    cy.location('pathname').should('match', /\/admin\/.*\/dashboard/);
+    cy.location('pathname').should('match', /\/backoffice\/.*\/dashboard/);
   });
 });

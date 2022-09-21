@@ -1,7 +1,4 @@
-<script
-  setup
-  lang="ts"
->
+<script setup lang="ts">
 import { routeLocationKey } from 'vue-router';
 import {
   authLoginPostValidator,
@@ -11,7 +8,7 @@ import {
 definePageMeta({
   middleware: () => {
     if (useNuxtApp().$auth.getGuard().isUserLoggedIn) {
-      return { name: 'admin' };
+      return { name: 'backoffice' };
     }
   },
 });
@@ -60,7 +57,7 @@ async function onLogin() {
   }
 
   if (data.value.default) {
-    await navigateTo({ name: 'admin' });
+    await navigateTo({ name: 'backoffice' });
   }
 
   if (

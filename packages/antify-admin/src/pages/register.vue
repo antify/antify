@@ -47,7 +47,7 @@ async function submit() {
   }
 
   if (data.value.default) {
-    await navigateTo({ name: 'admin' });
+    await navigateTo({ name: 'backoffice' });
   }
 }
 </script>

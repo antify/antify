@@ -1,7 +1,7 @@
 import prisma from '~~/server/datasources/core/client';
 import { useGuard } from '~~/composables/useGuard';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { Response } from '~~/glue/api/admin/[tenantId]/roles/[roleId].get';
+import { Response } from '~~/glue/api/backoffice/[tenantId]/roles/[roleId].get';
 import { HttpNotFoundError, HttpForbiddenError } from '../../errors';
 import { checkUserTenantAccess } from '~~/server/service/roleService';
 

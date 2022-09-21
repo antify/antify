@@ -57,7 +57,7 @@ describe('Test install page', () => {
 
     cy.location('pathname').should(
       'match',
-      /\/admin\/(((\w{4,12}-?)){5})\/dashboard/
+      /\/backoffice\/(((\w{4,12}-?)){5})\/dashboard/
     );
   });
 
@@ -76,7 +76,7 @@ describe('Test install page', () => {
 
     cy.location('pathname').should(
       'match',
-      /\/admin\/(((\w{4,12}-?)){5})\/dashboard/
+      /\/backoffice\/(((\w{4,12}-?)){5})\/dashboard/
     );
   });
 });

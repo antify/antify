@@ -1,11 +1,8 @@
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
 import TenantLink from '~~/components/fields/TenantLink.vue';
-import { Default } from '~~/glue/api/admin/[tenantId]/media/index.get';
+import { Default } from '~~/glue/api/backoffice/[tenantId]/media/index.get';
 
 const route = useRoute();
 const { $toaster } = useNuxtApp();
@@ -63,7 +60,7 @@ async function deleteMedia() {
     return;
   }
 
-  await useFetch(`/api/admin/:tenantId/media/${toDelete.value}`, {
+  await useFetch(`/api/backoffice/:tenantId/media/${toDelete.value}`, {
     ...useDefaultFetchOpts(),
     method: 'DELETE',
   });
@@ -88,7 +85,7 @@ async function deleteMedia() {
           class="block w-full h-full"
           data-cy="media-link"
           :to="{
-            name: 'admin-tenantId-media-mediaId',
+            name: 'backoffice-tenantId-media-mediaId',
             params: { mediaId: elem.id },
             query: { ...route.query },
           }"

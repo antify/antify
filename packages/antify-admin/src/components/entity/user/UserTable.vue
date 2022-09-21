@@ -1,7 +1,4 @@
-<script
-  lang="ts"
-  setup
->
+<script lang="ts" setup>
 import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
@@ -61,7 +58,7 @@ if (!props.singleCol) {
         data-cy="user-link"
         class="w-full block"
         :to="{
-          name: 'admin-tenantId-users-userId',
+          name: 'backoffice-tenantId-users-userId',
           params: { userId: elem.id },
         }"
       >
