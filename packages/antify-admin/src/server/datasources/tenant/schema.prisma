@@ -15,6 +15,7 @@ model MailTemplate {
   content   String    @db.Text
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+  tenantId  String
 }
 
 model Media {
@@ -24,4 +25,5 @@ model Media {
   fileType  String
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+  tenantId  String
 }

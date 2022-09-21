@@ -1,24 +1,21 @@
-(async () => {
-  const {
-    PrismaClient,
-  } = require('../../node_modules/@internal/prisma/tenant/index.js');
+import { PrismaClient } from '../../../node_modules/@internal/prisma/tenant/index.js';
+import { MailTemplateId } from '../static/mailTemplates';
+
+export async function seedTenant() {
   const prisma = new PrismaClient({
     datasources: { db: { url: process.env.TENANT_DATABASE_URL } },
   });
 
-  console.log('Install required data');
-
+  // Load required application data
   const defaultMailTemplates = [
     {
-      // TODO:: use MailTemplateId.RESET_PASSWORD from /server/datasources/static
-      id: 'RESET_PASSWORD',
+      id: MailTemplateId.RESET_PASSWORD,
       title: 'Passwort zurücksetzen',
       content: '<div>Passwort zurücksetzten</div>',
       info: 'Wird versendet, wenn der Nutzer auf "Paswort vergessen" klickt.',
     },
     {
-      // TODO:: use MailTemplateId.RESET_PASSWORD from /server/datasources/static
-      id: 'INVITE_USER',
+      id: MailTemplateId.INVITE_USER,
       title: 'Neuen Benutzer einladen',
       content: `
         <div contenteditable="true" translate="no" class="ProseMirror" tabindex="0">
@@ -47,5 +44,7 @@
     })
   );
 
-  console.log('Everything ready to go 🚀🚀🚀');
-})();
+  console.log('Tenant seeds sucessfully loaded 🌱🌱🌱');
+}
+
+

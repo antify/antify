@@ -8,22 +8,16 @@
     "generate": "nuxi generate",
     "preview": "nuxi preview",
     "core:generate": "npx prisma generate --schema=./server/datasources/core/schema.merged.prisma",
-    "core:migration:make": "npx prisma migrate dev --schema=./server/datasources/core/schema.merged.prisma --name",
-    "core:migration:reset": "npx prisma migrate reset --force --preview-feature --schema=./server/datasources/core/schema.merged.prisma",
+    "core:migration:make": "npx prisma migrate dev --skip-seed --schema=./server/datasources/core/schema.merged.prisma --name",
+    "core:migration:reset": "npx prisma migrate reset --force --preview-feature --skip-seed --schema=./server/datasources/core/schema.merged.prisma",
     "core:migration:reinit": "rm -rf server/datasources/core/migrations && pnpm core:migration:make init",
     "core:migration:migrate": "npx prisma migrate deploy --preview-feature --schema=./server/datasources/core/schema.merged.prisma",
-    "core:load:install": "npx ts-node ./command/install/core.install.ts",
-    "core:load:fixtures": "npx ts-node ./command/fixtures/core.fixtures.ts",
-    "core:rebuild": "pnpm core:migration:reset && pnpm core:load:install && pnpm core:load:fixtures",
     "tenant:generate": "npx prisma generate --schema=./server/datasources/tenant/schema.merged.prisma",
-    "tenant:migration:make": "npx prisma migrate dev --schema=./server/datasources/tenant/schema.merged.prisma --name",
-    "tenant:migration:reset": "npx prisma migrate reset --force --preview-feature --schema=./server/datasources/tenant/schema.merged.prisma",
+    "tenant:migration:make": "npx prisma migrate dev --skip-seed --schema=./server/datasources/tenant/schema.merged.prisma --name",
+    "tenant:migration:reset": "npx prisma migrate reset --skip-seed --force --preview-feature --schema=./server/datasources/tenant/schema.merged.prisma",
     "tenant:migration:reinit": "rm -rf server/datasources/tenant/migrations && pnpm tenant:migration:make init",
     "tenant:migration:migrate": "npx prisma migrate deploy --preview-feature --schema=./server/datasources/tenant/schema.merged.prisma",
-    "tenant:load:install": "npx ts-node ./command/install/tenant.install.ts",
-    "tenant:load:fixtures": "npx ts-node ./command/fixtures/tenant.fixtures.ts",
-    "tenant:rebuild": "pnpm tenant:migration:reset && pnpm tenant:load:install && pnpm tenant:load:fixtures",
-    "app:rebuild": "pnpm tenant:rebuild && pnpm core:rebuild",
+    "db:rebuild": "pnpm core:migration:reset && pnpm tenant:migration:reset && npx prisma db seed && ts-node server/datasources/fixtures.ts",
     "docker:start": "pnpm app:rebuild && nuxi dev"
   },
   "devDependencies": {
@@ -53,5 +47,8 @@
     "nuxt": "3.0.0-rc.6",
     "prisma": "^3.15.1",
     "uuid": "^8.3.2"
+  },
+  "prisma": {
+    "seed": "ts-node server/datasources/seed.ts"
   }
 }
