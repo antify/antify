@@ -5,7 +5,8 @@
     "packages/*/src",
     "packages/*/e2e",
     "packages/*",
-    "playground/*"
+    "playground",
+    "project"
   ],
   "engines": {
     "node": "^16.16.0",

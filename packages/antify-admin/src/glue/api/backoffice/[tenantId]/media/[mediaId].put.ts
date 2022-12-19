@@ -3,7 +3,7 @@ import {
   isTypeOfRule,
   Types,
   notBlankRule,
-} from '@antify/ant-validate';
+} from '@antify/validate';
 
 export type Response = {
   default?: {

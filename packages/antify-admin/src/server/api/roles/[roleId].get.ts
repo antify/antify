@@ -1,48 +1,35 @@
-import prisma from '~~/server/datasources/core/client';
 import { useGuard } from '~~/composables/useGuard';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { Response } from '~~/glue/api/backoffice/[tenantId]/roles/[roleId].get';
-import { HttpNotFoundError, HttpForbiddenError } from '../../errors';
-import { checkUserTenantAccess } from '~~/server/service/roleService';
+import { HttpForbiddenError } from '../../errors';
+import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
+import { PermissionId } from '~~/server/datasources/static/permissions';
+import { Role } from '~~/server/datasources/core/schemas/roles';
 
-export default defineEventHandler<Response>(async (event) => {
+export default defineEventHandler(async (event) => {
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
 
-  if (!guard.isUserLoggedIn) {
+  if (!guard.hasPermissionTo(PermissionId.CAN_UPDATE_ROLE, tenantId)) {
     throw new HttpForbiddenError();
   }
 
-  // TODO:: check permission
-
-  const role = await prisma.role.findUnique({
-    select: {
-      id: true,
-      name: true,
-      isAdmin: true,
-      permissions: {
-        select: {
-          permissionId: true,
-        },
-      },
-    },
-    where: {
-      id: event.context.params.roleId,
-    },
-  });
+  const RoleModel = (await useCoreClient().connect()).getModel<Role>('roles');
+  const role = await RoleModel.findById(event.context.params.roleId);
 
   if (!role) {
-    throw new HttpNotFoundError();
+    return {
+      notFound: {
+        errors: ['Not Found'],
+      },
+    };
   }
-
-  const access = await checkUserTenantAccess(event.context.params.roleId);
 
   return {
     default: {
-      ...role,
-      permissions: role.permissions.map(
-        (permission) => permission.permissionId
-      ),
-      canDelete: access.length === 0,
+      id: role.id,
+      name: role.name,
+      isAdmin: role.isAdmin,
+      permissions: role.permissions,
     },
   };
 });

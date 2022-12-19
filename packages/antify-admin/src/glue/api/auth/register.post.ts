@@ -1,10 +1,10 @@
-import { useValidator } from '../../../../../ant-validate/src/useValidator';
-import { notBlankRule } from '../../../../../ant-validate/src/rules/notBlank.rule';
-import { emailRule } from '../../../../../ant-validate/src/rules/email.rule';
 import {
+  useValidator,
+  notBlankRule,
+  emailRule,
   isTypeOfRule,
   Types,
-} from '../../../../../ant-validate/src/rules/isTypeOf.rule';
+} from '@antify/validate';
 
 export type Response = {
   default?: {

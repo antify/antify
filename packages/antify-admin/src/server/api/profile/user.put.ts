@@ -1,79 +1,47 @@
-import prisma from '~~/server/datasources/core/client';
 import { useGuard } from '~~/composables/useGuard';
-import { PermissionId } from '~~/server/datasources/static/permissions';
-import { HttpForbiddenError } from '~~/server/errors';
-import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
+import { HttpUnauthorizedError } from '~~/server/errors';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { useTenantHeader } from '~~/server/utils/useTenantHeader';
-import { Input, Response, validator } from '~~/glue/api/profile/user.put';
-import { useMediaService } from '../../service/useMediaService';
+import { Input, validator } from '~~/glue/api/profile/user.put';
+import { authenticatedMiddleware } from '~~/server/guard/authenticated.middleware';
+import { User } from '~~/server/datasources/core/schemas/user';
 
-export default defineEventHandler<Response>(async (event) => {
-  tenantContextMiddleware(event);
+export default defineEventHandler(async (event) => {
+  authenticatedMiddleware(event);
 
   const guard = useGuard(useAuthorizationHeader(event));
-  const tenantId = useTenantHeader(event);
-  const userId = guard.token.id;
-  const user = await prisma.user.findUnique({
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      profilePicture: true,
-    },
-    where: {
-      id: userId,
-    },
-  });
-
-  if (!user) {
-    throw new HttpForbiddenError();
-  }
-
-  if (
-    !guard.hasPermissionTo(PermissionId.CAN_UPDATE_USER, tenantId) &&
-    !(
-      user.id === userId &&
-      guard.hasPermissionTo(PermissionId.CAN_UPDATE_SELF, tenantId)
-    )
-  ) {
-    throw new HttpForbiddenError();
-  }
-
-  const requestData = await useBody<Input>(event);
+  const requestData = await readBody<Input>(event);
 
   validator.validate(requestData);
 
   if (validator.hasErrors()) {
     return {
-      badRequest: {
-        errors: validator.getErrors(),
-      },
+      errors: validator.getErrors(),
+      errorType: 'BAD_REQUEST',
     };
   }
 
-  const updatedUser = await prisma.user.update({
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      profilePicture: true,
-    },
-    where: {
-      id: userId,
-    },
-    data: {
-      email: requestData.email,
-      name: requestData.name,
-    },
-  });
+  const user = await (await useCoreClient().connect())
+    .getModel<User>('users')
+    .findById(guard.token?.id);
+
+  if (!user) {
+    // Weird error here... There is a token to a user which does not exists?
+    throw new HttpUnauthorizedError();
+  }
+
+  user.name = requestData.name;
+  user.email = requestData.email;
+
+  await user.save();
 
   return {
     default: {
-      ...updatedUser,
-      url: user.profilePicture
-        ? useMediaService(user.profilePicture).getProfileUrl()
-        : null,
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      // url: user.profilePicture
+      //   ? useMediaService(user.profilePicture).getProfileUrl()
+      //   : null,
     },
   };
 });

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Response as GetResponse } from '~~/glue/api/profile/user.get';
 import { faCamera, faX } from '@fortawesome/free-solid-svg-icons';
-import { useDefaultFetchOpts } from '../../../composables/useDefaultFetchOpts';
 import {
   validator as baseValidator,
   Response as PutResponse,

@@ -1,21 +1,16 @@
 version: '3'
 
 services:
-  core:
-    image: mysql:8
-    ports:
-      - '3307:3306'
+  database:
+    image: mongo:latest
+    restart: always
     environment:
-      - MYSQL_USE=core
-      - MYSQL_PASSWORD=core
-      - MYSQL_DATABASE=core
-      - MYSQL_ROOT_PASSWORD=root
-  tenant:
-    image: mysql:8
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_USERNAME: core
+      MONGO_INITDB_PASSWORD: core
+      MONGO_INITDB_DATABASE: core
     ports:
-      - '3306:3306'
-    environment:
-      - MYSQL_USE=tenant
-      - MYSQL_PASSWORD=tenant
-      - MYSQL_DATABASE=tenant
-      - MYSQL_ROOT_PASSWORD=root
+      - 27017:27017
+    volumes:
+      - ./docker/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro

@@ -225,10 +225,7 @@ async function deleteMedia() {
       v-model:active="deleteDialogActive"
       title="Datei löschen"
     >
-      <div>
-        Sind sie sicher das Sie diese Datei wirklich, sicherlich und
-        unwiederruflich löschen wollen?
-      </div>
+      <div>Sind sie sicher das Sie diese Datei wirklich löschen wollen?</div>
 
       <template #buttons>
         <AntButton

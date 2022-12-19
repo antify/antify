@@ -7,48 +7,32 @@
     "dev": "nuxi dev",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
-    "core:generate": "npx prisma generate --schema=./server/datasources/core/schema.merged.prisma",
-    "core:migration:make": "npx prisma migrate dev --skip-seed --schema=./server/datasources/core/schema.merged.prisma --name",
-    "core:migration:reset": "npx prisma migrate reset --force --preview-feature --skip-seed --schema=./server/datasources/core/schema.merged.prisma",
-    "core:migration:reinit": "rm -rf server/datasources/core/migrations && pnpm core:migration:make init",
-    "core:migration:migrate": "npx prisma migrate deploy --preview-feature --schema=./server/datasources/core/schema.merged.prisma",
-    "tenant:generate": "npx prisma generate --schema=./server/datasources/tenant/schema.merged.prisma",
-    "tenant:migration:make": "npx prisma migrate dev --skip-seed --schema=./server/datasources/tenant/schema.merged.prisma --name",
-    "tenant:migration:reset": "npx prisma migrate reset --skip-seed --force --preview-feature --schema=./server/datasources/tenant/schema.merged.prisma",
-    "tenant:migration:reinit": "rm -rf server/datasources/tenant/migrations && pnpm tenant:migration:make init",
-    "tenant:migration:migrate": "npx prisma migrate deploy --preview-feature --schema=./server/datasources/tenant/schema.merged.prisma",
-    "db:rebuild": "pnpm core:migration:reset && pnpm tenant:migration:reset && npx prisma db seed && ts-node server/datasources/fixtures.ts",
-    "docker:start": "pnpm app:rebuild && nuxi dev"
+    "docker:start": "pnpm app:rebuild && nuxi dev",
+    "db:seed": "npx ts-node ./server/command/seed-db.ts"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.2.0",
-    "@nuxt/kit": "3.0.0-rc.6",
-    "@nuxtjs/tailwindcss": "^5.0.3",
+    "@nuxt/kit": "3.0.0",
+    "@nuxtjs/tailwindcss": "^6.1.3",
+    "@types/jsonwebtoken": "^8.5.9",
     "@types/nodemailer": "^6.4.4",
     "autoprefixer": "^10.4.4",
+    "nuxt": "3.0.0",
     "postcss": "^8.4.12",
-    "prisma-merge-schema": "^1.0.0",
     "shelljs": "^0.8.5",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.4",
     "vite": "^2.3.0"
   },
   "dependencies": {
-    "@antify/ant-auth": "1.0.0",
     "@antify/ant-database": "1.0.0",
-    "@antify/ant-validate": "1.0.0",
-    "@antify/antify-ui": "0.0.69",
-    "@prisma/client": "^3.15.1",
+    "@antify/antify-ui": "0.0.70",
+    "@antify/validate": "1.0.0",
     "@types/formidable": "^2.0.5",
     "formidable": "^2.0.1",
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
     "nodemailer": "^6.7.7",
-    "nuxt": "3.0.0-rc.6",
-    "prisma": "^3.15.1",
     "uuid": "^8.3.2"
-  },
-  "prisma": {
-    "seed": "ts-node server/datasources/seed.ts"
   }
 }

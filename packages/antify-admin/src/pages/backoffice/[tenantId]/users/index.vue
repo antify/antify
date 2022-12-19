@@ -94,7 +94,7 @@ async function inviteUser() {
 
       <AntModal
         v-model:active="inviteUserActive"
-        title="Neuen Benutzer einladen"
+        title="Invite User"
       >
         <AntForm
           id="invite-user-form"
@@ -102,7 +102,7 @@ async function inviteUser() {
         >
           <AntInput
             v-model:value="inviteEmail"
-            label="E-Mail Adresse"
+            label="Mail"
             data-cy="invite-email"
             description="Geben Sie die E-Mail-Adresse des Nutzers ein den Sie einladen möchten"
             :errors="inviteValidator.errorMap['email']"
@@ -132,14 +132,14 @@ async function inviteUser() {
               inviteValidator.errorMap['roleId'].length > 0
             "
             :validator="(val: string) => inviteValidator.validateProperty('roleId', val, 1)"
-            label="Einladen als"
+            label="Invite as"
             data-cy="role-select"
           />
         </AntForm>
 
         <template #buttons>
           <AntButton
-            label="Schließen"
+            label="Cancel"
             @click="inviteUserActive = false"
           />
 
@@ -149,7 +149,7 @@ async function inviteUser() {
             form="invite-user-form"
             primary
           >
-            Benutzer einladen
+            Invite
           </AntButton>
         </template>
       </AntModal>

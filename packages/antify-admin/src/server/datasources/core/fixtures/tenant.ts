@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import mongoose from 'mongoose';
 
 export const tenantFixtures = {
   create(amount = 1, data = {}) {
@@ -14,7 +15,7 @@ export const tenantFixtures = {
   createOne(data = {}) {
     return {
       ...{
-        id: faker.datatype.uuid(),
+        _id: new mongoose.Types.ObjectId().toHexString(),
         name: faker.company.companyName(),
       },
       ...data,

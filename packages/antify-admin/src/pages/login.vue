@@ -132,7 +132,7 @@ onBeforeUnmount(() => {
 
       <template #beforeSubmit>
         <div class="flex justify-end w-full text-blue-500 text-sm">
-          <NuxtLink :to="{ name: 'forgotPassword' }">
+          <NuxtLink :to="{ name: 'forgot-password' }">
             Passwort vergessen?
           </NuxtLink>
         </div>

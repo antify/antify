@@ -4,7 +4,7 @@ import {
   Types,
   isTypeOfRule,
   useValidator,
-} from '@antify/ant-validate';
+} from '@antify/validate';
 
 export type AuthLoginPostResponse = {
   default?: {

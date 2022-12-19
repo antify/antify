@@ -1,30 +1,9 @@
-import { defineNuxtConfig } from 'nuxt';
 import AntDatabase from '..';
-import { resolve } from 'path';
 
 export default defineNuxtConfig({
   modules: [AntDatabase],
   antDatabase: {
-    schemas: {
-      core: {
-        inputs: [
-          resolve('./playground/server/datasources/core/schema.prisma'),
-          resolve(
-            './playground/server/datasources/core-extension/schema.prisma'
-          ),
-        ],
-        output: resolve(
-          './playground/server/datasources/core/schema.merged.prisma'
-        ),
-      },
-      tenant: {
-        inputs: [
-          resolve('./playground/server/datasources/tenant/schema.prisma'),
-        ],
-        output: resolve(
-          './playground/server/datasources/tenant/schema.merged.prisma'
-        ),
-      },
-    },
+    coreMongoUrl: 'mongodb://core:core@localhost:27017/core',
+    tenantMongoUrl: 'mongodb://root:root@127.0.0.1:27017',
   },
 });

@@ -2,11 +2,9 @@
 import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
-import { Response } from '~~/glue/api/backoffice/[tenantId]/roles/roles.get';
 
 const route = useRoute();
-
-const { data: roles } = await useFetch<Response>(
+const { data: roles } = await useFetch(
   '/api/roles/roles',
   useDefaultFetchOpts()
 );

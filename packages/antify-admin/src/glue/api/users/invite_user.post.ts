@@ -4,7 +4,7 @@ import {
   Types,
   notBlankRule,
   emailRule,
-} from '@antify/ant-validate';
+} from '@antify/validate';
 
 export type Input = {
   email: string;

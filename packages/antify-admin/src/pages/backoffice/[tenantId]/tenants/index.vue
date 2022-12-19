@@ -7,7 +7,10 @@ const search = ref('');
 <template>
   <AntContent>
     <template #head>
-      <AntInput v-model:value="search" placeholder="Suche" />
+      <AntInput
+        v-model:value="search"
+        placeholder="Suche"
+      />
     </template>
 
     <template #body>

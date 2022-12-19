@@ -7,12 +7,10 @@ const role = ref<{
   name: string;
   isAdmin: boolean;
   permissions: string[];
-  canDelete: boolean;
 }>({
   name: '',
   isAdmin: false,
   permissions: [],
-  canDelete: false,
 });
 
 const { data: permissions } = await useFetch(

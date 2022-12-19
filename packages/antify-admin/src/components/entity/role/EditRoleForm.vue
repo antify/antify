@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { Checkbox } from '@antify/antify-ui/dist/types/Checkbox.type';
 import { Default as RoleDefault } from '~~/glue/api/backoffice/[tenantId]/roles/[roleId].get';
-import { permissions } from '../../../server/datasources/static/permissions';
 
 type Permission = {
   id: string;
@@ -21,7 +20,6 @@ const allPermissions = ref([]);
 const checkboxes = computed<Checkbox[]>(() => {
   return (
     props.permissions?.map((permission) => {
-      console.log('Perm', permission);
       allPermissions.value.push(permission.id);
 
       return {

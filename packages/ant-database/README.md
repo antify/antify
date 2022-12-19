@@ -2,14 +2,18 @@
 
 It does:
 - [x] Merges multiple schemas to one
-- [x] Generate prisma types for schemas
 - [x] Provide a client for each database
+- [ ] Make seed logic
+- [ ] Make install logic
+- [ ] Make migration logic
 - [ ] Handle multiple migrations from different sources
 - [ ] Comes with a set of cli commands
 - [x] Provides a core and tenant client
-- [ ] Handle multiple databases for one schema (tenancy)
-- [ ] Define how things can be extended trought different schemas
-- [ ] Make prisma seed logic available for multiple components
+- [x] Handle multiple databases for one schema (tenancy)
+- [x] Define how things can be extended trought different schemas
+- [ ] Find a propper solution to call client.connect only once
+- [ ] Write docs
+- [ ] Improve security 
 
 ## Development
 

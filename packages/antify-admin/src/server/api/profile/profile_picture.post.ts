@@ -1,19 +1,24 @@
 import { tenantContextMiddleware } from '../../guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '../../utils/useAuthorizationHeader';
-import { useTenantHeader } from '../../utils/useTenantHeader';
 import { PermissionId } from '../../datasources/static/permissions';
 import { HttpBadRequestError, HttpForbiddenError } from '../../errors';
 import { useGuard } from '~~/composables/useGuard';
 import { useMediaStorage } from '../../service/useMediaService';
 import formidable, { Files, File } from 'formidable';
 import prisma from '~~/server/datasources/core/client';
+import { User } from '~~/server/datasources/core/schemas/user';
 
 export default defineEventHandler(async (event) => {
-  tenantContextMiddleware(event);
+  const tenantId = tenantContextMiddleware(event);
 
   const guard = useGuard(useAuthorizationHeader(event));
-  const tenantId = useTenantHeader(event);
   const userId = guard.token.id;
+
+  const coreClient = await useCoreClient().connect();
+  const user = await coreClient
+    .getModel<User>('users')
+    .findById(guard.token?.id);
+
   const user = await prisma.user.findUnique({
     select: {
       id: true,

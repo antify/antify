@@ -4,43 +4,35 @@ import { HttpForbiddenError } from '~~/server/errors';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
-import prisma from '~~/server/datasources/tenant/client';
 import {
   Input,
   Response,
   validator,
 } from '~~/glue/api/backoffice/[tenantId]/media/[mediaId].put';
 import { useMediaService } from '../../../../service/useMediaService';
+import { Media } from '~~/server/datasources/tenant/schemas/media';
 
 export default defineEventHandler<Response>(async (event) => {
-  tenantContextMiddleware(event);
-
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
-  const tenantId = useTenantHeader(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_EDIT_MEDIA, tenantId)) {
     throw new HttpForbiddenError();
   }
 
-  const media = await prisma.media.findUnique({
-    select: {
-      id: true,
-      title: true,
-    },
-    where: {
-      id: event.context.params.mediaId,
-    },
-  });
+  const tenantClient = await useTenantClient().connect(tenantId);
+  const MediaModel = tenantClient.getModel<Media>('medias');
+
+  const media = await MediaModel.findById(event.context.params.mediaId);
 
   if (!media) {
     return {
-      notFound: {
-        errors: ['Not found'],
-      },
+      errors: ['Not found'],
+      errorType: 'NOT_FOUND',
     };
   }
 
-  const requestData = await useBody<Input>(event);
+  const requestData = await readBody<Input>(event);
 
   validator.validate(requestData);
 
@@ -52,27 +44,16 @@ export default defineEventHandler<Response>(async (event) => {
     };
   }
 
-  const updatedMedia = await prisma.media.update({
-    select: {
-      id: true,
-      title: true,
-      fileName: true,
-      fileType: true,
-    },
-    where: {
-      id: event.context.params.mediaId,
-    },
-    data: {
-      title: requestData.title,
-    },
-  });
+  media.title = requestData.title;
+
+  await media.save();
 
   return {
     default: {
-      id: updatedMedia.id,
-      title: updatedMedia.title,
-      url: useMediaService(updatedMedia).getMediaUrl(tenantId),
-      fileType: updatedMedia.fileType,
+      id: media.id,
+      title: media.title,
+      url: useMediaService(media).getMediaUrl(tenantId),
+      fileType: media.fileType,
     },
   };
 });

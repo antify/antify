@@ -1,9 +1,11 @@
-import prisma from "~~/server/datasources/core/client";
+import { User } from '~~/server/datasources/core/schemas/user';
 
 export const apiAppInstallService = {
-    requireInstall: async () => {
-        const tenant = await prisma.tenant.findFirst();
+  requireInstall: async () => {
+    const coreClient = await useCoreClient().connect();
 
-        return !!!tenant;
-    }
-}
+    const User = coreClient.getModel<User>('users');
+
+    return (await User.find({})).length <= 0;
+  },
+};

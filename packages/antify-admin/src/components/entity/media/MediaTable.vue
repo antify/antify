@@ -117,8 +117,7 @@ async function deleteMedia() {
       title="Datei löschen"
     >
       <div data-cy="media-delete-dialog-text">
-        Sind sie sicher das Sie diese Datei wirklich, sicherlich und
-        unwiederruflich löschen wollen?
+        Sind sie sicher das Sie diese Datei wirklich löschen wollen?
       </div>
 
       <template #buttons>

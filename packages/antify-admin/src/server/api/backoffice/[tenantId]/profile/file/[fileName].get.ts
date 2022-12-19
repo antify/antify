@@ -1,39 +1,31 @@
-import { useAuthorizationHeader } from '../../../../../utils/useAuthorizationHeader';
-import { PermissionId } from '../../../../../datasources/static/permissions';
-import prisma from '~~/server/datasources/core/client';
-import { useTenantHeader } from '../../../../../utils/useTenantHeader';
-import { tenantContextMiddleware } from '../../../../../guard/tenantContext.middleware';
-import { HttpForbiddenError, HttpNotFoundError } from '../../../../../errors';
+import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
+import { PermissionId } from '~~/server/datasources/static/permissions';
+import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
+import { HttpForbiddenError, HttpNotFoundError } from '~~/server/errors';
 import { sendStream } from 'h3';
-import { useMediaService } from '../../../../../service/useMediaService';
+import { useMediaService } from '~~/server/service/useMediaService';
 import { useGuard } from '~~/composables/useGuard';
+import { User } from '~~/server/datasources/core/schemas/user';
 
+// TODO:: this endpoint makes no sense. Redesign it to use cockpit media endpoint
 export default defineEventHandler(async (event) => {
-  tenantContextMiddleware(event);
-
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
-  const tenantId = useTenantHeader(event);
-
-  const userId = guard.token.id;
-  const user = await prisma.user.findUnique({
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      profilePicture: true,
-    },
-    where: {
-      id: userId,
-    },
-  });
 
   if (!guard.hasPermissionTo(PermissionId.CAN_READ_MEDIA, tenantId)) {
     throw new HttpForbiddenError();
   }
 
-  if (!user.profilePicture) {
+  const user = await (await useCoreClient().connect())
+    .getModel<User>('users')
+    .findById(guard.token?.id);
+
+  if (!user?.profilePicture) {
     throw new HttpNotFoundError();
   }
 
-  return sendStream(event, useMediaService(user.profilePicture).createReadStream());
+  return sendStream(
+    event,
+    useMediaService(user.profilePicture).createReadStream()
+  );
 });

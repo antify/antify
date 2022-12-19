@@ -281,8 +281,7 @@ async function deleteTenant() {
       title="Mandant löschen"
     >
       <div>
-        Sind sie sicher das Sie diesen Mandanten wirklich, sicherlich und
-        unwiederruflich löschen wollen?
+        Sind sie sicher das Sie diesen Mandanten wirklich löschen wollen?
       </div>
 
       <template #buttons>

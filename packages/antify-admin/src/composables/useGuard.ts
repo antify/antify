@@ -12,7 +12,7 @@ export type CustomToken = {
 
 export type InviteToken = {
   id: string;
-  tenantId: string;
+  tenantId: string | null;
 };
 
 export type UserToken = {
@@ -35,12 +35,13 @@ export const useGuard = (rawToken: string | null) => {
     rawToken,
     token,
     isUserLoggedIn: token?.exp < new Date().getTime(),
+    isSuperAdmin: () => token?.isSuperAdmin || false,
     hasPermissionTo: (permission: string[] | string, tenantId: string) => {
-      if (token.isSuperAdmin) {
+      if (token?.isSuperAdmin) {
         return true;
       }
 
-      const tenantAccess = token.tenantsAccess.find(
+      const tenantAccess = (token?.tenantsAccess || []).find(
         (tenantAccessItem) => tenantAccessItem.tenantId === tenantId
       );
 

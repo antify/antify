@@ -1,4 +1,3 @@
-import prisma from '~~/server/datasources/core/client';
 import { useGuard } from '~~/composables/useGuard';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { HttpForbiddenError } from '~~/server/errors';
@@ -6,6 +5,9 @@ import { authenticatedMiddleware } from '~~/server/guard/authenticated.middlewar
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { Response } from '~~/glue/api/tenants/tenants.get';
+import { Paginator } from '~~/server/utils/paginator';
+import { Tenant } from '~~/server/datasources/core/schemas/tenant';
+import { Model } from 'mongoose';
 
 export default defineEventHandler<Response>(async (event) => {
   authenticatedMiddleware(event);
@@ -18,41 +20,33 @@ export default defineEventHandler<Response>(async (event) => {
   }
 
   let where = {};
-  const page: number = parseInt(useQuery(event)?.page as string, 10) || 1;
-  const itemsPerPage: number =
-    parseInt(useQuery(event)?.itemsPerPage as string, 10) || 20;
 
-  if (!guard.token.isSuperAdmin) {
-    where = {
-      id: {
-        in: guard.token.tenantsAccess.map(
-          (tenantAccess) => tenantAccess.tenantId
-        ),
-      },
-    };
-  }
+  // TODO:: Only show the users tenants here
+  // if (!guard.token?.isSuperAdmin) {
+  //   where = {
+  //     id: {
+  //       in: guard.token.tenantsAccess.map(
+  //         (tenantAccess) => tenantAccess.tenantId
+  //       ),
+  //     },
+  //   };
+  // }
 
-  const tenants = await prisma.tenant.findMany({
-    select: {
-      id: true,
-      name: true,
-    },
-    where,
-    orderBy: { name: 'asc' },
-    take: itemsPerPage,
-    skip: page * itemsPerPage - itemsPerPage,
-  });
+  const paginator = new Paginator(event, 'title');
 
-  const itemsCount = await prisma.tenant.count();
+  const TenantModel = (await useCoreClient().connect()).getModel<Tenant>(
+    'tenants'
+  );
+
+  const tenants = await paginator.paginateQuery(TenantModel.find(where));
 
   return {
     default: {
-      data: tenants,
-      pagination: {
-        page,
-        itemsPerPage,
-        count: Math.ceil(itemsCount / itemsPerPage),
-      },
+      data: tenants.map((tenant: Model<Tenant>) => ({
+        id: tenant.id,
+        name: tenant.name,
+      })),
+      pagination: await paginator.getPaginationResponse(TenantModel),
     },
   };
 });

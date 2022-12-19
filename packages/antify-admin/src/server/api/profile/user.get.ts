@@ -1,37 +1,32 @@
-import prisma from '~~/server/datasources/core/client';
 import { useGuard } from '~~/composables/useGuard';
-import { HttpNotFoundError } from '~~/server/errors';
 import { authenticatedMiddleware } from '~~/server/guard/authenticated.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { Response } from '~~/glue/api/profile/user.get';
 import { useMediaService } from '../../service/useMediaService';
+import { User } from '~~/server/datasources/core/schemas/user';
 
-export default defineEventHandler<Response>(async (event) => {
+export default defineEventHandler(async (event) => {
   authenticatedMiddleware(event);
 
   const guard = useGuard(useAuthorizationHeader(event));
-  const user = await prisma.user.findUnique({
-    where: {
-      id: guard.token.id,
-    },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      profilePicture: true,
-    },
-  });
+  const user = await (await useCoreClient().connect())
+    .getModel<User>('users')
+    .findById(guard.token?.id);
 
   if (!user) {
-    throw new HttpNotFoundError();
+    return {
+      errors: ['Not Found'],
+      errorType: 'NOT_FOUND',
+    };
   }
 
   return {
     default: {
-      ...user,
-      url: user.profilePicture
-        ? useMediaService(user.profilePicture).getProfileUrl()
-        : null,
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      // url: user.profilePicture
+      //   ? useMediaService(user.profilePicture).getProfileUrl()
+      //   : null,
     },
   };
 });
