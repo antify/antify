@@ -1,15 +1,8 @@
 <script setup lang="ts">
-import { Response as GetResponse } from '~~/glue/api/profile/user.get';
 import { faCamera, faX } from '@fortawesome/free-solid-svg-icons';
-import {
-  validator as baseValidator,
-  Response as PutResponse,
-} from '~~/glue/api/profile/user.put';
+import { validator as baseValidator } from '~~/glue/api/profile/user.put';
 
-const { data } = await useFetch<GetResponse | PutResponse>(
-  `/api/profile/user`,
-  useDefaultFetchOpts()
-);
+const { data } = await useFetch(`/api/profile/user`, useDefaultFetchOpts());
 
 const { $toaster } = useNuxtApp();
 const errors = ref([]);
@@ -19,17 +12,16 @@ const validator = ref(baseValidator);
 const profilePicture = ref({});
 
 async function onSubmit() {
-  loading.value = true;
   errors.value = [];
 
   validator.value.validate(data.value.default, 1);
 
   if (validator.value.hasErrors()) {
-    loading.value = false;
     return;
   }
 
-  const { data: response } = await useFetch<PutResponse>(`/api/profile/user`, {
+  loading.value = true;
+  const { data: response } = await useFetch(`/api/profile/user`, {
     ...useDefaultFetchOpts(),
     ...{
       method: 'PUT',
@@ -98,7 +90,10 @@ async function removeProfilePicture() {
         <li v-for="error in errors">{{ error }}</li>
       </ul>
 
-      <form class="px-4 py-4 space-y-4" @submit.prevent="onSubmit">
+      <form
+        class="px-4 py-4 space-y-4"
+        @submit.prevent="onSubmit"
+      >
         <div data-cy="name">
           <AntInput
             v-model:value="data.default.name"
@@ -171,7 +166,11 @@ async function removeProfilePicture() {
 
         <div>TODO:: Profile password</div>
 
-        <AntButton type="submit" data-cy="submit" :primary="true">
+        <AntButton
+          type="submit"
+          data-cy="submit"
+          :primary="true"
+        >
           Speichern
         </AntButton>
       </form>

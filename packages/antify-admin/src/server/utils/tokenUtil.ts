@@ -1,27 +1,12 @@
 import jwt from 'jsonwebtoken';
 import { H3Event, setCookie } from 'h3';
 import { TOKEN_COOKIE_KEY, CustomToken } from '~~/composables/useGuard';
-import crypto from 'crypto';
 import { InviteToken } from '../../composables/useGuard';
 import jwtDecode from 'jwt-decode';
 import { User } from '../../glue/api/global/me.get';
 import { User as UserDatabaseSchema } from '~~/server/datasources/core/schemas/user';
 import { UserTenantAccess } from '../datasources/core/schemas/userTenantAccess';
 import { Role } from '../datasources/core/schemas/roles';
-
-export const hashPassword = async (password: string): Promise<string> => {
-  const config = useRuntimeConfig();
-
-  return new Promise((resolve, reject) => {
-    crypto.scrypt(password, config.passwordSalt, 64, (error, derivedKey) => {
-      if (error) {
-        return reject(error);
-      }
-
-      resolve(derivedKey.toString('hex'));
-    });
-  });
-};
 
 export const tokenValid = async (token: string): Promise<boolean> => {
   // TODO:: Security dude?

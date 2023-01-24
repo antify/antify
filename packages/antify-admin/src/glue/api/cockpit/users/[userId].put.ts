@@ -11,19 +11,6 @@ export type Input = {
   name: string;
 };
 
-export type Response = {
-  default?: {
-    id: string;
-    email: string;
-    name: string;
-    isAdmin: boolean;
-    isBanned: boolean;
-  };
-  badRequest?: {
-    errors: string[];
-  };
-};
-
 export type User = {
   id: string;
   email: string;

@@ -1,4 +1,4 @@
-import { Input, validator } from '~~/glue/api/tenants/tenants.post';
+import { Input, validator } from '~~/glue/api/cockpit/tenants/tenants.post';
 import { isSuperAdminMiddleware } from '~~/server/guard/isSuperAdmin.middleware';
 import { Tenant } from '~~/server/datasources/core/schemas/tenant';
 

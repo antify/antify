@@ -1,5 +1,5 @@
 import { resolve } from 'path';
-import AntDatabase from '@antify/ant-database';
+import AntDatabase from '@antify/ant-database-module';
 
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({

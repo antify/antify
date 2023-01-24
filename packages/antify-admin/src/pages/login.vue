@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { routeLocationKey } from 'vue-router';
 import {
   authLoginPostValidator,
   AuthLoginPostInput,
@@ -57,7 +56,7 @@ async function onLogin() {
   }
 
   if (data.value.default) {
-    await navigateTo({ name: 'backoffice' });
+    return await navigateTo({ name: 'backoffice' });
   }
 
   if (

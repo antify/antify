@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { Input, validator } from '~~/glue/api/tenants/tenants.post';
+import { Input, validator } from '~~/glue/api/cockpit/tenants/tenants.post';
 
 const tenant = reactive<Input>({ name: '' });
 const { $toaster } = useNuxtApp();

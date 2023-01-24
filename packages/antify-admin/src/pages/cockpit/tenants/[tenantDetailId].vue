@@ -2,7 +2,7 @@
 import {
   validator as baseValidator,
   Response as PutResponse,
-} from '~~/glue/api/tenants/[tenantDetailId].put';
+} from '~~/glue/api/backoffice/[tenantId]/tenant/index.put';
 import TenantTable from '~~/components/pages/cockpit/tenant/TenantTable.vue';
 import { AntTabsType } from '@antify/antify-ui';
 

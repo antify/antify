@@ -1,28 +1,48 @@
-import { tenantContextMiddleware } from '../../guard/tenantContext.middleware';
-import { useAuthorizationHeader } from '../../utils/useAuthorizationHeader';
+import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
+import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useGuard } from '~~/composables/useGuard';
-import { useTenantHeader } from '../../utils/useTenantHeader';
-import { PermissionId } from '../../datasources/static/permissions';
-import { HttpForbiddenError, HttpBadRequestError } from '../../errors';
-import { Input } from '../../../glue/api/users/invite_user.post';
-import { useMailer } from '../../utils/useMailer';
-import { createInviteToken } from '../../utils/tokenUtil';
-import tenantPrisma from '~~/server/datasources/tenant/client';
+import { PermissionId } from '~~/server/datasources/static/permissions';
+import { HttpForbiddenError } from '~~/server/errors';
+import { Input } from '~~/glue/api/users/invite_user.post';
+import { useMailer } from '~~/server/utils/useMailer';
+import { createInviteToken } from '~~/server/utils/tokenUtil';
 import authPrisma from '~~/server/datasources/core/client';
+import { validator } from '~~/glue/api/users/invite_user.post';
+import { Role } from '~~/server/datasources/core/schemas/roles';
+import { MailTemplate } from '~~/server/datasources/tenant/schemas/mailTemplate';
 
 export default defineEventHandler(async (event) => {
-  const requestData = await useBody<Input>(event);
-  tenantContextMiddleware(event);
-
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
-  const tenantId = useTenantHeader(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_READ_USER, tenantId)) {
     throw new HttpForbiddenError();
   }
 
-  if (!requestData.email || !requestData.roleId) {
-    throw new HttpBadRequestError();
+  const requestData = await readBody<Input>(event);
+  validator.validate(requestData);
+
+  if (validator.hasErrors()) {
+    return {
+      badRequest: {
+        errors: validator.getErrors(),
+      },
+    };
+  }
+
+  const coreClient = await useCoreClient().connect();
+  const tenantClient = await useTenantClient().connect(tenantId);
+
+  const role = await coreClient
+    .getModel<Role>('tenants')
+    .findById(requestData.roleId);
+
+  if (!role) {
+    return {
+      badRequest: {
+        errors: `Role with id ${requestData.roleId} does not exists`,
+      },
+    };
   }
 
   // get user (new or updated)
@@ -33,37 +53,12 @@ export default defineEventHandler(async (event) => {
     return;
   }
 
-  const tenant = await authPrisma.tenant.findUnique({
-    select: {
-      id: true,
-      name: true,
-    },
-    where: {
-      id: tenantId,
-    },
-  });
-  const role = await authPrisma.role.findUnique({
-    select: {
-      id: true,
-      name: true,
-    },
-    where: {
-      id: requestData.roleId,
-    },
-  });
-  const mailTemplate = await tenantPrisma.mailTemplate.findUnique({
-    select: {
-      id: true,
-      title: true,
-      content: true,
-    },
-    where: {
-      id: 'INVITE_USER',
-    },
-  });
+  // TODO:: INVITE_USER as enum
+  const mailTemplate = await tenantClient
+    .getModel<MailTemplate>('tenants')
+    .findById('INVITE_USER');
 
   const { systemMail, baseUrl } = useRuntimeConfig();
-
   const token = await createInviteToken(data.user, tenantId);
   const link = `${baseUrl}${
     data.isNew ? 'register' : 'login'

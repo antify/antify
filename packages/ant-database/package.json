@@ -1,58 +1,53 @@
 {
   "name": "@antify/ant-database",
+  "private": false,
   "version": "1.0.0",
+  "description": "",
   "license": "MIT",
+  "sideEffects": false,
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/module.mjs",
-      "require": "./dist/module.cjs"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     }
   },
-  "main": "./dist/module.cjs",
-  "types": "./dist/types.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "prepack": "nuxt-module-build",
-    "dev": "nuxi dev playground",
-    "dev:build": "nuxi build playground",
-    "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground",
-    "prisma:generate": "npx prisma generate --schema=./playground/datasources/db/schema.prisma",
-    "prisma:migration:make": "npx prisma migrate dev --schema=./playground/datasources/db/schema.prisma --name",
-    "prisma:migration:reset": "npx prisma migrate reset --force --preview-feature --schema=./playground/datasources/db/schema.prisma",
-    "prisma:migration:reinit": "rm -rf server/datasources/prisma/migrations && pnpm prisma:migration:make init",
-    "prisma:migration:migrate": "npx prisma migrate deploy --preview-feature --schema=./playground/datasources/db/schema.prisma",
-    "prisma:load:install": "npx ts-node ./command/install/prisma.install.ts",
-    "prisma:load:fixtures": "npx ts-node ./command/fixtures/prisma.fixtures.ts",
-    "prisma:rebuild": "pnpm prisma:migration:reset && pnpm prisma:load:install && pnpm prisma:load:fixtures",
-    "auth:generate": "npx prisma generate --schema=./server/datasources/auth/schema.core.prisma",
-    "auth:migration:make": "npx prisma migrate dev --schema=./server/datasources/auth/schema.core.prisma --name",
-    "auth:migration:reset": "npx prisma migrate reset --force --preview-feature --schema=./server/datasources/auth/schema.core.prisma",
-    "auth:migration:reinit": "rm -rf server/datasources/auth/migrations && pnpm auth:migration:make init",
-    "auth:migration:migrate": "npx prisma migrate deploy --preview-feature --schema=./server/datasources/auth/schema.core.prisma",
-    "auth:load:install": "npx ts-node ./command/install/auth.install.ts",
-    "auth:load:fixtures": "npx ts-node ./command/fixtures/auth.fixtures.ts",
-    "auth:rebuild": "pnpm auth:migration:reset && pnpm auth:load:install && pnpm auth:load:fixtures",
-    "tenant:generate": "npx prisma generate --schema=./server/datasources/db/schema.tenant.prisma",
-    "tenant:migration:make": "npx prisma migrate dev --schema=./server/datasources/db/schema.tenant.prisma --name",
-    "tenant:migration:reset": "npx prisma migrate reset --force --preview-feature --schema=./server/datasources/db/schema.tenant.prisma",
-    "tenant:migration:reinit": "rm -rf server/datasources/db/migrations && pnpm tenant:migration:make init",
-    "tenant:migration:migrate": "npx prisma migrate deploy --preview-feature --schema=./server/datasources/db/schema.tenant.prisma",
-    "tenant:load:install": "npx ts-node ./command/install/tenant.install.ts",
-    "tenant:load:fixtures": "npx ts-node ./command/fixtures/tenant.fixtures.ts",
-    "tenant:rebuild": "pnpm tenant:migration:reset && pnpm tenant:load:install && pnpm tenant:load:fixtures",
-    "app:rebuild": "pnpm build && pnpm tenant:rebuild && pnpm auth:rebuild"
-  },
-  "dependencies": {
-    "@nuxt/kit": "^3.0.0",
-    "mongoose": "^6.6.5"
+    "build": "unbuild",
+    "dev": "vitest dev",
+    "lint": "eslint --ext .ts,.js,.mjs,.cjs .",
+    "prepack": "unbuild",
+    "release": "pnpm test && standard-version && git push --follow-tags && pnpm publish",
+    "test": "pnpm lint && vitest run"
   },
   "devDependencies": {
-    "@nuxt/module-builder": "latest",
     "@nuxtjs/eslint-config-typescript": "latest",
+    "c8": "latest",
     "eslint": "latest",
-    "nuxt": "3.0.0"
+    "standard-version": "latest",
+    "typescript": "latest",
+    "unbuild": "latest",
+    "vitest": "latest"
+  },
+  "dependencies": {
+    "mongoose": "^6.8.1",
+    "jiti": "^1.16.1",
+    "pathe": "^1.0.0"
+  },
+  "optionalDependencies": {
+    "fsevents": "~2.3.2"
+  },
+  "packageManager": "pnpm@7.0.0",
+  "engines": {
+    "node": ">=0.14"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -3,9 +3,10 @@ import {
   AppInstallPostInput,
   AppInstallPostResponse,
 } from '~~/glue/api/app/install.post';
-import { handleCreateToken, hashPassword } from '~~/server/utils/tokenUtil';
+import { handleCreateToken } from '~~/server/utils/tokenUtil';
 import { apiAppInstallService } from './install.service';
 import { User } from '~~/server/datasources/core/schemas/user';
+import { hashPassword } from '~~/server/utils/passwordHashUtil';
 
 export default defineEventHandler<AppInstallPostResponse>(async (event) => {
   const requireInstall = await apiAppInstallService.requireInstall();
@@ -33,7 +34,7 @@ export default defineEventHandler<AppInstallPostResponse>(async (event) => {
   const coreClient = await useCoreClient().connect();
 
   const UserModel = coreClient.getModel<User>('users');
-  const password = await hashPassword(requestData.password);
+  const password = await hashPassword(requestData.password, useRuntimeConfig().passwordSalt);
 
   await new UserModel({
     email: requestData.email,

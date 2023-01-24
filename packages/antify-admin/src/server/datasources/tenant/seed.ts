@@ -1,13 +1,16 @@
-import { PrismaClient } from '../../../node_modules/@internal/prisma/tenant/index.js';
 import { MailTemplateId } from '../static/mailTemplates';
+import { MultiConnectionClient } from '@antify/ant-db';
+import { MailTemplate } from './schemas/mailTemplate';
 
-export async function seedTenant() {
-  const prisma = new PrismaClient({
-    datasources: { db: { url: process.env.TENANT_DATABASE_URL } },
-  });
+export async function seedTenant(
+  tenantId: string,
+  client: MultiConnectionClient
+) {
+  console.log('Load tenant seeds 🌱');
 
-  // Load required application data
-  const defaultMailTemplates = [
+  await client.connect(tenantId);
+
+  client.getModel<MailTemplate>('mail_templates').insertMany([
     {
       id: MailTemplateId.RESET_PASSWORD,
       title: 'Passwort zurücksetzen',
@@ -30,21 +33,7 @@ export async function seedTenant() {
         </div>`,
       info: 'Wird versendet, wenn ein neuer Nutzer eingeladen wird.',
     },
-  ];
-
-  await Promise.all(
-    defaultMailTemplates.map((mailTemplate) => {
-      return prisma.mailTemplate.create({
-        data: {
-          id: mailTemplate.id,
-          title: mailTemplate.title,
-          content: mailTemplate.content,
-        },
-      });
-    })
-  );
+  ]);
 
   console.log('Tenant seeds sucessfully loaded 🌱🌱🌱');
 }
-
-

@@ -1,9 +1,8 @@
 import { faker } from '@faker-js/faker';
 import mongoose from 'mongoose';
-import { User } from '../schemas/user';
 
 export const userFixtures = {
-  create(amount = 1, data = {}): User[] {
+  create(amount = 1, data = {}) {
     const items = [];
 
     for (let i = 0; i < amount - 1; i++) {
@@ -13,7 +12,7 @@ export const userFixtures = {
     return items;
   },
 
-  createOne(data = {}): User {
+  createOne(data = {}) {
     return {
       ...{
         _id: new mongoose.Types.ObjectId().toHexString(),
@@ -21,7 +20,7 @@ export const userFixtures = {
         password: faker.random.words(),
         name: faker.name.findName(),
         isSuperAdmin: true,
-        isBanned: true,
+        isBanned: false,
         tenantAccesses: [],
       },
       ...data,

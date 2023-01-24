@@ -1,5 +1,4 @@
 import formidable, { File, Files } from 'formidable';
-import prisma from '~~/server/datasources/tenant/client';
 import { useGuard } from '~~/composables/useGuard';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
@@ -35,7 +34,7 @@ export default defineEventHandler(async (event) => {
   });
 
   const files: Files = await new Promise((resolve, reject) => {
-    form.parse(event.req, async (err, fields, files) => {
+    form.parse(event.node.req, async (err, fields, files) => {
       if (err) {
         throw new HttpBadRequestError(`Upload failed: ${err}`);
       }

@@ -2,7 +2,7 @@ import {
   Input,
   validator,
   Response,
-} from '~~/glue/api/tenants/[tenantDetailId].put';
+} from '~~/glue/api/backoffice/[tenantId]/tenant/index.put';
 import { Tenant } from '~~/server/datasources/core/schemas/tenant';
 
 export default defineEventHandler<Response>(async (event) => {

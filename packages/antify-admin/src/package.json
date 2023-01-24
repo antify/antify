@@ -8,7 +8,8 @@
     "generate": "nuxi generate",
     "preview": "nuxi preview",
     "docker:start": "pnpm app:rebuild && nuxi dev",
-    "db:seed": "npx ts-node ./server/command/seed-db.ts"
+    "db:load:fixtures": "npx ts-node ./server/command/load-fixtures.ts",
+    "db:make-migration": "ant-db"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.2.0",
@@ -19,13 +20,14 @@
     "autoprefixer": "^10.4.4",
     "nuxt": "3.0.0",
     "postcss": "^8.4.12",
-    "shelljs": "^0.8.5",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.4",
-    "vite": "^2.3.0"
+    "vite": "^2.3.0",
+    "@antify/ant-database-cli": "1.0.0"
   },
   "dependencies": {
     "@antify/ant-database": "1.0.0",
+    "@antify/ant-database-module": "1.0.0",
     "@antify/antify-ui": "0.0.70",
     "@antify/validate": "1.0.0",
     "@types/formidable": "^2.0.5",

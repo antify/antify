@@ -1,14 +1,15 @@
-import { handleCreateToken, hashPassword } from '~~/server/utils/tokenUtil';
+import { handleCreateToken } from '~~/server/utils/tokenUtil';
 import { tokenValid, tokenContent } from '~~/server/utils/tokenUtil';
 import { HttpForbiddenError } from '~~/server/errors';
-import prisma from '~~/server/datasources/core/client';
 import {
   AuthLoginPostInput,
   authLoginPostValidator,
   AuthLoginPostResponse,
 } from '~~/glue/api/auth/login.post';
 import { H3Event, readBody } from 'h3';
-import { CURRENT_TENANT_COOKIE_KEY } from '~~/composables/useCurrentTenant';
+import { User } from '~~/server/datasources/core/schemas/user';
+import { UserTenantAccess } from '~~/server/datasources/core/schemas/userTenantAccess';
+import { hashPassword } from '~~/server/utils/passwordHashUtil';
 
 export default defineEventHandler<AuthLoginPostResponse>(
   async (event: H3Event) => {
@@ -25,9 +26,7 @@ export default defineEventHandler<AuthLoginPostResponse>(
     }
 
     // check if got an invite token:
-    const inviteToken = requestData.token;
-
-    if (inviteToken) {
+    if (requestData.token) {
       const isValid = await tokenValid(requestData.token);
 
       if (!isValid) {
@@ -37,35 +36,26 @@ export default defineEventHandler<AuthLoginPostResponse>(
       const inviteTokenContent = await tokenContent(requestData.token);
 
       // check if token was made for current user:
-      const user = await prisma.user.findUnique({
-        where: {
-          id: inviteTokenContent.id,
-        },
-        select: {
-          id: true,
-          email: true,
-        },
-      });
+      const coreClient = await useCoreClient().connect();
+      const UserModel = coreClient.getModel<User>('users');
+      const UserTenantAccessModel = coreClient.getModel<UserTenantAccess>(
+        'user_tenant_accesses'
+      );
+      const user = await UserModel.findById(inviteTokenContent.id);
 
-      if (user.email !== requestData.email) {
+      if (user?.email !== requestData.email) {
+        // TODO:: handle by response error not http error
         throw new HttpForbiddenError('Not allowed to use given token.');
       }
 
       // everything looks good, update tenant access to be no longer pending
-      await prisma.userTenantAccess.update({
-        where: {
-          userId_tenantId: {
-            userId: inviteTokenContent.id,
-            tenantId: inviteTokenContent.tenantId,
-          },
-        },
-        data: {
-          isPending: false,
-        },
-      });
+      await UserTenantAccessModel.updateOne(
+        { user: inviteTokenContent.id, tenant: inviteTokenContent.tenantId },
+        { isPending: false }
+      );
     }
 
-    const password = await hashPassword(requestData.password);
+    const password = await hashPassword(requestData.password, useRuntimeConfig().passwordSalt);
     const token = await handleCreateToken(event, {
       email: requestData.email,
       password,
@@ -90,9 +80,6 @@ export default defineEventHandler<AuthLoginPostResponse>(
         },
       };
     }
-
-    // TODO:: remove me
-    setCookie(event, CURRENT_TENANT_COOKIE_KEY, '639c669e630621d8107bb75b');
 
     return {
       default: {

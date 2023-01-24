@@ -31,6 +31,7 @@ export default defineEventHandler(async (event) => {
 
   user.name = requestData.name;
   user.email = requestData.email;
+  console.log(requestData);
 
   await user.save();
 

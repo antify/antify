@@ -4,8 +4,8 @@ import { ToastType } from '../composables/states';
 import {
   faHouse,
   faTrophy,
-  faUser,
   faUsers,
+  faHouseUser,
   faPhotoFilm,
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -27,18 +27,19 @@ const navItems = computed(() => [
     active: route.name === 'cockpit-dashboard',
   },
   {
-    label: 'Benutzer',
+    label: 'Users',
     route: { name: 'cockpit-users' },
-    icon: faUser,
+    icon: faUsers,
     active: route.name === 'cockpit-users',
   },
   {
-    label: 'Mandanten',
+    label: 'Tenants',
     route: { name: 'cockpit-tenants' },
+    icon: faHouseUser,
     active: route.name === 'cockpit-tenants',
   },
   {
-    label: 'E-Mail Templates',
+    label: 'Mail Templates',
     route: { name: 'cockpit-mail-templates' },
     icon: faTrophy,
     active: route.name === 'cockpit-mail-templates',

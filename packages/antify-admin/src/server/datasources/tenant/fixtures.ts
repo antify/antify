@@ -1,21 +1,16 @@
-import { PrismaClient } from '@internal/prisma/tenant';
-import { mediaFixtures } from './fixtures/media';
+import { MultiConnectionClient, truncateAllCollections } from '@antify/ant-db';
+import { extendSchemas } from './schema.extensions';
 
-export async function loadTenantFixtures() {
-  const prisma = new PrismaClient({
-    datasources: { db: { url: process.env.TENANT_DATABASE_URL } },
-  });
+export async function loadTenantFixtures(tenantId: string) {
+  require('dotenv').config();
 
-  await prisma.media.create({
-    data: mediaFixtures.createOne({
-      id: '1039fc07-7bf9-4dd4-b299-26addb875123',
-      title: '__test image',
-    }),
-  });
+  const tenantClient = await MultiConnectionClient.getInstance(
+    process.env.TENANT_DATABASE_URL as string
+  ).connect('1');
 
-  await prisma.media.createMany({
-    data: mediaFixtures.create(50),
-  });
+  extendSchemas(tenantClient);
+
+  await truncateAllCollections(tenantClient.connection);
 
   console.log('Tenant fixtures sucessfully loaded 🐅🐅🐅🐈🐈🐆🐆🐈🐆');
 }

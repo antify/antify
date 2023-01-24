@@ -10,7 +10,7 @@ if (
 </script>
 
 <template>
-  <NuxtLayout name="admin">
-    <NuxtPage></NuxtPage>
+  <NuxtLayout name="backoffice">
+    <NuxtPage />
   </NuxtLayout>
 </template>
