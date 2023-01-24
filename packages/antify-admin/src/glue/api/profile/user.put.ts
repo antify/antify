@@ -4,22 +4,16 @@ import {
   Types,
   notBlankRule,
   emailRule,
-} from '@antify/ant-validate';
+} from '@antify/validate';
 
 export type Input = {
   email: string;
-  name: string | null;
-};
-export type Response = {
-  default?: User;
-  badRequest?: {
-    errors: string[];
-  };
+  name: string;
 };
 export type User = {
   id: string;
   email: string;
-  name: string | null;
+  name: string;
   url: string;
 };
 export const validator = useValidator({

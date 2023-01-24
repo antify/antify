@@ -1,22 +1,17 @@
-import prisma from "~~/server/datasources/core/client";
-import { useGuard } from "~~/composables/useGuard";
+import { useGuard } from '~~/composables/useGuard';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { HttpBadRequestError, HttpForbiddenError } from '~~/server/errors';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { useTenantHeader } from '~~/server/utils/useTenantHeader';
+import { Role } from '~~/server/datasources/core/schemas/roles';
 
-export type RoleResponse = {
-  id: string;
-  name: string;
-  isAdmin: boolean;
-  permissions: string[];
-};
+// TODO:: move to glue
 export type RoleInput = {
   name: string;
   permissions: string[];
 };
 
+// TODO:: mvoe to glue and implement in frontend
 export const validate = (data: RoleInput): RoleInput => {
   if (!data.name) {
     throw new HttpBadRequestError('Missing required name');
@@ -29,46 +24,30 @@ export const validate = (data: RoleInput): RoleInput => {
   return data;
 };
 
-export default defineEventHandler<RoleResponse>(async (event) => {
-  tenantContextMiddleware(event);
-
+export default defineEventHandler(async (event) => {
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
-  const tenantId = useTenantHeader(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_CREATE_ROLE, tenantId)) {
     throw new HttpForbiddenError();
   }
 
-  const requestBody = await useBody(event);
+  const requestBody = await readBody(event);
   const requestData = validate(requestBody);
-  const createdRole = await prisma.role.create({
-    select: {
-      id: true,
-      name: true,
-      isAdmin: true,
-      permissions: {
-        select: {
-          permissionId: true,
-        },
-      },
-    },
-    data: {
-      name: requestData.name,
-      isAdmin: false,
-      permissions: {
-        create: requestData.permissions.map((permissionId: string) => {
-          return {
-            permissionId: permissionId,
-          };
-        }),
-      },
-    },
+  const RoleModel = (await useCoreClient().connect()).getModel<Role>('roles');
+  const role = new RoleModel({
+    name: requestData.name,
+    isAdmin: false,
+    permissions: requestData.permissions,
+    tenant: tenantId,
   });
 
+  await role.save();
+
   return {
-    ...createdRole,
-    permissions: createdRole.permissions.map(
-      (permission) => permission.permissionId
-    ),
+    id: role.id,
+    name: role.name,
+    isAdmin: role.isAdmin,
+    permissions: role.permissions,
   };
 });

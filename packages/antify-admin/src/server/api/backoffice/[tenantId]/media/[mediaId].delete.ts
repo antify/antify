@@ -1,43 +1,34 @@
-import { useGuard } from "~~/composables/useGuard";
+import { useGuard } from '~~/composables/useGuard';
 import { PermissionId } from '~~/server/datasources/static/permissions';
-import { HttpForbiddenError, HttpNotFoundError } from '~~/server/errors';
+import { HttpForbiddenError } from '~~/server/errors';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { useTenantHeader } from '~~/server/utils/useTenantHeader';
-import prisma from "~~/server/datasources/tenant/client";
-import { useMediaService } from "~~/server/service/useMediaService";
+import { useMediaService } from '~~/server/service/useMediaService';
+import { Media } from '~~/server/datasources/tenant/schemas/media';
 
 export default defineEventHandler(async (event) => {
-    tenantContextMiddleware(event);
+  const tenantId = tenantContextMiddleware(event);
+  const guard = useGuard(useAuthorizationHeader(event));
 
-    const guard = useGuard(useAuthorizationHeader(event));
-    const tenantId = useTenantHeader(event);
+  if (!guard.hasPermissionTo(PermissionId.CAN_DELETE_MEDIA, tenantId)) {
+    throw new HttpForbiddenError();
+  }
 
-    if (!guard.hasPermissionTo(PermissionId.CAN_DELETE_MEDIA, tenantId)) {
-        throw new HttpForbiddenError();
-    }
+  const tenantClient = await useTenantClient().connect(tenantId);
+  const MediaModel = tenantClient.getModel<Media>('medias');
 
-    const media = await prisma.media.findUnique({
-        select: {
-            fileName: true,
-            fileType: true
-        },
-        where: {
-            id: event.context.params.mediaId
-        }
-    });
+  const media = await MediaModel.findById(event.context.params.mediaId);
 
-    if (!media) {
-        throw new HttpNotFoundError();
-    }
+  if (!media) {
+    return {
+      errors: ['Not found'],
+      errorType: 'NOT_FOUND',
+    };
+  }
 
-    await prisma.media.delete({
-        where: {
-            id: event.context.params.mediaId
-        },
-    });
+  await media.remove();
 
-    useMediaService(media).deleteFile();
+  useMediaService(media).deleteFile();
 
-    return {};
+  return {};
 });

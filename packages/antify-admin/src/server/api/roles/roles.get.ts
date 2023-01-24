@@ -1,39 +1,28 @@
-import prisma from '~~/server/datasources/core/client';
 import { useGuard } from '~~/composables/useGuard';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { Response as RolesResponse } from '~~/glue/api/backoffice/[tenantId]/roles/roles.get';
-import { HttpForbiddenError } from '../../errors';
+import { HttpForbiddenError } from '~~/server/errors';
+import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
+import { PermissionId } from '~~/server/datasources/static/permissions';
+import { Role } from '~~/server/datasources/core/schemas/roles';
 
-export default defineEventHandler<RolesResponse>(async (event) => {
+export default defineEventHandler(async (event) => {
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
 
-  if (!guard.isUserLoggedIn) {
+  if (!guard.hasPermissionTo(PermissionId.CAN_READ_ROLE, tenantId)) {
     throw new HttpForbiddenError();
   }
 
-  // TODO:: check permission
+  const roles = await (await useCoreClient().connect())
+    .getModel<Role>('roles')
+    .find({ tenant: tenantId });
 
-  const roles = await prisma.role.findMany({
-    select: {
-      id: true,
-      name: true,
-      isAdmin: true,
-      permissions: {
-        select: {
-          permissionId: true,
-        },
-      },
-    },
-  });
-
-  const result = roles.map((role) => {
-    return {
-      ...role,
-      permissions: role.permissions.map(
-        (permission) => permission.permissionId
-      ),
-    };
-  });
-
-  return { default: result };
+  return {
+    default: roles.map((role) => ({
+      id: role.id,
+      name: role.name,
+      isAdmin: role.isAdmin,
+      permissions: role.permissions,
+    })),
+  };
 });

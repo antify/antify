@@ -1,6 +1,5 @@
 import {
   tokenValid,
-  hashPassword,
   tokenContent,
   handleCreateToken,
 } from '../../utils/tokenUtil';
@@ -11,9 +10,10 @@ import {
   Input,
   validator,
 } from '../../../glue/api/auth/register.post';
+import { hashPassword } from '~~/server/utils/passwordHashUtil';
 
 export default defineEventHandler<Response>(async (event) => {
-  const requestData = await useBody<Input>(event);
+  const requestData = await readBody<Input>(event);
   const isValid = await tokenValid(requestData.token);
 
   if (!isValid) {
@@ -34,7 +34,7 @@ export default defineEventHandler<Response>(async (event) => {
     };
   }
 
-  const password = await hashPassword(requestData.password);
+  const password = await hashPassword(requestData.password, useRuntimeConfig().passwordSalt);
 
   // set user password
   const user = await prisma.user.update({

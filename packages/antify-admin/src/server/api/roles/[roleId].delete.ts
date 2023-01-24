@@ -3,36 +3,41 @@ import { PermissionId } from '~~/server/datasources/static/permissions';
 import { HttpForbiddenError } from '~~/server/errors';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { useTenantHeader } from '~~/server/utils/useTenantHeader';
-import prisma from '~~/server/datasources/core/client';
-import { Response } from '../../../glue/api/backoffice/[tenantId]/roles/[roleId].delete';
-import { checkUserTenantAccess } from '~~/server/service/roleService';
+import { UserTenantAccessRepository } from '~~/server/repository/userTenantAccess';
+import { Role } from '~~/server/datasources/core/schemas/roles';
 
-export default defineEventHandler(async (event): Promise<Response> => {
-  tenantContextMiddleware(event);
-
+export default defineEventHandler(async (event) => {
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
-  const tenantId = useTenantHeader(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_DELETE_ROLE, tenantId)) {
     throw new HttpForbiddenError();
   }
 
-  const access = await checkUserTenantAccess(event.context.params.roleId);
+  const userTenantAccesses = await new UserTenantAccessRepository().findByRole(
+    event.context.params.roleId
+  );
 
-  if (access && access.length > 0) {
+  if (userTenantAccesses && userTenantAccesses.length > 0) {
     return {
       errors: [
-        'Eine Rolle kann nur gelöscht werden wenn sie keinem Benutzer zugewiesen ist.',
+        `Eine Rolle kann nur gelöscht werden wenn sie keinem Benutzer zugewiesen ist. Aktuell ist diese Rolle ${userTenantAccesses.length} Benutzern zugewiesen.`,
       ],
+      errorType: 'NOT_DELETE_ABLE',
     };
   }
 
-  await prisma.role.delete({
-    where: {
-      id: event.context.params.roleId,
-    },
-  });
+  const RoleModel = (await useCoreClient().connect()).getModel<Role>('roles');
+  const role = RoleModel.findById(event.context.params.roleId);
+
+  if (!role) {
+    return {
+      errors: ['Not Found'],
+      errorType: 'NOT_FOUND',
+    };
+  }
+
+  await role.remove();
 
   return {};
 });

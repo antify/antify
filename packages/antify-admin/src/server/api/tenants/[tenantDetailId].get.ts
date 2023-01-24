@@ -1,11 +1,11 @@
-import prisma from '~~/server/datasources/core/client';
 import { useGuard } from '~~/composables/useGuard';
 import { HttpForbiddenError, HttpNotFoundError } from '~~/server/errors';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { Response } from '~~/glue/api/tenants/[tenantDetailId].get';
-import { useMediaService } from '../../service/useMediaService';
+import { useMediaService } from '~~/server/service/useMediaService';
+import { Tenant } from '~~/server/datasources/core/schemas/tenant';
 
 export default defineEventHandler<Response>(async (event) => {
   const guard = useGuard(useAuthorizationHeader(event));
@@ -20,16 +20,9 @@ export default defineEventHandler<Response>(async (event) => {
     throw new HttpForbiddenError();
   }
 
-  const tenant = await prisma.tenant.findUnique({
-    select: {
-      id: true,
-      name: true,
-      logo: true,
-    },
-    where: {
-      id: event.context.params.tenantDetailId,
-    },
-  });
+  const tenant = await (await useCoreClient().connect())
+    .getModel<Tenant>('tenants')
+    .findById(event.context.params.tenantDetailId);
 
   if (!tenant) {
     throw new HttpNotFoundError();
@@ -37,8 +30,13 @@ export default defineEventHandler<Response>(async (event) => {
 
   return {
     default: {
-      ...tenant,
-      url: tenant.logo ? useMediaService(tenant.logo).getLogoUrl(event.context.params.tenantDetailId) : null,
+      id: tenant.id,
+      name: tenant.name,
+      url: tenant.logo
+        ? useMediaService(tenant.logo).getLogoUrl(
+            event.context.params.tenantDetailId
+          )
+        : null,
     },
   };
 });

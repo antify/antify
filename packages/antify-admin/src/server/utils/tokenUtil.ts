@@ -1,25 +1,12 @@
 import jwt from 'jsonwebtoken';
-import { CompatibilityEvent, setCookie } from 'h3';
+import { H3Event, setCookie } from 'h3';
 import { TOKEN_COOKIE_KEY, CustomToken } from '~~/composables/useGuard';
-import prisma from '~~/server/datasources/core/client';
-import crypto from 'crypto';
 import { InviteToken } from '../../composables/useGuard';
 import jwtDecode from 'jwt-decode';
 import { User } from '../../glue/api/global/me.get';
-
-export const hashPassword = async (password: string): Promise<string> => {
-  const config = useRuntimeConfig();
-
-  return new Promise((resolve, reject) => {
-    crypto.scrypt(password, config.passwordSalt, 64, (error, derivedKey) => {
-      if (error) {
-        return reject(error);
-      }
-
-      resolve(derivedKey.toString('hex'));
-    });
-  });
-};
+import { User as UserDatabaseSchema } from '~~/server/datasources/core/schemas/user';
+import { UserTenantAccess } from '../datasources/core/schemas/userTenantAccess';
+import { Role } from '../datasources/core/schemas/roles';
 
 export const tokenValid = async (token: string): Promise<boolean> => {
   // TODO:: Security dude?
@@ -27,6 +14,7 @@ export const tokenValid = async (token: string): Promise<boolean> => {
   const JWT_SECRET = 'secret';
 
   return new Promise((resolve, reject) => {
+    // TODO:: accept changed tokens!!!
     jwt.verify(token, JWT_SECRET, function (error) {
       resolve(!!!error);
     });
@@ -40,41 +28,32 @@ export const tokenContent = async (token: string): Promise<any> => {
 };
 
 export const handleCreateToken = async (
-  event: CompatibilityEvent,
-  userIdentification
+  event: H3Event,
+  userCredentials: { email?: string; password?: string; _id?: string }
 ): Promise<string | null> => {
-  const user = await prisma.user.findFirst({
-    select: {
-      id: true,
-      email: true,
-      isSuperAdmin: true,
-      isBanned: true,
-      tenantAccesses: {
-        select: {
-          tenantId: true,
-          role: {
-            select: {
-              id: true,
-              isAdmin: true,
-              name: true,
-              permissions: {
-                select: {
-                  permissionId: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    where: userIdentification,
-  });
+  const coreClient = await useCoreClient().connect();
+  const UserModel = coreClient.getModel<UserDatabaseSchema>('users');
+  const UserTenantAccessModel = coreClient.getModel<UserTenantAccess>(
+    'user_tenant_accesses'
+  );
+  const RoleModel = coreClient.getModel<Role>('roles');
+
+  const user = await UserModel.findOne(userCredentials);
 
   if (!user) {
+    // TODO:: Enum
     return 'notFound';
   } else if (user.isBanned) {
+    // TODO:: Enum
     return 'banned';
   }
+
+  const userTenantAccesses = await UserTenantAccessModel.find({
+    user: user.id,
+  }).populate({
+    path: 'role',
+    model: RoleModel,
+  });
 
   // TODO:: Security dude?
   // TODO:: env
@@ -88,15 +67,11 @@ export const handleCreateToken = async (
     tenantsAccess: [],
   };
 
-  userToken.tenantsAccess = user.tenantAccesses.map((tenantAccess) => {
-    return {
-      tenantId: tenantAccess.tenantId,
-      isAdmin: tenantAccess.role.isAdmin,
-      permissions: tenantAccess.role.permissions.map(
-        (permission) => permission.permissionId
-      ),
-    };
-  });
+  userToken.tenantsAccess = userTenantAccesses.map((tenantAccess) => ({
+    tenantId: tenantAccess.tenant._id,
+    isAdmin: tenantAccess.role.isAdmin,
+    permissions: tenantAccess.role.permissions,
+  }));
 
   const token = jwt.sign(userToken, JWT_SECRET, { expiresIn: JWT_EXPIRATION });
 
@@ -107,12 +82,16 @@ export const handleCreateToken = async (
   return token;
 };
 
-export const createInviteToken = async (user: User, tenantId: string) => {
+export const createInviteToken = async (
+  user: User,
+  tenantId: string | null
+) => {
   const inviteToken: InviteToken = {
     id: user.id,
     tenantId,
   };
 
+  // TODO:: env
   const JWT_SECRET = 'secret';
   const JWT_EXPIRATION = '4h';
 

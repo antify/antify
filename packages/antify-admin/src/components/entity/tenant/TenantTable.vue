@@ -61,7 +61,7 @@ function prev() {
 }
 
 function next() {
-  if (page.value < data.value.default?.pagination.count) {
+  if (page.value < data.value?.default?.pagination?.count) {
     page.value++;
   }
 }

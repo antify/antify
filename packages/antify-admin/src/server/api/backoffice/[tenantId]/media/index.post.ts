@@ -1,19 +1,16 @@
 import formidable, { File, Files } from 'formidable';
-import prisma from '~~/server/datasources/tenant/client';
 import { useGuard } from '~~/composables/useGuard';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { HttpForbiddenError } from '~~/server/errors';
 import { useMediaStorage } from '~~/server/service/useMediaService';
-import { HttpBadRequestError } from '../../../../errors';
+import { HttpBadRequestError } from '~~/server/errors';
+import { Media } from '~~/server/datasources/tenant/schemas/media';
 
 export default defineEventHandler(async (event) => {
-  tenantContextMiddleware(event);
-
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
-  const tenantId = useTenantHeader(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_CREATE_MEDIA, tenantId)) {
     throw new HttpForbiddenError();
@@ -37,7 +34,7 @@ export default defineEventHandler(async (event) => {
   });
 
   const files: Files = await new Promise((resolve, reject) => {
-    form.parse(event.req, async (err, fields, files) => {
+    form.parse(event.node.req, async (err, fields, files) => {
       if (err) {
         throw new HttpBadRequestError(`Upload failed: ${err}`);
       }
@@ -46,16 +43,15 @@ export default defineEventHandler(async (event) => {
     });
   });
 
-  await Promise.all(
-    Object.values(files).map((file: File) => {
-      return prisma.media.create({
-        data: {
-          title: file.originalFilename,
-          fileName: file.newFilename,
-          fileType: file.mimetype,
-        },
-      });
-    })
+  const tenantClient = await useTenantClient().connect(tenantId);
+  const MediaModel = tenantClient.getModel<Media>('medias');
+
+  await MediaModel.insertMany(
+    Object.values(files).map((file: File) => ({
+      title: file.originalFilename,
+      fileName: file.newFilename,
+      fileType: file.mimetype,
+    }))
   );
 
   return {};

@@ -1,21 +1,17 @@
-import prisma from '~~/server/datasources/core/client';
 import { useGuard } from '~~/composables/useGuard';
 import { PermissionId } from '~~/server/datasources/static/permissions';
-import {
-  HttpBadRequestError,
-  HttpForbiddenError,
-  HttpNotFoundError,
-} from '~~/server/errors';
+import { HttpBadRequestError, HttpForbiddenError } from '~~/server/errors';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { useTenantHeader } from '~~/server/utils/useTenantHeader';
-import { Response } from '~~/glue/api/backoffice/[tenantId]/roles/[roleId].get';
+import { Role } from '~~/server/datasources/core/schemas/roles';
 
+// TODO:: glue
 export type RoleInput = {
   name: string;
   permissions: string[];
 };
 
+// TODO:: glue + implement on frontend
 export const validate = (data: RoleInput): RoleInput => {
   if (!data.name) {
     throw new HttpBadRequestError('Missing required name');
@@ -28,64 +24,38 @@ export const validate = (data: RoleInput): RoleInput => {
   return data as RoleInput;
 };
 
-export default defineEventHandler<Response>(async (event) => {
-  tenantContextMiddleware(event);
-
+export default defineEventHandler(async (event) => {
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
-  const tenantId = useTenantHeader(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_UPDATE_ROLE, tenantId)) {
     throw new HttpForbiddenError();
   }
 
-  const role = await prisma.role.findUnique({
-    select: {
-      id: true,
-    },
-    where: {
-      id: event.context.params.roleId,
-    },
-  });
+  const requestBody = await readBody<RoleInput>(event);
+  const requestData = validate(requestBody);
+  const RoleModel = (await useCoreClient().connect()).getModel<Role>('roles');
+  const role = await RoleModel.findById(event.context.params.roleId);
 
   if (!role) {
-    throw new HttpNotFoundError();
+    return {
+      notFound: {
+        errors: ['Not Found'],
+      },
+    };
   }
 
-  const requestBody = await useBody(event);
-  const requestData = validate(requestBody);
-  const updatedRole = await prisma.role.update({
-    select: {
-      id: true,
-      name: true,
-      isAdmin: true,
-      permissions: {
-        select: {
-          permissionId: true,
-        },
-      },
-    },
-    where: {
-      id: event.context.params.roleId,
-    },
-    data: {
-      name: requestData.name,
-      permissions: {
-        deleteMany: {},
-        create: requestData.permissions.map((permissionId: string) => {
-          return {
-            permissionId: permissionId,
-          };
-        }),
-      },
-    },
-  });
+  role.name = requestData.name;
+  role.permissions = requestData.permissions;
+
+  await role.save();
 
   return {
     default: {
-      ...updatedRole,
-      permissions: updatedRole.permissions.map(
-        (permission) => permission.permissionId
-      ),
+      id: role.id,
+      name: role.name,
+      isAdmin: role.isAdmin,
+      permissions: role.permissions,
     },
   };
 });

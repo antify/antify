@@ -1,4 +1,3 @@
-import prisma from '~~/server/datasources/core/client';
 import { useGuard } from '~~/composables/useGuard';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { HttpForbiddenError } from '~~/server/errors';
@@ -7,6 +6,7 @@ import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { Response } from '~~/glue/api/tenants/tenants.get';
 import { useMediaService } from '../../service/useMediaService';
+import { Tenant } from '~~/server/datasources/core/schemas/tenant';
 
 export default defineEventHandler<Response>(async (event) => {
   authenticatedMiddleware(event);
@@ -19,33 +19,32 @@ export default defineEventHandler<Response>(async (event) => {
     throw new HttpForbiddenError();
   }
 
-  let where = {};
+  // TODO:: implement not super admin + outsource to helper function
+  // let where = {};
+  // if (!guard.token.isSuperAdmin) {
+  //   where = {
+  //     id: {
+  //       in: guard.token.tenantsAccess.map(
+  //         (tenantAccess) => tenantAccess.tenantId
+  //       ),
+  //     },
+  //   };
+  // }
 
-  if (!guard.token.isSuperAdmin) {
-    where = {
-      id: {
-        in: guard.token.tenantsAccess.map(
-          (tenantAccess) => tenantAccess.tenantId
-        ),
-      },
-    };
-  }
+  const TenantModel = (await useCoreClient().connect()).getModel<Tenant>(
+    'tenants'
+  );
 
-  const tenants = await prisma.tenant.findMany({
-    select: {
-      id: true,
-      name: true,
-      logo: true,
-    },
-    where,
-    orderBy: { name: 'asc' },
+  const tenants = await TenantModel.find({
+    // orderBy: { name: 'asc' },
   });
 
   return {
     default: {
       data: tenants.map((tenant) => {
         return {
-          ...tenant,
+          id: tenant.id,
+          name: tenant.name,
           url: tenant.logo
             ? useMediaService(tenant.logo).getLogoUrl(tenant.id)
             : null,

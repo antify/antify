@@ -7,7 +7,6 @@ import {
 } from '~~/glue/api/users/[userId].put';
 import UserTable from '~~/components/entity/user/UserTable.vue';
 import { AntTabsType } from '@antify/antify-ui';
-import { Response as RoleResponse } from '~~/glue/api/backoffice/[tenantId]/roles/roles.get';
 
 const route = useRoute();
 const router = useRouter();
@@ -28,7 +27,7 @@ const tabs = ref<AntTabsType[]>([
   },
 ]);
 const user = ref<GetResponse>({ default: {} });
-const roles = ref<RoleResponse>({ default: [] });
+const roles = ref({ default: [] });
 
 const roleOptions = computed(() => {
   return (
@@ -39,24 +38,20 @@ const roleOptions = computed(() => {
   );
 });
 
-let refresh: Function;
+const { data: userData, refresh } = await useFetch<GetResponse | PutResponse>(
+  `/api/users/${useRoute().params.userId}`,
+  useDefaultFetchOpts()
+);
 
-onMounted(async () => {
-  const { data: userData, refresh: userRefresh } = await useFetch<
-    GetResponse | PutResponse
-  >(`/api/users/${useRoute().params.userId}`, useDefaultFetchOpts());
+user.value = userData.value as GetResponse;
 
-  user.value = userData.value as GetResponse;
-  refresh = userRefresh;
+const { data: rolesData } = await useFetch<RoleResponse>(
+  '/api/roles/roles',
+  useDefaultFetchOpts()
+);
 
-  const { data: rolesData } = await useFetch<RoleResponse>(
-    '/api/roles/roles',
-    useDefaultFetchOpts()
-  );
-
-  roles.value = rolesData.value;
-  loading.value = false;
-});
+roles.value = rolesData.value;
+loading.value = false;
 
 async function onSubmit() {
   saving.value = true;
@@ -139,19 +134,19 @@ async function unbanUser() {
         <div class="flex space-x-4">
           <DeleteButton
             v-if="!user.default.isAdmin"
-            label="Löschen"
+            label="Remove Access"
             @click="deleteDialogActive = true"
           />
 
           <AntButton
             v-if="!user.default.isAdmin && !user.default.isBanned"
-            label="Sperren"
+            label="Ban"
             @click="banUser"
           />
 
           <AntButton
             v-if="!user.default.isAdmin && user.default.isBanned"
-            label="Sperre aufheben"
+            label="Unban"
             @click="unbanUser"
           />
         </div>
@@ -204,7 +199,7 @@ async function unbanUser() {
           <div data-cy="email">
             <AntInput
               v-model:value="user.default.email"
-              label="E-Mail"
+              label="Mail"
               :errors="validator.errorMap['email']"
               :validator="(val: string) => validator.validateProperty('email', val, 1)"
               disabled
@@ -223,7 +218,7 @@ async function unbanUser() {
 
           <div>
             <AntSelect
-              label="Rolle"
+              label="Role"
               :options="roleOptions"
               v-model:value="user.default.roleId"
               data-cy="roles"
@@ -251,7 +246,7 @@ async function unbanUser() {
               name: 'backoffice-tenantId-users',
             }"
           >
-            Zurück
+            Back
           </TenantLink>
         </AntButton>
 
@@ -261,7 +256,7 @@ async function unbanUser() {
           :primary="true"
           form="user-create-form"
         >
-          Speichern
+          Save
         </AntButton>
       </template>
 
@@ -279,23 +274,20 @@ async function unbanUser() {
 
     <AntModal
       v-model:active="deleteDialogActive"
-      title="Benutzer löschen"
+      title="Remove access"
     >
-      <div>
-        Sind sie sicher das Sie diesen Benutzer wirklich, sicherlich und
-        unwiederruflich löschen wollen?
-      </div>
+      <div>Do you relay want to remove the users access to this tenant?</div>
 
       <template #buttons>
         <AntButton
           primary
           @click="deleteDialogActive = false"
         >
-          Abbrechen
+          Cancel
         </AntButton>
 
         <DeleteButton
-          label="Löschen"
+          label="Remove Access"
           @click="deleteUser"
         />
       </template>

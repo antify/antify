@@ -2,8 +2,6 @@
 import RoleTable from '~~/components/entity/role/RoleTable.vue';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { AntTabsType } from '@antify/antify-ui';
-import { Response } from '../../../../glue/api/backoffice/[tenantId]/roles/[roleId].get';
-import { Response as DeleteResponse } from '../../../../glue/api/backoffice/[tenantId]/roles/[roleId].delete';
 import { Response as PermissionsResponse } from '~~/glue/api/backoffice/[tenantId]/roles/permissions.get';
 
 const { $toaster } = useNuxtApp();
@@ -19,36 +17,30 @@ const tabs = ref<AntTabsType[]>([
     to: '',
   },
 ]);
-const role = ref<Response>({ default: {} });
+const role = ref({ default: {} });
 const permissions = ref<PermissionsResponse>({ default: [] });
 
-onMounted(async () => {
-  const { data: permissionsData } = await useFetch<PermissionsResponse>(
-    '/api/roles/permissions',
-    useDefaultFetchOpts()
-  );
+const { data: permissionsData } = await useFetch<PermissionsResponse>(
+  '/api/roles/permissions',
+  useDefaultFetchOpts()
+);
 
-  permissions.value = permissionsData.value as PermissionsResponse;
-  console.log('loaded', permissions.value);
+permissions.value = permissionsData.value as PermissionsResponse;
 
-  const { data: roleData } = await useFetch<Response>(
-    `/api/roles/${route.params.roleId}`,
-    useDefaultFetchOpts()
-  );
+const { data: roleData } = await useFetch<Response>(
+  `/api/roles/${route.params.roleId}`,
+  useDefaultFetchOpts()
+);
 
-  role.value = roleData.value;
+role.value = roleData.value;
 
-  loading.value = false;
-});
+loading.value = false;
 
 async function onDelete() {
-  const { data } = await useFetch<DeleteResponse>(
-    `/api/roles/${route.params.roleId}`,
-    {
-      ...useDefaultFetchOpts(),
-      method: 'DELETE',
-    }
-  );
+  const { data } = await useFetch(`/api/roles/${route.params.roleId}`, {
+    ...useDefaultFetchOpts(),
+    method: 'DELETE',
+  });
 
   if (data.value && data.value.errors) {
     data.value.errors.forEach((error) => {
@@ -120,10 +112,7 @@ async function onDelete() {
       v-model:active="deleteDialogActive"
       title="Rolle löschen"
     >
-      <div>
-        Sind sie sicher das Sie diese Rolle wirklich, sicherlich und
-        unwiederruflich löschen wollen?
-      </div>
+      <div>Sind sie sicher das Sie diese Rolle wirklich löschen wollen?</div>
 
       <template #buttons>
         <AntButton

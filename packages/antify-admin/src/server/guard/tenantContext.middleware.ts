@@ -1,14 +1,16 @@
-import { CompatibilityEvent } from "h3";
-import { HttpBadRequestError } from "../errors";
-import { useTenantHeader } from "../utils/useTenantHeader";
-import { authenticatedMiddleware } from "./authenticated.middleware";
+import { H3Event } from 'h3';
+import { HttpBadRequestError } from '~~/server/errors';
+import { useTenantHeader } from '~~/server/utils/useTenantHeader';
+import { authenticatedMiddleware } from './authenticated.middleware';
 
-export const tenantContextMiddleware = (event: CompatibilityEvent): void => {
-    authenticatedMiddleware(event);
+export const tenantContextMiddleware = (event: H3Event): string => {
+  authenticatedMiddleware(event);
 
-    const tenantId = useTenantHeader(event);
+  const tenantId = useTenantHeader(event);
 
-    if (!tenantId) {
-        throw new HttpBadRequestError();
-    }
-}
+  if (!tenantId) {
+    throw new HttpBadRequestError();
+  }
+
+  return tenantId;
+};

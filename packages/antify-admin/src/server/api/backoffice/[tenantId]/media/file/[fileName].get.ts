@@ -1,34 +1,25 @@
 import { sendStream } from 'h3';
-import prisma from '~~/server/datasources/tenant/client';
 import { useGuard } from '~~/composables/useGuard';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { HttpForbiddenError, HttpNotFoundError } from '~~/server/errors';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { useMediaService } from '~~/server/service/useMediaService';
+import { Media } from '~~/server/datasources/tenant/schemas/media';
 
 export default defineEventHandler(async (event) => {
-  tenantContextMiddleware(event);
-
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
-  const tenantId = useTenantHeader(event);
 
-  if (
-    !guard.hasPermissionTo(PermissionId.CAN_READ_MEDIA, tenantId) ||
-    !event.context.params.fileName
-  ) {
+  if (!guard.hasPermissionTo(PermissionId.CAN_READ_MEDIA, tenantId)) {
     throw new HttpForbiddenError();
   }
 
-  const media = await prisma.media.findUnique({
-    select: {
-      fileName: true,
-      fileType: true,
-    },
-    where: {
-      fileName: event.context.params.fileName,
-    },
+  const tenantClient = await useTenantClient().connect(tenantId);
+  const MediaModel = tenantClient.getModel<Media>('medias');
+
+  const media = await MediaModel.findOne({
+    fileName: event.context.params.fileName,
   });
 
   if (!media) {

@@ -5,7 +5,7 @@ import { User } from '~~/glue/api/global/me.get';
 export const useTenantState = () => useState<Tenant[]>('tenants', () => []);
 export const useCurrentTenantState = () =>
   useState<TenantDefault>('tenant', () => ({}));
-export const useMeState = () => useState<User>('me', () => null);
+export const useMeState = () => useState<User | null>('me', () => null);
 
 export enum ToastType {
   error = 'error',
@@ -19,3 +19,4 @@ export type Toast = {
 };
 
 export const useToastState = () => useState<Toast[]>('toasts', () => []);
+export const useUserDetailState = () => useState('userDetail', () => null);

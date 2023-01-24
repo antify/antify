@@ -1,38 +1,38 @@
-import prisma from '~~/server/datasources/tenant/client';
 import { useGuard } from '~~/composables/useGuard';
 import { HttpForbiddenError } from '~~/server/errors';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { PermissionId } from '~~/server/datasources/static/permissions';
-import { Response } from '~~/glue/api/mail_templates/[mailTemplateId].get';
+import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
+import { MailTemplate } from '~~/server/datasources/tenant/schemas/mailTemplate';
 
-export default defineEventHandler<Response>(async (event) => {
+export default defineEventHandler(async (event) => {
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
-
-  if (!guard.isUserLoggedIn) {
-    throw new HttpForbiddenError();
-  }
-
-  const tenantId = useTenantHeader(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_READ_MAIL_TEMPLATES, tenantId)) {
     throw new HttpForbiddenError();
   }
 
-  const mailTemplate = await prisma.mailTemplate.findUnique({
-    select: {
-      id: true,
-      title: true,
-      content: true,
-    },
-    where: {
-      id: event.context.params.mailTemplateId,
-    },
-  });
+  const tenantClient = await useTenantClient().connect(tenantId);
+  const MailTemplateModel =
+    tenantClient.getModel<MailTemplate>('mail_templates');
+  const mailTemplate = await MailTemplateModel.findById(
+    event.context.params.mailTemplateId
+  );
 
-  // if (!mailTemplate) {
-  //   return createNotFoundError();
-  // }
+  if (!mailTemplate) {
+    return {
+      errors: ['Not Found'],
+      type: 'NOT_FOUND',
+    };
+  }
 
-  return { default: mailTemplate };
+  return {
+    default: {
+      id: mailTemplate.id,
+      templateId: mailTemplate.templateId,
+      title: mailTemplate.title,
+      content: mailTemplate.content,
+    },
+  };
 });

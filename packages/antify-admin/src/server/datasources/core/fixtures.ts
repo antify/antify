@@ -1,56 +1,73 @@
-import { PrismaClient } from '@internal/prisma/core';
+import { PermissionId } from '../static/permissions';
+import { extendSchemas } from './schema.extensions';
+import { Role } from './schemas/roles';
+// TODO:: import correctly from @antify/ant-database
+import { SingleConnectionClient, truncateAllCollections } from '@antify/ant-db';
 import { tenantFixtures } from './fixtures/tenant';
+import { Tenant } from './schemas/tenant';
+import { User } from './schemas/user';
 import { userFixtures } from './fixtures/user';
+import { hashPassword } from '../../utils/passwordHashUtil';
 
 export async function loadCoreFixtures() {
-  const prisma = new PrismaClient({
-    datasources: { db: { url: process.env.CORE_DATABASE_URL } },
-  });
+  require('dotenv').config();
 
-  const tenantId = '1039fc07-7be9-4dd4-b299-26addb875111';
-  await prisma.tenant.create({
-    data: tenantFixtures.createOne({
-      id: tenantId,
-      name: 'Demo Mandant',
-    }),
-  });
+  const coreClient = await SingleConnectionClient.getInstance(
+    process.env.CORE_DATABASE_URL as string
+  ).connect();
 
-  const userId = '1039fc07-7be9-4dd4-b299-26addb875771';
-  await prisma.user.create({
-    data: userFixtures.createOne({
-      id: userId,
-      name: 'Demo Benutzer',
-      // Password is: admin
-      password:
-        '3ba0469d6c4724298538beb08d2e3f5120df0f7670c2a4ff2874cf55fbda5f634661a0ca6a0d17cafc3e05fbe9d8ad868c32c2438bd2ba653c467ba55e4695a1',
-      email: 'admin@admin.de',
-      isSuperAdmin: true,
-    }),
-  });
+  extendSchemas(coreClient);
 
-  const adminRole = await prisma.role.findFirst({
-    select: {
-      id: true,
-    },
-    where: {
+  await truncateAllCollections(coreClient.connection);
+
+  const TenantModel = coreClient.getModel<Tenant>('tenants');
+
+  const testTenant = await new TenantModel(
+    tenantFixtures.createOne({
+      name: 'Test tenant',
+    })
+  ).save();
+
+  await coreClient.getModel<Role>('roles').insertMany([
+    {
+      name: 'Admin',
       isAdmin: true,
+      tenant: testTenant._id,
     },
-  });
-
-  await prisma.userTenantAccess.create({
-    data: {
-      tenantId: tenantId,
-      userId: userId,
-      roleId: adminRole.id,
+    {
+      name: 'Employee',
+      isAdmin: false,
+      permissions: Object.values(PermissionId),
+      tenant: testTenant._id,
     },
-  });
+  ]);
 
-  // await Promise.all(userFixtures.create(50).map(async (data) => await prisma.user.create({ data })));
-  await Promise.all(
-    tenantFixtures
-      .create(50)
-      .map(async (data) => await prisma.tenant.create({ data }))
-  );
+  const UserModel = coreClient.getModel<User>('users');
+
+  const admin = await new UserModel(
+    userFixtures.createOne({
+      email: 'admin@admin.de',
+      password: await hashPassword(
+        'admin',
+        process.env.PASSWORD_SALT as string
+      ),
+      name: 'Admin',
+      isSuperAdmin: true,
+      tenantAccesses: [],
+    })
+  ).save();
+
+  const employee = await new UserModel(
+    userFixtures.createOne({
+      email: 'user@user.de',
+      password: await hashPassword('user', process.env.PASSWORD_SALT as string),
+      isSuperAdmin: false,
+      tenantAccesses: [],
+    })
+  ).save();
 
   console.log('Core fixtures sucessfully loaded 🐅🐅🐅🐈🐈🐆🐆🐈🐆');
+  // console.log('Core seeds sucessfully loaded 🌱🌱🌱');
+
+  return { tenants: [testTenant] };
 }

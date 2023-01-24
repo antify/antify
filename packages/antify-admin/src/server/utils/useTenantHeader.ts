@@ -1,5 +1,10 @@
-import { CompatibilityEvent } from "h3";
-import { CURRENT_TENANT_COOKIE_KEY, CURRENT_TENANT_HEADER_KEY } from "~~/composables/useCurrentTenant";
+import { H3Event, getCookie } from 'h3';
+import {
+  CURRENT_TENANT_COOKIE_KEY,
+  CURRENT_TENANT_HEADER_KEY,
+} from '~~/composables/useCurrentTenant';
 
-export const useTenantHeader = (event: CompatibilityEvent): string | null =>
-    event.req.headers[CURRENT_TENANT_HEADER_KEY] || (useCookie(event, CURRENT_TENANT_COOKIE_KEY) || null);
+export const useTenantHeader = (event: H3Event): string | null =>
+  event.node.req.headers[CURRENT_TENANT_HEADER_KEY] ||
+  getCookie(event, CURRENT_TENANT_COOKIE_KEY) ||
+  null;

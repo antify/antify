@@ -1,95 +1,90 @@
-import { handleCreateToken, hashPassword } from '~~/server/utils/tokenUtil';
-import { tokenValid, tokenContent } from '../../utils/tokenUtil';
-import { HttpForbiddenError } from '../../errors';
-import prisma from '~~/server/datasources/core/client';
+import { handleCreateToken } from '~~/server/utils/tokenUtil';
+import { tokenValid, tokenContent } from '~~/server/utils/tokenUtil';
+import { HttpForbiddenError } from '~~/server/errors';
 import {
   AuthLoginPostInput,
   authLoginPostValidator,
   AuthLoginPostResponse,
 } from '~~/glue/api/auth/login.post';
+import { H3Event, readBody } from 'h3';
+import { User } from '~~/server/datasources/core/schemas/user';
+import { UserTenantAccess } from '~~/server/datasources/core/schemas/userTenantAccess';
+import { hashPassword } from '~~/server/utils/passwordHashUtil';
 
-export default defineEventHandler<AuthLoginPostResponse>(async (event) => {
-  const requestData = await useBody<AuthLoginPostInput>(event);
+export default defineEventHandler<AuthLoginPostResponse>(
+  async (event: H3Event) => {
+    const requestData = await readBody<AuthLoginPostInput>(event);
 
-  authLoginPostValidator.validate(requestData);
+    authLoginPostValidator.validate(requestData);
 
-  if (authLoginPostValidator.hasErrors()) {
-    return {
-      badRequest: {
-        errors: authLoginPostValidator.getErrors(),
-      },
-    };
-  }
-
-  // check if got an invite token:
-  const inviteToken = requestData.token;
-  if (inviteToken) {
-    const isValid = await tokenValid(requestData.token);
-
-    if (!isValid) {
-      throw new HttpForbiddenError();
-    }
-
-    const inviteTokenContent = await tokenContent(requestData.token);
-
-    // check if token was made for current user:
-    const user = await prisma.user.findUnique({
-      where: {
-        id: inviteTokenContent.id,
-      },
-      select: {
-        id: true,
-        email: true,
-      },
-    });
-
-    if (user.email !== requestData.email) {
-      throw new HttpForbiddenError('Not allowed to use given token.');
-    }
-
-    // everything looks good, update tenant access to be no longer pending
-    await prisma.userTenantAccess.update({
-      where: {
-        userId_tenantId: {
-          userId: inviteTokenContent.id,
-          tenantId: inviteTokenContent.tenantId,
+    if (authLoginPostValidator.hasErrors()) {
+      return {
+        badRequest: {
+          errors: authLoginPostValidator.getErrors(),
         },
-      },
-      data: {
-        isPending: false,
-      },
+      };
+    }
+
+    // check if got an invite token:
+    if (requestData.token) {
+      const isValid = await tokenValid(requestData.token);
+
+      if (!isValid) {
+        throw new HttpForbiddenError();
+      }
+
+      const inviteTokenContent = await tokenContent(requestData.token);
+
+      // check if token was made for current user:
+      const coreClient = await useCoreClient().connect();
+      const UserModel = coreClient.getModel<User>('users');
+      const UserTenantAccessModel = coreClient.getModel<UserTenantAccess>(
+        'user_tenant_accesses'
+      );
+      const user = await UserModel.findById(inviteTokenContent.id);
+
+      if (user?.email !== requestData.email) {
+        // TODO:: handle by response error not http error
+        throw new HttpForbiddenError('Not allowed to use given token.');
+      }
+
+      // everything looks good, update tenant access to be no longer pending
+      await UserTenantAccessModel.updateOne(
+        { user: inviteTokenContent.id, tenant: inviteTokenContent.tenantId },
+        { isPending: false }
+      );
+    }
+
+    const password = await hashPassword(requestData.password, useRuntimeConfig().passwordSalt);
+    const token = await handleCreateToken(event, {
+      email: requestData.email,
+      password,
     });
-  }
 
-  const password = await hashPassword(requestData.password);
-  const token = await handleCreateToken(event, {
-    email: requestData.email,
-    password,
-  });
+    if (token === 'notFound') {
+      return {
+        invalidCredentials: {
+          errors: [
+            'E-Mail oder Passwort falsch - Bitte prüfen Sie Ihre Eingaben.',
+          ],
+        },
+      };
+    }
 
-  if (token === 'notFound') {
+    if (token === 'banned') {
+      return {
+        banned: {
+          errors: [
+            'Ihr Account wurde gesperrt. Bitte wenden Sie sich an unseren Support.',
+          ],
+        },
+      };
+    }
+
     return {
-      invalidCredentials: {
-        errors: [
-          'E-Mail oder Passwort falsch - Bitte prüfen Sie Ihre Eingaben.',
-        ],
+      default: {
+        token,
       },
     };
   }
-
-  if (token === 'banned') {
-    return {
-      banned: {
-        errors: [
-          'Ihr Account wurde gesperrt. Bitte wenden Sie sich an unseren Support.',
-        ],
-      },
-    };
-  }
-
-  return {
-    default: {
-      token,
-    },
-  };
-});
+);

@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import mongoose from 'mongoose';
 
 export const userFixtures = {
   create(amount = 1, data = {}) {
@@ -14,11 +15,13 @@ export const userFixtures = {
   createOne(data = {}) {
     return {
       ...{
-        id: faker.datatype.uuid(),
+        _id: new mongoose.Types.ObjectId().toHexString(),
         email: faker.internet.email(),
         password: faker.random.words(),
         name: faker.name.findName(),
         isSuperAdmin: true,
+        isBanned: false,
+        tenantAccesses: [],
       },
       ...data,
     };

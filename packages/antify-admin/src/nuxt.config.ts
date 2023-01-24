@@ -1,7 +1,5 @@
-import { defineNuxtConfig } from 'nuxt';
 import { resolve } from 'path';
-import AntDatabase from '@antify/ant-database';
-import AntAuth from '@antify/ant-auth';
+import AntDatabase from '@antify/ant-database-module';
 
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
@@ -29,12 +27,11 @@ export default defineNuxtConfig({
     },
   },
   modules: [
-    AntAuth,
     AntDatabase,
     // TODO:: remove me and replace with antify-ui
     '@nuxtjs/tailwindcss',
   ],
-  privateRuntimeConfig: {
+  runtimeConfig: {
     baseUrl: process.env.BASE_URL,
     systemMail: process.env.SYSTEM_MAIL,
     passwordSalt: process.env.PASSWORD_SALT,
@@ -45,15 +42,7 @@ export default defineNuxtConfig({
     mediaUploadDir: process.env.MEDIA_UPLOAD_DIR,
   },
   antDatabase: {
-    schemas: {
-      core: {
-        inputs: [resolve('./server/datasources/core/schema.prisma')],
-        output: resolve('./server/datasources/core/schema.merged.prisma'),
-      },
-      tenant: {
-        inputs: [resolve('./server/datasources/tenant/schema.prisma')],
-        output: resolve('./server/datasources/tenant/schema.merged.prisma'),
-      },
-    },
+    coreMongoUrl: 'mongodb://core:core@localhost:27017/core',
+    tenantMongoUrl: 'mongodb://root:root@127.0.0.1:27017',
   },
 });

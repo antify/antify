@@ -8,7 +8,7 @@ const route = useRoute();
 const loading = ref<boolean>(true);
 const tableHeader = ref<Array<TableHeader>>([
   {
-    title: 'Name',
+    title: 'Title',
     identifier: 'title',
     type: ANT_ROW_TYPES.SLOT,
   },
@@ -22,7 +22,7 @@ const { data } = await useFetch(
 loading.value = false;
 
 const _data = computed(() => {
-  return (data.value as Array<any>).map((template) => {
+  return data?.value?.default.map((template) => {
     if (route.params?.mailTemplateId === template.id) {
       return {
         ...template,
@@ -36,7 +36,7 @@ const _data = computed(() => {
     };
   });
 });
-
+console.log(_data.value);
 function goToDetail(id: string) {
   router.push({
     name: 'backoffice-tenantId-mail-templates-mailTemplateId',

@@ -59,6 +59,6 @@ definePageMeta({
 
 <template>
   <div>
-    <NuxtChild />
+    <NuxtPage />
   </div>
 </template>

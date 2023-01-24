@@ -1,39 +1,46 @@
-import prisma from "~~/server/datasources/core/client";
-import { 
-  Input, 
+import {
+  Input,
   validator,
-  Response
-} from '~~/glue/api/tenants/[tenantDetailId].put';
+  Response,
+} from '~~/glue/api/backoffice/[tenantId]/tenant/index.put';
+import { Tenant } from '~~/server/datasources/core/schemas/tenant';
 
 export default defineEventHandler<Response>(async (event) => {
-  const requestData = await useBody<Input>(event);
+  const requestData = await readBody<Input>(event);
 
   validator.validate(requestData);
 
   if (validator.hasErrors()) {
     return {
       badRequest: {
-        errors: validator.getErrors()
-      }
-    }
+        errors: validator.getErrors(),
+      },
+    };
   }
 
-  // TODO:: what if not exists?
+  const TenantModel = (await useCoreClient().connect()).getModel<Tenant>(
+    'tenants'
+  );
+  const tenant = await TenantModel.findById(
+    event.context.params.tenantDetailId
+  );
 
-  const tenant = await prisma.tenant.update({
-    select: {
-      id: true,
-      name: true,
-    },
-    where: {
-      id: event.context.params.tenantDetailId
-    },
-    data: {
-      name: requestData.name,
-    }
-  });
+  if (!tenant) {
+    return {
+      notFound: {
+        errors: ['Not Found'],
+      },
+    };
+  }
+
+  tenant.name = requestData.name;
+
+  await tenant.save();
 
   return {
-    default: tenant
-  }
+    default: {
+      id: tenant.id,
+      name: tenant.name,
+    },
+  };
 });

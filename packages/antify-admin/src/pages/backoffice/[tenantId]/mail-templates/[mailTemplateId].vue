@@ -1,13 +1,9 @@
 <script setup lang="ts">
-import { Response as GetResponse } from '../../../../glue/api/mail_templates/[mailTemplateId].get';
-import {
-  validator as baseValidator,
-  Response as PutResponse,
-} from '../../../../glue/api/mail_templates/[mailTemplateId].put';
-import TenantLink from '../../../../components/fields/TenantLink.vue';
+import { validator as baseValidator } from '~~/glue/api/mail_templates/[mailTemplateId].put';
+import TenantLink from '~~/components/fields/TenantLink.vue';
 import MailTemplatesTable from '~~/components/entity/mail-templates/MailTemplatesTable.vue';
 import { validator as sendTestMailValidator } from '~~/glue/api/mail_templates/[mailTemplateId]/send_test_mail.post';
-import { AntTabsType, AntSkeleton } from '@antify/antify-ui';
+import { AntTabsType } from '@antify/antify-ui';
 
 const { $toaster, hook } = useNuxtApp();
 
@@ -26,26 +22,18 @@ const tabs = ref<AntTabsType[]>([
     to: '',
   },
 ]);
-const mailTemplates = ref<GetResponse>({
+const mailTemplates = ref({
   default: {},
 });
 
-let refresh: Function;
+const { data, refresh } = await useFetch(
+  `/api/mail_templates/${useRoute().params.mailTemplateId}`,
+  useDefaultFetchOpts()
+);
 
-onMounted(async () => {
-  const { data, refresh: mailTemplateRefresh } = await useFetch<
-    GetResponse | PutResponse
-  >(
-    `/api/mail_templates/${useRoute().params.mailTemplateId}`,
-    useDefaultFetchOpts()
-  );
+mailTemplates.value = data.value;
 
-  refresh = mailTemplateRefresh;
-
-  mailTemplates.value = data.value as GetResponse;
-
-  loading.value = false;
-});
+loading.value = false;
 
 async function onSubmit() {
   saving.value = true;
@@ -58,7 +46,7 @@ async function onSubmit() {
     return;
   }
 
-  const { data: response } = await useFetch<PutResponse>(
+  const { data: response } = await useFetch(
     `/api/mail_templates/${useRoute().params.mailTemplateId}`,
     {
       ...useDefaultFetchOpts(),
@@ -72,8 +60,8 @@ async function onSubmit() {
   refresh();
   $toaster.toastUpdated();
 
-  if (response.value.badRequest) {
-    $toaster.toastError(response.value.badRequest.errors.join('\n'));
+  if (response.value.errorType === 'BAD_REQUEST') {
+    $toaster.toastError(response.value.errors.join('\n'));
   }
 
   saving.value = false;
@@ -228,7 +216,7 @@ hook('page:start', () => {
                   data-cy="testing"
                   class="!rounded-none !rounded-br-md !rounded-tr-md -ml-px w-20"
                 >
-                  Senden
+                  Send
                 </AntButton>
               </AntInput>
             </div>
@@ -239,7 +227,7 @@ hook('page:start', () => {
       <template #mainFooter>
         <AntButton>
           <TenantLink :to="{ name: 'backoffice-tenantId-mail-templates' }">
-            Zurück
+            Back
           </TenantLink>
         </AntButton>
 
@@ -249,7 +237,7 @@ hook('page:start', () => {
           data-cy="submit"
           form="mail-template-form"
         >
-          Speichern
+          Save
         </AntButton>
       </template>
 

@@ -51,7 +51,7 @@ export default defineEventHandler(async (event) => {
   });
 
   const files: Files = await new Promise((resolve, reject) => {
-    form.parse(event.req, async (error, fields, files) => {
+    form.parse(event.node.req, async (error, fields, files) => {
       if (error) {
         reject(`Upload failed: ${error}`);
         throw new HttpBadRequestError(`Upload failed: ${error}`);

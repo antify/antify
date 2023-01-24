@@ -2,16 +2,30 @@
 
 It does:
 - [x] Merges multiple schemas to one
-- [x] Generate prisma types for schemas
 - [x] Provide a client for each database
-- [ ] Handle multiple migrations from different sources
-- [ ] Comes with a set of cli commands
+- [ ] Make fixtures logic
+- [ ] Make seed logic
+- [ ] Make migration logic
+- [x] Handle multiple migrations from different sources
+- [x] Comes with a set of cli commands
 - [x] Provides a core and tenant client
-- [ ] Handle multiple databases for one schema (tenancy)
-- [ ] Define how things can be extended trought different schemas
-- [ ] Make prisma seed logic available for multiple components
+- [x] Handle multiple databases for one schema (tenancy)
+- [x] Define how things can be extended trought different schemas
+- [ ] Write docs
+- [ ] Improve security (root user for tenants is not good)
+- [ ] Implement rollback mechanism on error
+- [x] Implement stop mechanism on error
+
+## Usage
+
+TODO::
+
+### Migration naming
+
+The sorting of the migration names is important. New migrations should be added to the end (sorted ASC).
+Its recommended to use a timestamp or date as beginning for the name.
 
 ## Development
 
-- Run `npm run dev:prepare` to generate type stubs.
-- Use `npm run dev` to start [playground](./playground) in development mode.
+- Run `pnpm build` to generate type stubs.
+- Run `node bin/ant-db.mjs` to call commands.

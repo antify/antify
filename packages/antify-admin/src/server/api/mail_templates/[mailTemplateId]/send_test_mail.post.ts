@@ -1,25 +1,24 @@
-import prisma from '~~/server/datasources/tenant/client';
 import { useGuard } from '~~/composables/useGuard';
 import { HttpForbiddenError } from '~~/server/errors';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import {
   Input,
-  Response,
   validator,
 } from '~~/glue/api/mail_templates/[mailTemplateId]/send_test_mail.post';
 import { useMailer } from '~~/server/utils/useMailer';
+import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
+import { MailTemplate } from '~~/server/datasources/tenant/schemas/mailTemplate';
 
-export default defineEventHandler<Response>(async (event) => {
+export default defineEventHandler(async (event) => {
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
-  const tenantId = useTenantHeader(event);
 
-  if (!guard.isUserLoggedIn || !guard.hasPermissionTo(PermissionId.CAN_EDIT_MAIL_TEMPLATES, tenantId)) {
+  if (!guard.hasPermissionTo(PermissionId.CAN_EDIT_MAIL_TEMPLATES, tenantId)) {
     throw new HttpForbiddenError();
   }
 
-  const requestData = await useBody<Input>(event);
+  const requestData = await readBody<Input>(event);
 
   validator.validate(requestData);
 
@@ -31,22 +30,17 @@ export default defineEventHandler<Response>(async (event) => {
     };
   }
 
-  const mailTemplate = await prisma.mailTemplate.findUnique({
-    select: {
-      id: true,
-      title: true,
-      content: true,
-    },
-    where: {
-      id: event.context.params.mailTemplateId,
-    },
-  });
+  const tenantClient = await useTenantClient().connect(tenantId);
+  const MailTemplateModel =
+    tenantClient.getModel<MailTemplate>('mail_templates');
+  const mailTemplate = await MailTemplateModel.findById(
+    event.context.params.mailTemplateId
+  );
 
   if (!mailTemplate) {
     return {
-      notFound: {
-        errors: ['Not found'],
-      },
+      errors: ['Not found'],
+      errorType: 'NOT_FOUND',
     };
   }
 
