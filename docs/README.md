@@ -21,7 +21,7 @@
 - [ ] CORS
 - [ ] env processor
 - [ ] Loading state everywhere
-- [ ] Form validation (server- and clientside)
+- [x] Form validation (server- and clientside)
 
 ## Extends
 
