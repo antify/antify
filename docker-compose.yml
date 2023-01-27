@@ -1,51 +1,52 @@
 version: '3'
 
 services:
-  core:
-    image: mysql:8
-    ports:
-      - '3307:3307'
-    environment:
-      - MYSQL_USE=core
-      - MYSQL_PASSWORD=core
-      - MYSQL_DATABASE=core
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_TCP_PORT=3307
-    expose:
-      - 3307
-  
-  tenant:
-    image: mysql:8
-    ports:
-      - '3306:3306'
-    environment:
-      - MYSQL_USE=tenant
-      - MYSQL_PASSWORD=tenant
-      - MYSQL_DATABASE=tenant
-      - MYSQL_ROOT_PASSWORD=root
-      - MYSQL_TCP_PORT=3306
-    expose:
-      - 3306
+  # database:
+  #   image: mongo:latest
+  #   restart: always
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: root
+  #     MONGO_INITDB_USERNAME: core
+  #     MONGO_INITDB_PASSWORD: core
+  #     MONGO_INITDB_DATABASE: core
+  #   ports:
+  #     - 27017:27017
+  #   volumes:
+  #     - ./docker/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
-  mailhog:
-    image: mailhog/mailhog
-    logging:
-      driver: 'none'  # disable saving logs
-    ports:
-      - "8025:8025" # web ui
-      - "1025:1025" # smtp server
+  # mailhog:
+  #   image: mailhog/mailhog
+  #   logging:
+  #     driver: 'none' # disable saving logs
+  #   ports:
+  #     - '8025:8025' # web ui
+  #     - '1025:1025' # smtp server
 
-  antify-admin:
-    depends_on:
-      - core
-      - tenant
-    build: ./
-    # volumes:
-    #   - ./packages/antify-admin/src/:/app/packages/antify-admin/src
-    # image
-    container_name: antify-admin
-    restart: unless-stopped
-    env_file: ./packages/antify-admin/src/.env
+  # antify-admin:
+  #   depends_on:
+  #     - core
+  #     - tenant
+  #   build: ./
+  #   # volumes:
+  #   #   - ./packages/antify-admin/src/:/app/packages/antify-admin/src
+  #   # image
+  #   container_name: antify-admin
+  #   restart: unless-stopped
+  #   env_file: ./packages/antify-admin/src/.env
+  #   ports:
+  #     - 3000:3000
+  #     - 24678:24678
+
+  ant-document-storage:
+    image: ghcr.io/antify/antify/ant-document-storage:1.0.0
+    container_name: ant-document-storage
+    build:
+      context: .
+      dockerfile: ./packages/ant-document-storage/Dockerfile
     ports:
-      - 3000:3000
-      - 24678:24678
+      - '4000:3000'
+    env_file:
+      - ./packages/ant-document-storage/.env.dist
+    volumes:
+      - ./packages/ant-document-storage/uploads:/app/uploads

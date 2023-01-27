@@ -1,0 +1,9 @@
+*
+!.output 
+!.npmrc 
+!package.json 
+!tsconfig.json 
+!templates
+!routes 
+!plugins 
+!utils 

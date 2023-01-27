@@ -1,0 +1,20 @@
+{
+  "name": "@antify/ant-document-storage",
+  "private": true,
+  "scripts": {
+    "dev": "PORT=4000 nitro dev",
+    "build": "nitro build",
+    "test:watch": "vitest dev",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "latest"
+  },
+  "dependencies": {
+    "formidable": "^2.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^3.1.2",
+    "minimatch": "^6.1.6",
+    "nitropack": "^2.1.0"
+  }
+}

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test Utils</title>
+
+	<style type="text/css">
+		body {
+			margin: 0 auto;
+			max-width: 40em;
+			width: 88%;
+		}
+
+		label,
+		input {
+			display: block;
+			width: 100%;
+		}
+
+		input {
+			margin-bottom: 1em;
+		}
+
+		#app {
+			margin-bottom: 1em;
+		}
+
+		img {
+			height: auto;
+			max-width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<h1>File Upload</h1>
+
+	<form id="upload">
+		<label for="file">File to upload</label>
+		<input type="file" id="file" accept="image/*" multiple>
+		<label>
+			Directory: <br>
+			<input type="text" id="dir" value="/test-dir">
+		</label>
+
+		<button>Upload</button>
+	</form>
+
+	<br><br>
+
+	<h1>Set token</h1>
+	<form id="token-form">
+		<label>
+			Token: <br>
+			<textarea id="token-content">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb2N1bWVudFN0b3JhZ2UiOnsicmVhZCI6WyIvdGVzdC1kaXIiXSwid3JpdGUiOlsiL3Rlc3QtZGlyIl0sImRlbGV0ZSI6WyIvdGVzdC1kaXIiXX0sImlhdCI6MTUxNjIzOTAyMn0.D8DywB7LRFTibaIhyHJS5fWaTd1BddbEbsHqo-NCmnY</textarea>
+		</label>
+
+		<button>Save</button>
+	</form>
+
+	<script>
+		let form = document.querySelector('#upload');
+		let file = document.querySelector('#file');
+		let dir = document.querySelector('#dir');
+
+        async function handleSubmit (event) {
+			event.preventDefault();
+
+			if (!file.value.length) {
+                return;
+            }
+
+            let formData = new FormData();
+
+            for (let i = 0; i < file.files.length; i++) {
+                formData.append(`file-${i}`, file.files[i]);
+            }
+
+            await fetch(`/upload?dir=${encodeURI(dir.value)}`, {
+                'method' : 'POST',
+                'body' : formData
+            });
+		}
+
+		form.addEventListener('submit', handleSubmit);
+	</script>
+
+	<script>
+		let tokenForm = document.querySelector('#token-form');
+		let tokenContent = document.querySelector('#token-content');
+
+		async function handleSubmit (event) {
+			event.preventDefault();
+
+			document.cookie = `antt=${tokenContent.value};`;
+
+			tokenContent.value = '';
+		}
+
+		tokenForm.addEventListener('submit', handleSubmit);
+	</script>
+</body>
+</html>

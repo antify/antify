@@ -32,7 +32,6 @@ export default defineMigration({
 
     const migrations = loadMigrationsFromFilesystem(__dirname, {
       databaseUrl: 'mongodb://core:core@localhost:27017/core',
-      isSingleConnection: true,
       migrationDir: folderName,
     });
 
