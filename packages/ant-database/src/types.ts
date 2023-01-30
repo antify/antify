@@ -11,13 +11,14 @@ export type DatabaseConfiguration = {
 
   /**
    * Directory where migration files are expected.
-   * Default is `migrations-[CONFIGURATION_NAME]`
+   * Default is `migrations/[CONFIGURATION_NAME]`
+   * // TODO:: implement default dir like fixtures does and make it not required
    */
   migrationDir: string;
 
   /**
    * Directory where fixture files are expected.
-   * Default is `fixtures-[CONFIGURATION_NAME]`
+   * Default is `fixtures/[CONFIGURATION_NAME]`
    */
   fixturesDir?: string;
 };

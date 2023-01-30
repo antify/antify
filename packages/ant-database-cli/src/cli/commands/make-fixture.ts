@@ -1,11 +1,7 @@
 import consola from 'consola';
 import { defineAntDbCommand } from './index';
 import { resolve } from 'pathe';
-import { tryRequire } from '../../utils';
-import {
-  getAbsoluteFixturesDir,
-  loadDatabaseConfiguration,
-} from '@antify/ant-database';
+import { getAbsoluteFixturesDir } from '@antify/ant-database';
 import { join } from 'pathe';
 import fs from 'fs';
 import { loadDatabaseConfig } from '../utils/load-database-config';
@@ -43,7 +39,7 @@ export default defineAntDbCommand({
     );
 
     if (!fs.existsSync(absoluteOutDir)) {
-      fs.mkdirSync(absoluteOutDir);
+      fs.mkdirSync(absoluteOutDir, { recursive: true });
     }
 
     const fileName = `${migrationName}.ts`;

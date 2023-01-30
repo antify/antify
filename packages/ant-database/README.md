@@ -3,9 +3,9 @@
 It does:
 - [x] Merges multiple schemas to one
 - [x] Provide a client for each database
-- [ ] Make fixtures logic
-- [ ] Make seed logic
-- [ ] Make migration logic
+- [x] Make fixtures logic
+- [x] Make seed logic
+- [x] Make migration logic
 - [x] Handle multiple migrations from different sources
 - [x] Comes with a set of cli commands
 - [x] Provides a core and tenant client

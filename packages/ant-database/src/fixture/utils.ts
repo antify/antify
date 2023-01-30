@@ -8,7 +8,7 @@ export const getAbsoluteFixturesDir = (
   let fixturesDir = databaseConfig?.fixturesDir;
 
   if (!fixturesDir) {
-    fixturesDir = `fixtures-${databaseConfig.name}`;
+    fixturesDir = `fixtures/${databaseConfig.name}`;
   }
 
   return join(projectRootDir, fixturesDir);

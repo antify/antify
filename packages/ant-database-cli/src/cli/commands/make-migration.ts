@@ -38,11 +38,11 @@ export default defineAntDbCommand({
 
     const absoluteOutDir = join(
       resolve(args.cwd || '.'),
-      databaseConfig[databaseName].migrationDir
+      databaseConfig.migrationDir
     );
 
     if (!fs.existsSync(absoluteOutDir)) {
-      fs.mkdirSync(absoluteOutDir);
+      fs.mkdirSync(absoluteOutDir, { recursive: true });
     }
 
     const now = new Date();

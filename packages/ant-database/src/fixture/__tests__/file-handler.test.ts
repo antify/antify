@@ -7,7 +7,7 @@ import { loadFixturesFromFilesystem } from '../file-handler';
 describe('Fixtures file handler test', async () => {
   test('Should load all fixtures from fixtures directory', async () => {
     const __dirname = path.dirname(fileURLToPath(new URL(import.meta.url)));
-    const folderName = 'fixtures-core';
+    const folderName = 'fixtures/core';
     const dir = path.join(__dirname, folderName);
     const fileNames = ['fixture-1.ts', 'fixture-2.ts', 'fixture-3.ts'];
 
@@ -15,12 +15,12 @@ describe('Fixtures file handler test', async () => {
       recursive: true,
       force: true,
     });
-    fs.mkdirSync(dir);
+    fs.mkdirSync(dir, { recursive: true });
 
     fileNames.forEach((fileName) => {
       fs.writeFileSync(
         path.join(dir, fileName),
-        `import { defineFixture } from '../../../../src';
+        `import { defineFixture } from '../../../../../src';
 
 export default defineFixture({
   async load(client) { },

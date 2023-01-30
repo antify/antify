@@ -1,4 +1,5 @@
-prismerge.json
+fixtures
+migrations
 
 # Dependencies
 node_modules

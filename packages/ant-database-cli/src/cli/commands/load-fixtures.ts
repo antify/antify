@@ -2,7 +2,7 @@ import consola from 'consola';
 import { defineAntDbCommand } from './index';
 import { resolve } from 'pathe';
 import {
-  FixtureExecutionResult,
+  LoadFixtureExecutionResult,
   SingleConnectionClient,
   MultiConnectionLoadFixtureCallbacks,
   MultiConnectionClient,
@@ -47,7 +47,7 @@ export default defineAntDbCommand({
     }
 
     const callbacks: MultiConnectionLoadFixtureCallbacks = {
-      onLoadFixtureFinished: (executionResult: FixtureExecutionResult) => {
+      onLoadFixtureFinished: (executionResult: LoadFixtureExecutionResult) => {
         if (executionResult.error) {
           return consola.error(executionResult.error.message);
         }

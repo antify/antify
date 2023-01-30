@@ -1,7 +1,8 @@
 import jiti from 'jiti';
 import { DatabaseConfigurations } from './types';
+// TODO:: rename file in load-database-configuration.ts
 
-export function tryRequire(id: string, rootDir: string = process.cwd()) {
+function tryRequire(id: string, rootDir: string = process.cwd()) {
   const _require = jiti(rootDir, { interopDefault: true, esmResolve: true });
 
   try {
@@ -17,6 +18,7 @@ export function tryRequire(id: string, rootDir: string = process.cwd()) {
   }
 }
 
+// TODO:: do not export this
 export function forceRequire(id: string, rootDir: string = process.cwd()) {
   const _require = jiti(rootDir, { interopDefault: true, esmResolve: true });
 

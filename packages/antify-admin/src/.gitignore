@@ -7,4 +7,3 @@ node_modules
 .env
 upload/*
 !upload/.gitkeep
-prismerge.json

@@ -7,7 +7,7 @@ export class Migrator {
   constructor(
     readonly client: Client,
     readonly databaseConfiguration: DatabaseConfiguration,
-    readonly projectRootDir: string
+    readonly projectRootDir: string = process.cwd()
   ) {}
 
   loadMigrationState = async (): Promise<MigrationState> =>

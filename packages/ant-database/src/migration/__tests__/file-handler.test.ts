@@ -7,7 +7,7 @@ import fs from 'fs';
 describe('Migration file handler test', async () => {
   test('Should load all migrations from migrations directory', async () => {
     const __dirname = path.dirname(fileURLToPath(new URL(import.meta.url)));
-    const folderName = 'migrations-core';
+    const folderName = 'migrations/core';
     const dir = path.join(__dirname, folderName);
     const fileNames = ['migration-1.ts', 'migration-2.ts', 'migration-3.ts'];
 
@@ -15,12 +15,12 @@ describe('Migration file handler test', async () => {
       recursive: true,
       force: true,
     });
-    fs.mkdirSync(dir);
+    fs.mkdirSync(dir, { recursive: true });
 
     fileNames.forEach((fileName) => {
       fs.writeFileSync(
         path.join(dir, fileName),
-        `import { defineMigration } from '../../../../src';
+        `import { defineMigration } from '../../../../../src';
 
 export default defineMigration({
   async up(client) { },
@@ -31,7 +31,7 @@ export default defineMigration({
     });
 
     const migrations = loadMigrationsFromFilesystem(__dirname, {
-      databaseUrl: 'mongodb://core:core@localhost:27017/core',
+      databaseUrl: '',
       migrationDir: folderName,
     });
 
