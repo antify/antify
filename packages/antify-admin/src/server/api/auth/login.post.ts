@@ -10,6 +10,7 @@ import { H3Event, readBody } from 'h3';
 import { User } from '~~/server/datasources/core/schemas/user';
 import { UserTenantAccess } from '~~/server/datasources/core/schemas/userTenantAccess';
 import { hashPassword } from '~~/server/utils/passwordHashUtil';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler<AuthLoginPostResponse>(
   async (event: H3Event) => {
@@ -55,7 +56,10 @@ export default defineEventHandler<AuthLoginPostResponse>(
       );
     }
 
-    const password = await hashPassword(requestData.password, useRuntimeConfig().passwordSalt);
+    const password = await hashPassword(
+      requestData.password,
+      useRuntimeConfig().passwordSalt
+    );
     const token = await handleCreateToken(event, {
       email: requestData.email,
       password,

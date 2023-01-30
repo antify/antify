@@ -1,36 +1,24 @@
 import { tenantContextMiddleware } from '../../../../guard/tenantContext.middleware';
 import { useGuard } from '../../../../../composables/useGuard';
 import { useAuthorizationHeader } from '../../../../utils/useAuthorizationHeader';
-import { useTenantHeader } from '../../../../utils/useTenantHeader';
 import { PermissionId } from '../../../../datasources/static/permissions';
-import prisma from '~~/server/datasources/core/client';
 import { HttpForbiddenError, HttpNotFoundError } from '../../../../errors';
 import { useMediaService } from '../../../../service/useMediaService';
+import { Tenant } from '~~/server/datasources/core/schemas/tenant';
+import { useCoreClient } from '~~/server/service/useCoreClient';
+
 export default defineEventHandler(async (event) => {
-  tenantContextMiddleware(event);
-
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
-  const globTenantId = useTenantHeader(event);
 
-  if (
-    !guard.hasPermissionTo(PermissionId.CAN_REMOVE_TENANT_LOGO, globTenantId)
-  ) {
+  if (!guard.hasPermissionTo(PermissionId.CAN_REMOVE_TENANT_LOGO, tenantId)) {
     throw new HttpForbiddenError();
   }
 
-  // The tenant in wich I try to delete the logo in
-  const tenantId = event.context.params.tenantDetailId;
-
-  const tenant = await prisma.tenant.findUnique({
-    select: {
-      id: true,
-      name: true,
-      logo: true,
-    },
-    where: {
-      id: tenantId,
-    },
-  });
+  const coreClient = await useCoreClient().connect();
+  const tenant = coreClient
+    .getModel<Tenant>('tenants')
+    .findOne({ id: tenantId });
 
   if (!tenant || !tenant.logo) {
     throw new HttpNotFoundError(tenantId);
@@ -40,11 +28,7 @@ export default defineEventHandler(async (event) => {
   await useMediaService(tenant.logo).deleteFile();
 
   // Delete in media table
-  await prisma.media.delete({
-    where: {
-      id: tenant.logo.id,
-    },
-  });
+  await coreClient.getModel('medias').remove({ id: tenant.logo.id });
 
   return {};
 });

@@ -11,6 +11,7 @@ import {
 } from '~~/glue/api/backoffice/[tenantId]/media/[mediaId].put';
 import { useMediaService } from '../../../../service/useMediaService';
 import { Media } from '~~/server/datasources/tenant/schemas/media';
+import { useTenantClient } from '~~/server/service/useTenantClient';
 
 export default defineEventHandler<Response>(async (event) => {
   const tenantId = tenantContextMiddleware(event);

@@ -1,7 +1,10 @@
-import { SingleConnectionClient } from '@antify/ant-database';
+import {
+  MultiConnectionClient,
+  loadDatabaseConfiguration,
+} from '@antify/ant-database';
 
 export const useTenantClient = () => {
-  return SingleConnectionClient.getInstance(
-    useRuntimeConfig().antDatabase.tenantMongoUrl
+  return MultiConnectionClient.getInstance(
+    loadDatabaseConfiguration()['tenant']
   );
 };

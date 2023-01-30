@@ -1,26 +1,22 @@
 import { PermissionId } from '../../datasources/static/permissions';
 import { HttpForbiddenError } from '../../errors';
-import { useTenantHeader } from '../../utils/useTenantHeader';
 import { useAuthorizationHeader } from '../../utils/useAuthorizationHeader';
 import { tenantContextMiddleware } from '../../guard/tenantContext.middleware';
 import { useGuard } from '~~/composables/useGuard';
-import prisma from '~~/server/datasources/core/client';
+import { useCoreClient } from '~~/server/service/useCoreClient';
+import { User } from '~~/server/datasources/core/schemas/user';
 
 export default defineEventHandler(async (event) => {
-  tenantContextMiddleware(event);
-
+  const tenantId = tenantContextMiddleware(event);
   const guard = useGuard(useAuthorizationHeader(event));
-  const tenantId = useTenantHeader(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_DELETE_USER, tenantId)) {
     throw new HttpForbiddenError();
   }
 
-  await prisma.user.delete({
-    where: {
-      id: event.context.params.userId,
-    },
-  });
+  (await useCoreClient().connect())
+    .getModel<User>('users')
+    .remove({ id: event.context.params.userId });
 
   return {};
 });

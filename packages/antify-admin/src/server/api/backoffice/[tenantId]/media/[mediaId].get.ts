@@ -5,6 +5,7 @@ import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middlewar
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { Response } from '~~/glue/api/backoffice/[tenantId]/media/[mediaId].get';
 import { useMediaService } from '~~/server/service/useMediaService';
+import { useTenantClient } from '~~/server/service/useTenantClient';
 
 export default defineEventHandler<Response>(async (event) => {
   const tenantId = tenantContextMiddleware(event);

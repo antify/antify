@@ -1,10 +1,9 @@
 import consola from 'consola';
 import { defineAntDbCommand } from './index';
 import { resolve } from 'pathe';
-import { tryRequire } from '../../utils';
-import { DatabaseConfigurations, DatabaseConfiguration } from '@antify/ant-database';
 import { join } from 'pathe';
 import fs from 'fs';
+import { loadDatabaseConfig } from '../utils/load-database-config';
 
 const convertTwoDigits = (number: number): string => {
   return number < 10 ? `0${number}` : `${number}`;
@@ -12,9 +11,8 @@ const convertTwoDigits = (number: number): string => {
 
 export default defineAntDbCommand({
   meta: {
-    // TODO:: "databaseName" is a confusing name
-    name: 'make-migration [databaseName] [migrationName]',
-    usage: 'ant-db make-migration',
+    name: 'make-migration',
+    usage: 'ant-db make-migration [databaseName] [migrationName]',
     description: 'Generates a migration',
   },
   invoke(args) {
@@ -29,14 +27,13 @@ export default defineAntDbCommand({
       return consola.error(`Missing required argument "migrationName"`);
     }
 
-    const projectRootDir = resolve(args.cwd || '.');
-    const databaseConfig: DatabaseConfigurations =
-      tryRequire('./database.config', projectRootDir) || {};
+    const databaseConfig = loadDatabaseConfig(
+      databaseName,
+      resolve(args.cwd || '.')
+    );
 
-    if (databaseConfig[databaseName] === undefined) {
-      return consola.error(
-        `There exists no configuration for database "${databaseName}"`
-      );
+    if (!databaseConfig) {
+      return;
     }
 
     const absoluteOutDir = join(

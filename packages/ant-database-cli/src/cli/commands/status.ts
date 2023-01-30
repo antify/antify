@@ -42,13 +42,13 @@ export default defineAntDbCommand({
 
     if (databaseConfig.isSingleConnection === true) {
       client = await SingleConnectionClient.getInstance(
-        databaseConfig.databaseUrl
+        databaseConfig
       ).connect();
     } else {
       const tenants = await databaseConfig.fetchTenants();
 
       if (tenantId === null) {
-        client = MultiConnectionClient.getInstance(databaseConfig.databaseUrl);
+        client = MultiConnectionClient.getInstance(databaseConfig);
 
         for (const tenant of tenants) {
           await client.connect(tenant.id);
@@ -71,7 +71,7 @@ export default defineAntDbCommand({
       }
 
       client = await MultiConnectionClient.getInstance(
-        databaseConfig.databaseUrl
+        databaseConfig
       ).connect(tenantId);
     }
 

@@ -7,6 +7,7 @@ import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { Response } from '~~/glue/api/tenants/tenants.get';
 import { useMediaService } from '../../service/useMediaService';
 import { Tenant } from '~~/server/datasources/core/schemas/tenant';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler<Response>(async (event) => {
   authenticatedMiddleware(event);

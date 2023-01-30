@@ -5,6 +5,7 @@ import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { Response } from '~~/glue/api/global/me.get';
 import { useMediaService } from '../../service/useMediaService';
 import { User } from '~~/server/datasources/core/schemas/user';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler<Response>(async (event) => {
   authenticatedMiddleware(event);

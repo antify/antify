@@ -7,6 +7,7 @@ import { handleCreateToken } from '~~/server/utils/tokenUtil';
 import { apiAppInstallService } from './install.service';
 import { User } from '~~/server/datasources/core/schemas/user';
 import { hashPassword } from '~~/server/utils/passwordHashUtil';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler<AppInstallPostResponse>(async (event) => {
   const requireInstall = await apiAppInstallService.requireInstall();

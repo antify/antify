@@ -7,6 +7,7 @@ import {
 import { isSuperAdminMiddleware } from '~~/server/guard/isSuperAdmin.middleware';
 import { User } from '~~/server/datasources/core/schemas/user';
 import mongoose from 'mongoose';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler<Response>(async (event) => {
   isSuperAdminMiddleware(event);

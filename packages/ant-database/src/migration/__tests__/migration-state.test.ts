@@ -1,5 +1,4 @@
 import { describe, test, expect } from 'vitest';
-import { defineMigration } from '../../types';
 import { MigrationState } from '../migration-state';
 import { generateMigrationMocks } from './utils';
 

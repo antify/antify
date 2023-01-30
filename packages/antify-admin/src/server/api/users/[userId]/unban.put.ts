@@ -4,6 +4,7 @@ import { PermissionId } from '~~/server/datasources/static/permissions';
 import { HttpForbiddenError } from '~~/server/errors';
 import { useGuard } from '~~/composables/useGuard';
 import { User } from '~~/server/datasources/core/schemas/user';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler(async (event) => {
   const tenantId = tenantContextMiddleware(event);

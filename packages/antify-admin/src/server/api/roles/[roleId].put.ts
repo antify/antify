@@ -4,6 +4,7 @@ import { HttpBadRequestError, HttpForbiddenError } from '~~/server/errors';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { Role } from '~~/server/datasources/core/schemas/roles';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 // TODO:: glue
 export type RoleInput = {

@@ -7,6 +7,7 @@ import { User } from '../../glue/api/global/me.get';
 import { User as UserDatabaseSchema } from '~~/server/datasources/core/schemas/user';
 import { UserTenantAccess } from '../datasources/core/schemas/userTenantAccess';
 import { Role } from '../datasources/core/schemas/roles';
+import { useCoreClient } from '../service/useCoreClient';
 
 export const tokenValid = async (token: string): Promise<boolean> => {
   // TODO:: Security dude?

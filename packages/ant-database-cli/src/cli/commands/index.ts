@@ -6,7 +6,9 @@ export const commands = {
   // Migrate down
   status: () => import('./status').then(_rDefault),
   migrate: () => import('./migrate').then(_rDefault),
-  make: () => import('./make').then(_rDefault),
+  'load-fixtures': () => import('./load-fixtures').then(_rDefault),
+  'make-fixture': () => import('./make-fixture').then(_rDefault),
+  'make-migration': () => import('./make').then(_rDefault),
   usage: () => import('./usage').then(_rDefault),
 };
 

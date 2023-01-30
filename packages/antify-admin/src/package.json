@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "@antify/ant-database": "1.0.0",
-    "@antify/ant-database-module": "1.0.0",
     "@antify/antify-ui": "0.0.70",
     "@antify/validate": "1.0.0",
     "@types/formidable": "^2.0.5",

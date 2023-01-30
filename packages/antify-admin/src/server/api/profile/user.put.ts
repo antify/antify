@@ -4,6 +4,7 @@ import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { Input, validator } from '~~/glue/api/profile/user.put';
 import { authenticatedMiddleware } from '~~/server/guard/authenticated.middleware';
 import { User } from '~~/server/datasources/core/schemas/user';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler(async (event) => {
   authenticatedMiddleware(event);

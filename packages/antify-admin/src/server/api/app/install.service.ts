@@ -1,4 +1,5 @@
 import { User } from '~~/server/datasources/core/schemas/user';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export const apiAppInstallService = {
   requireInstall: async () => {

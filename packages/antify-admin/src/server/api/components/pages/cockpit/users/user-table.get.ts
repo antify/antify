@@ -1,5 +1,6 @@
 import { User } from '~~/server/datasources/core/schemas/user';
 import { isSuperAdminMiddleware } from '~~/server/guard/isSuperAdmin.middleware';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler(async (event) => {
   isSuperAdminMiddleware(event);

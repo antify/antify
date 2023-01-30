@@ -1,11 +1,4 @@
 {
-  "ts-node": {
-    // For prisma seeds
-    "compilerOptions": {
-      "target": "esnext",
-      "module": "commonjs",
-    }
-  },
   // https://v3.nuxtjs.org/concepts/typescript
   "extends": "./.nuxt/tsconfig.json"
 }

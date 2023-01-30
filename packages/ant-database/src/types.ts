@@ -1,8 +1,25 @@
 import { Client } from './client/Client';
 
 export type DatabaseConfiguration = {
-  migrationDir: string;
+  /**
+   * The database name coming from key. Will be
+   * automatically set.
+   */
+  name?: string;
+
   databaseUrl: string;
+
+  /**
+   * Directory where migration files are expected.
+   * Default is `migrations-[CONFIGURATION_NAME]`
+   */
+  migrationDir: string;
+
+  /**
+   * Directory where fixture files are expected.
+   * Default is `fixtures-[CONFIGURATION_NAME]`
+   */
+  fixturesDir?: string;
 };
 
 export type SingleConnectionDatabaseConfiguration = {
@@ -53,6 +70,15 @@ export const defineMigration = (migration: Migration): Migration => {
   return migration;
 };
 
+export type Fixture = {
+  name?: string;
+  load: (client: Client) => Promise<void>;
+};
+
+export const defineFixture = (fixture: Fixture): Fixture => {
+  return fixture;
+};
+
 export interface MigrationSchema {
   file: string;
   date: Date;
@@ -71,4 +97,18 @@ export type MigrateTenantResult = {
   tenantId?: string | null;
   tenantName?: string | null;
   results?: MigrationExecutionResult[];
+};
+
+export type LoadFixtureExecutionResult = {
+  executionTimeInMs?: number | null;
+  fixtureName?: string | null;
+  error?: Error | null;
+  info?: string | null;
+  stopLoadFixtureProcess?: boolean;
+};
+
+export type LoadFixtureResult = {
+  tenantId?: string | null;
+  tenantName?: string | null;
+  results?: LoadFixtureExecutionResult[];
 };

@@ -1,8 +1,10 @@
 import { PermissionId } from '../static/permissions';
 import { extendSchemas } from './schema.extensions';
 import { Role } from './schemas/roles';
-// TODO:: import correctly from @antify/ant-database
-import { SingleConnectionClient, truncateAllCollections } from '@antify/ant-db';
+import {
+  SingleConnectionClient,
+  truncateAllCollections,
+} from '@antify/ant-database';
 import { tenantFixtures } from './fixtures/tenant';
 import { Tenant } from './schemas/tenant';
 import { User } from './schemas/user';

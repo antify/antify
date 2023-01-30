@@ -6,6 +6,7 @@ import { PermissionId } from '../../datasources/static/permissions';
 import { useMediaService } from '../../service/useMediaService';
 import { User } from '~~/server/datasources/core/schemas/user';
 import { Media } from '~~/server/datasources/core/schemas/media';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 /**
  * TODO:: remove this request and implement image remove logic in user.put request.

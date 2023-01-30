@@ -1,5 +1,6 @@
 import { Tenant } from '~~/server/datasources/core/schemas/tenant';
 import { isSuperAdminMiddleware } from '~~/server/guard/isSuperAdmin.middleware';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 import { Paginator } from '~~/server/utils/paginator';
 
 export default defineEventHandler(async (event) => {

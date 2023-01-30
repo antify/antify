@@ -17,7 +17,6 @@ import { loadDatabaseConfig } from '../utils/load-database-config';
 import { bold } from 'colorette';
 import { validateDatabaseName, validateHasTenantId } from '../utils/validate';
 
-// TODO:: migrate posibility to migrate one migration only (migrateOneUp)
 export default defineAntDbCommand({
   meta: {
     name: 'migrate',
@@ -83,15 +82,15 @@ export default defineAntDbCommand({
           return consola.info(executionResult.info);
         }
 
-        consola.log(
-          `++ migrated (took ${executionResult.executionTimeInMs} ms) `
+        consola.success(
+          `Migrated (took ${executionResult.executionTimeInMs} ms) `
         );
       },
       beforeMigrate: (migrationName: string) => {
-        consola.log(`++ migrating ${migrationName}`);
+        consola.info(`Migrating ${migrationName}`);
       },
       beforeMigrateTenant: (tenantId, tenantName) => {
-        consola.log(
+        consola.info(
           `Execute migrations for tenant ${bold(tenantId)} (${tenantName})`
         );
       },
@@ -105,7 +104,7 @@ export default defineAntDbCommand({
      */
     if (databaseConfig.isSingleConnection === false && tenantId) {
       const client = await MultiConnectionClient.getInstance(
-        databaseConfig.databaseUrl
+        databaseConfig
       ).connect(tenantId);
 
       return await migrateOneDatabase(
@@ -121,7 +120,7 @@ export default defineAntDbCommand({
      */
     if (databaseConfig.isSingleConnection === true) {
       const client = await SingleConnectionClient.getInstance(
-        databaseConfig.databaseUrl
+        databaseConfig
       ).connect();
 
       return await migrateOneDatabase(

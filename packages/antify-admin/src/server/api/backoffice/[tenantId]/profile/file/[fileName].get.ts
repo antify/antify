@@ -6,6 +6,7 @@ import { sendStream } from 'h3';
 import { useMediaService } from '~~/server/service/useMediaService';
 import { useGuard } from '~~/composables/useGuard';
 import { User } from '~~/server/datasources/core/schemas/user';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 // TODO:: this endpoint makes no sense. Redesign it to use cockpit media endpoint
 export default defineEventHandler(async (event) => {

@@ -9,6 +9,7 @@ import {
 import { useMailer } from '~~/server/utils/useMailer';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { MailTemplate } from '~~/server/datasources/tenant/schemas/mailTemplate';
+import { useTenantClient } from '~~/server/service/useTenantClient';
 
 export default defineEventHandler(async (event) => {
   const tenantId = tenantContextMiddleware(event);

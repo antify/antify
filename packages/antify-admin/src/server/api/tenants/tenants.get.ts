@@ -8,6 +8,7 @@ import { Response } from '~~/glue/api/tenants/tenants.get';
 import { Paginator } from '~~/server/utils/paginator';
 import { Tenant } from '~~/server/datasources/core/schemas/tenant';
 import { Model } from 'mongoose';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler<Response>(async (event) => {
   authenticatedMiddleware(event);

@@ -1,5 +1,5 @@
 import { MailTemplateId } from '../static/mailTemplates';
-import { MultiConnectionClient } from '@antify/ant-db';
+import { MultiConnectionClient } from '@antify/ant-database';
 import { MailTemplate } from './schemas/mailTemplate';
 
 export async function seedTenant(

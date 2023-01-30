@@ -1,5 +1,6 @@
 import { isSuperAdminMiddleware } from '~~/server/guard/isSuperAdmin.middleware';
 import { MailTemplate } from '~~/server/datasources/core/schemas/mailTemplate';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler(async (event) => {
   isSuperAdminMiddleware(event);

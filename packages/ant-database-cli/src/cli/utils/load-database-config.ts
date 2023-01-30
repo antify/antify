@@ -3,8 +3,8 @@ import {
   DatabaseConfigurations,
   MultiConnectionDatabaseConfiguration,
   SingleConnectionDatabaseConfiguration,
+  loadDatabaseConfiguration,
 } from '@antify/ant-database';
-import { tryRequire } from '../../utils';
 
 export const loadDatabaseConfig = (
   databaseName: string,
@@ -16,7 +16,7 @@ export const loadDatabaseConfig = (
   let databaseConfig: DatabaseConfigurations;
 
   try {
-    databaseConfig = tryRequire('./database.config', projectRootDir) || {};
+    databaseConfig = loadDatabaseConfiguration(false, projectRootDir) || {};
   } catch (e) {
     consola.error(e.message);
     return null;

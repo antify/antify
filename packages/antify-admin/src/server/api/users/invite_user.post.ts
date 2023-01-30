@@ -6,10 +6,12 @@ import { HttpForbiddenError } from '~~/server/errors';
 import { Input } from '~~/glue/api/users/invite_user.post';
 import { useMailer } from '~~/server/utils/useMailer';
 import { createInviteToken } from '~~/server/utils/tokenUtil';
-import authPrisma from '~~/server/datasources/core/client';
 import { validator } from '~~/glue/api/users/invite_user.post';
 import { Role } from '~~/server/datasources/core/schemas/roles';
 import { MailTemplate } from '~~/server/datasources/tenant/schemas/mailTemplate';
+import { useTenantClient } from '~~/server/service/useTenantClient';
+import { useCoreClient } from '~~/server/service/useCoreClient';
+import { User } from '~~/server/datasources/core/schemas/user';
 
 export default defineEventHandler(async (event) => {
   const tenantId = tenantContextMiddleware(event);
@@ -94,80 +96,75 @@ function getHtmlContent(content: string, link: string): string {
 }
 
 async function getUser(email: string, roleId: string, tenantId: string) {
-  const user = await authPrisma.user.findUnique({
-    select: {
-      id: true,
-      email: true,
-      tenantAccesses: true,
-    },
-    where: {
-      email: email,
-    },
-  });
+  const coreClient = await useCoreClient().connect();
+  const UserModel = coreClient.getModel<User>('users');
 
-  if (user) {
-    // check if has already access to tenant, or add isPending#
-    const index = user.tenantAccesses.findIndex(
-      (tenant) => tenant.tenantId === tenantId
-    );
+  const user = await UserModel.findOne({ email });
 
-    if (index !== -1) {
-      // already has access to tenant (TODO:: inform user)
-      return null;
-    }
+  // TODO:: finish refactor to mongodb
+  // if (user) {
+  //   // check if has already access to tenant, or add isPending#
+  //   const index = user.tenantAccesses.findIndex(
+  //     (tenant) => tenant.tenantId === tenantId
+  //   );
 
-    // add new tenantAccess and sent e-mail
-    return {
-      user: await authPrisma.user.update({
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          tenantAccesses: true,
-        },
-        where: {
-          id: user.id,
-        },
-        data: {
-          tenantAccesses: {
-            create: {
-              roleId: roleId,
-              tenantId: tenantId,
-              isPending: true,
-            },
-          },
-        },
-      }),
-      isNew: false,
-    };
+  //   if (index !== -1) {
+  //     // already has access to tenant (TODO:: inform user)
+  //     return null;
+  //   }
 
-    // need to go to login to activate
-  } else {
-    // need to go to register to activate
+  //   // add new tenantAccess and sent e-mail
+  //   return {
+  //     user: await authPrisma.user.update({
+  //       select: {
+  //         id: true,
+  //         email: true,
+  //         name: true,
+  //         tenantAccesses: true,
+  //       },
+  //       where: {
+  //         id: user.id,
+  //       },
+  //       data: {
+  //         tenantAccesses: {
+  //           create: {
+  //             roleId: roleId,
+  //             tenantId: tenantId,
+  //             isPending: true,
+  //           },
+  //         },
+  //       },
+  //     }),
+  //     isNew: false,
+  //   };
 
-    // create new user
-    return {
-      user: await authPrisma.user.create({
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          tenantAccesses: true,
-        },
-        data: {
-          email: email,
-          name: email.split('@')[0],
-          isSuperAdmin: false,
-          tenantAccesses: {
-            create: {
-              roleId: roleId,
-              tenantId: tenantId,
-              isPending: true,
-            },
-          },
-        },
-      }),
-      isNew: true,
-    };
-  }
+  //   // need to go to login to activate
+  // } else {
+  //   // need to go to register to activate
+
+  //   // create new user
+  //   return {
+  //     user: await authPrisma.user.create({
+  //       select: {
+  //         id: true,
+  //         email: true,
+  //         name: true,
+  //         tenantAccesses: true,
+  //       },
+  //       data: {
+  //         email: email,
+  //         name: email.split('@')[0],
+  //         isSuperAdmin: false,
+  //         tenantAccesses: {
+  //           create: {
+  //             roleId: roleId,
+  //             tenantId: tenantId,
+  //             isPending: true,
+  //           },
+  //         },
+  //       },
+  //     }),
+  //     isNew: true,
+  //   };
+  // }
 }

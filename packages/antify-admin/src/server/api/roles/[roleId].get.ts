@@ -4,6 +4,7 @@ import { HttpForbiddenError } from '../../errors';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { Role } from '~~/server/datasources/core/schemas/roles';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler(async (event) => {
   const tenantId = tenantContextMiddleware(event);

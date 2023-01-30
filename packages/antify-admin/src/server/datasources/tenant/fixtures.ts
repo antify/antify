@@ -1,4 +1,7 @@
-import { MultiConnectionClient, truncateAllCollections } from '@antify/ant-db';
+import {
+  MultiConnectionClient,
+  truncateAllCollections,
+} from '@antify/ant-database';
 import { extendSchemas } from './schema.extensions';
 
 export async function loadTenantFixtures(tenantId: string) {

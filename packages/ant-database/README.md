@@ -15,6 +15,7 @@ It does:
 - [ ] Improve security (root user for tenants is not good)
 - [ ] Implement rollback mechanism on error
 - [x] Implement stop mechanism on error
+- [ ] Implement migrate down
 
 ## Usage
 

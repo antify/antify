@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'fs';
 
-describe('Migrate up test', async () => {
+describe('Migration file handler test', async () => {
   test('Should load all migrations from migrations directory', async () => {
     const __dirname = path.dirname(fileURLToPath(new URL(import.meta.url)));
     const folderName = 'migrations-core';

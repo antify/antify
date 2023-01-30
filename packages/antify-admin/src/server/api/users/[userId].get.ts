@@ -5,6 +5,7 @@ import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middlewar
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { Response } from '~~/glue/api/users/[userId].get';
 import { UserTenantAccess } from '~~/server/datasources/core/schemas/userTenantAccess';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler<Response>(async (event) => {
   const tenantId = tenantContextMiddleware(event);

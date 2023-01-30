@@ -1,6 +1,3 @@
-import { resolve } from 'path';
-import AntDatabase from '@antify/ant-database-module';
-
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
   tailwindcss: {
@@ -27,7 +24,6 @@ export default defineNuxtConfig({
     },
   },
   modules: [
-    AntDatabase,
     // TODO:: remove me and replace with antify-ui
     '@nuxtjs/tailwindcss',
   ],
@@ -40,9 +36,5 @@ export default defineNuxtConfig({
     smtpUser: process.env.SMTP_USER,
     smtpPassword: process.env.SMTP_PASSWORD,
     mediaUploadDir: process.env.MEDIA_UPLOAD_DIR,
-  },
-  antDatabase: {
-    coreMongoUrl: 'mongodb://core:core@localhost:27017/core',
-    tenantMongoUrl: 'mongodb://root:root@127.0.0.1:27017',
   },
 });

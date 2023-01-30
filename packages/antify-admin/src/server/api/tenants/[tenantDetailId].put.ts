@@ -4,6 +4,7 @@ import {
   Response,
 } from '~~/glue/api/backoffice/[tenantId]/tenant/index.put';
 import { Tenant } from '~~/server/datasources/core/schemas/tenant';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler<Response>(async (event) => {
   const requestData = await readBody<Input>(event);

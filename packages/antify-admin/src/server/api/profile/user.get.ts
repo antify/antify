@@ -3,6 +3,7 @@ import { authenticatedMiddleware } from '~~/server/guard/authenticated.middlewar
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useMediaService } from '../../service/useMediaService';
 import { User } from '~~/server/datasources/core/schemas/user';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler(async (event) => {
   authenticatedMiddleware(event);

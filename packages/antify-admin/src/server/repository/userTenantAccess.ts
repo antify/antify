@@ -1,4 +1,5 @@
 import { UserTenantAccess } from '../datasources/core/schemas/userTenantAccess';
+import { useCoreClient } from '../service/useCoreClient';
 
 export class UserTenantAccessRepository {
   async findByRole(roleId: string) {

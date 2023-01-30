@@ -6,6 +6,7 @@ import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { Input, validator } from '~~/glue/api/users/[userId].put';
 import { UserTenantAccess } from '~~/server/datasources/core/schemas/userTenantAccess';
 import { Role } from '~~/server/datasources/core/schemas/roles';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler(async (event) => {
   const tenantId = tenantContextMiddleware(event);

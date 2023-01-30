@@ -5,6 +5,7 @@ import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middlewar
 import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useMediaService } from '~~/server/service/useMediaService';
 import { Media } from '~~/server/datasources/tenant/schemas/media';
+import { useTenantClient } from '~~/server/service/useTenantClient';
 
 export default defineEventHandler(async (event) => {
   const tenantId = tenantContextMiddleware(event);

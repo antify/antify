@@ -7,6 +7,7 @@ import { HttpForbiddenError } from '~~/server/errors';
 import { useMediaStorage } from '~~/server/service/useMediaService';
 import { HttpBadRequestError } from '~~/server/errors';
 import { Media } from '~~/server/datasources/tenant/schemas/media';
+import { useTenantClient } from '~~/server/service/useTenantClient';
 
 export default defineEventHandler(async (event) => {
   const tenantId = tenantContextMiddleware(event);

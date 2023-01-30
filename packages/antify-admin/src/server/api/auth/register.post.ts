@@ -4,13 +4,13 @@ import {
   handleCreateToken,
 } from '../../utils/tokenUtil';
 import { HttpForbiddenError } from '../../errors';
-import prisma from '~~/server/datasources/core/client';
 import {
   Response,
   Input,
   validator,
 } from '../../../glue/api/auth/register.post';
 import { hashPassword } from '~~/server/utils/passwordHashUtil';
+import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler<Response>(async (event) => {
   const requestData = await readBody<Input>(event);
@@ -34,30 +34,22 @@ export default defineEventHandler<Response>(async (event) => {
     };
   }
 
-  const password = await hashPassword(requestData.password, useRuntimeConfig().passwordSalt);
+  const password = await hashPassword(
+    requestData.password,
+    useRuntimeConfig().passwordSalt
+  );
 
-  // set user password
-  const user = await prisma.user.update({
-    where: {
-      id: content.id,
-    },
-    data: {
-      password: password,
-    },
-  });
+  const tenantClient = await useCoreClient().connect();
 
-  // set isPending to false
-  await prisma.userTenantAccess.update({
-    where: {
-      userId_tenantId: {
-        userId: content.id,
-        tenantId: content.tenantId,
-      },
-    },
-    data: {
-      isPending: false,
-    },
-  });
+  await tenantClient
+    .getModel('users')
+    .updateOne({ id: content.id }, { password });
+  await tenantClient
+    .getModel('user_tenant_accesses')
+    .updateOne(
+      { userId: content.id, tenantId: content.tenantId },
+      { isPending: false }
+    );
 
   // create login token
   const loginToken = await handleCreateToken(event, {

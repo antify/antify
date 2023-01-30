@@ -1,5 +1,5 @@
 import { DatabaseConfiguration, Migration } from '../types';
-import { require } from '../utils';
+import { forceRequire, removeFileTypeExtension } from '../utils';
 import { getAbsoluteMigrationDir } from './utils';
 import fs from 'fs';
 
@@ -14,8 +14,10 @@ export const loadMigrationsFromFilesystem = (
   );
 
   getMigrationsFilenames(absoluteMigrationDir).forEach((filename) => {
-    const migration =
-      require(`./${filename}`, absoluteMigrationDir) as Migration;
+    const migration = forceRequire(
+      `./${filename}`,
+      absoluteMigrationDir
+    ) as Migration;
 
     migration.name = filename;
     migrations.push(migration);
@@ -25,12 +27,12 @@ export const loadMigrationsFromFilesystem = (
 };
 
 export const getMigrationsFilenames = (dir: string): string[] => {
+  if (!fs.existsSync(dir)) {
+    return [];
+  }
+
   return fs
     .readdirSync(dir)
     .map((filename) => removeFileTypeExtension(filename))
     .sort();
 };
-
-function removeFileTypeExtension(filename: string): string {
-  return filename.substring(0, filename.lastIndexOf('.'));
-}
