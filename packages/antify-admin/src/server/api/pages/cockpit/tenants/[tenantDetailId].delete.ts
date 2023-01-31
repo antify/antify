@@ -1,6 +1,7 @@
 import { isSuperAdminMiddleware } from '~~/server/guard/isSuperAdmin.middleware';
 import { Tenant } from '~~/server/datasources/core/schemas/tenant';
 import { useCoreClient } from '~~/server/service/useCoreClient';
+import { useTenantClient } from '~~/server/service/useTenantClient';
 
 export default defineEventHandler(async (event) => {
   isSuperAdminMiddleware(event);
@@ -18,6 +19,10 @@ export default defineEventHandler(async (event) => {
   }
 
   await tenant.remove();
+
+  const tenantClient = await useTenantClient().connect(tenant.id);
+
+  await tenantClient.getConnection().dropDatabase();
 
   return {};
 });
