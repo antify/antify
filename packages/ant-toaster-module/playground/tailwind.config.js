@@ -1,3 +1,4 @@
+// TODO:: remove it if default config comes from antify ui
 module.exports = {
   content: ['./dist/index.js', './src/components/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {

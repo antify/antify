@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import Toaster from '../../src/runtime/components/Toaster.vue';
 const { $toaster } = useNuxtApp();
 </script>
 
@@ -14,7 +13,5 @@ const { $toaster } = useNuxtApp();
     <AntButton @click="() => $toaster.toastError('Error message here')"
       >Toast error</AntButton
     >
-
-    <Toaster />
   </div>
 </template>

@@ -1,5 +1,10 @@
 import { fileURLToPath } from 'url';
-import { defineNuxtModule, createResolver, addPlugin } from '@nuxt/kit';
+import {
+  defineNuxtModule,
+  createResolver,
+  addPlugin,
+  addComponentsDir,
+} from '@nuxt/kit';
 
 type ModuleOptions = {
   messageShowTime: number;
@@ -18,6 +23,13 @@ export default defineNuxtModule<ModuleOptions>({
     };
 
     addPlugin(resolve(runtimeDir, 'plugins/toaster'));
+
+    await addComponentsDir({
+      path: resolve('./runtime/components'),
+      pathPrefix: false,
+      prefix: '',
+      global: true,
+    });
 
     nuxt.options.runtimeConfig.public.antToaster = {
       ...defaultOptions,
