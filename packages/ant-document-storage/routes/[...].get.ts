@@ -1,24 +1,21 @@
 import * as fs from 'fs';
 import { join } from 'path';
 import { sendStream } from 'h3';
-import { validateAndGetToken } from '../../../utils/jwtUtil';
+import { validateAndGetToken } from '../utils/jwtUtil';
+import { parseURL } from 'ufo';
 
 export default defineEventHandler(async (event) => {
   const token = await validateAndGetToken(event);
-  const filePath = join(
-    useRuntimeConfig().filesStorageDir,
-    event.context.params.dir,
-    event.context.params.fileName
-  );
+  const { pathname } = parseURL(event.node.req.url);
 
-  if (guard.canRead(token, filePath)) {
+  if (!guard.canRead(token, pathname.split('/').slice(0, -1).join('/'))) {
     throw createError({
       statusCode: 403,
       statusMessage: `Forbidden`,
     });
   }
 
-  // Make sure, the user can see this file.
+  const filePath = join(useRuntimeConfig().filesStorageDir, pathname);
 
   try {
     if (fs.existsSync(filePath)) {

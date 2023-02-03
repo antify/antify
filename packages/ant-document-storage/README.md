@@ -67,10 +67,10 @@ If env NODE_ENV is not 'production', you can visit [http://localhost:3000/dev](h
 - [ ] Make 500 html
 - [x] Unify the jwt structure
 - [x] Unify jwt validation
+- [ ] Rule set which file types are allowed
 - [ ] Do not show critical errors on production
 - [ ] Add sentry integration
 - [ ] Implement unjs/ipx
-- [ ] Add infinite nested dirs to have long paths like localhost/foo/bar/blub/image.png
 - [ ] Provide docker image
 - [ ] Add endpoint to graph multiple files
 - [ ] Add filter to endpoint to graph files of type XY or with name XY

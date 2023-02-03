@@ -39,7 +39,7 @@
 		<input type="file" id="file" accept="image/*" multiple>
 		<label>
 			Directory: <br>
-			<input type="text" id="dir" value="/test-dir">
+			<input type="text" id="dir" value="/core/foo">
 		</label>
 
 		<button>Upload</button>
@@ -48,10 +48,11 @@
 	<br><br>
 
 	<h1>Set token</h1>
+	<p>Token with access to /core/foo and /core/bar</p>
 	<form id="token-form">
 		<label>
 			Token: <br>
-			<textarea id="token-content">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb2N1bWVudFN0b3JhZ2UiOnsicmVhZCI6WyIvdGVzdC1kaXIiXSwid3JpdGUiOlsiL3Rlc3QtZGlyIl0sImRlbGV0ZSI6WyIvdGVzdC1kaXIiXX0sImlhdCI6MTUxNjIzOTAyMn0.D8DywB7LRFTibaIhyHJS5fWaTd1BddbEbsHqo-NCmnY</textarea>
+			<textarea id="token-content">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkb2N1bWVudFN0b3JhZ2UiOnsicmVhZCI6WyIvY29yZS9mb28iLCIvY29yZS9iYXIiXSwid3JpdGUiOlsiL2NvcmUvZm9vIiwiL2NvcmUvYmFyIl0sImRlbGV0ZSI6WyIvY29yZS9mb28iLCIvY29yZS9iYXIiXX0sImlhdCI6MTUxNjIzOTAyMn0.cZscDVzHlqoC4wygQlJBfPIB1xg_QJ1J_Q4GD_zSuWg</textarea>
 		</label>
 
 		<button>Save</button>
@@ -75,7 +76,7 @@
                 formData.append(`file-${i}`, file.files[i]);
             }
 
-            await fetch(`/upload?dir=${encodeURI(dir.value)}`, {
+            await fetch(encodeURI(dir.value), {
                 'method' : 'POST',
                 'body' : formData
             });

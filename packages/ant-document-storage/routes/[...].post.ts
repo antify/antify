@@ -1,4 +1,5 @@
 // TODO:: fix type errors
+import { parseURL } from 'ufo';
 import formidable, { Files } from 'formidable';
 import { defineEventHandler } from 'h3';
 import { validateAndGetToken } from '../utils/jwtUtil';
@@ -6,15 +7,9 @@ import { join } from 'path';
 import * as fs from 'fs';
 import guard from '../utils/guard';
 
-const createDirIfNotExists = (dir: string) => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
-  }
-};
-
 export default defineEventHandler(async (event) => {
   const token = await validateAndGetToken(event);
-  const dir = decodeURI((getQuery(event)?.dir as string) || '/');
+  const { pathname: dir } = parseURL(event.node.req.url);
 
   if (!guard.canUpload(token, dir)) {
     throw createError({
@@ -23,11 +18,11 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  createDirIfNotExists(useRuntimeConfig().filesStorageDir);
-
   const uploadDir = join(useRuntimeConfig().filesStorageDir, dir);
 
-  createDirIfNotExists(uploadDir);
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
 
   const form = formidable({
     multiples: true,
@@ -35,6 +30,7 @@ export default defineEventHandler(async (event) => {
     keepExtensions: true,
     filter: function ({ name, originalFilename, mimetype }) {
       // keep only images, text files and pdf's
+      // TODO:: make it configurateable
       return (
         mimetype &&
         (mimetype.includes('image') ||
