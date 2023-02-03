@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import { join } from 'path';
+import { parseURL } from 'ufo';
 import { sendStream } from 'h3';
 import { validateAndGetToken } from '../utils/jwtUtil';
-import { parseURL } from 'ufo';
 
 export default defineEventHandler(async (event) => {
-  const token = await validateAndGetToken(event);
+  const token = validateAndGetToken(event);
   const { pathname } = parseURL(event.node.req.url);
 
   if (!guard.canRead(token, pathname.split('/').slice(0, -1).join('/'))) {

@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import guard from '../utils/guard';
 
 export default defineEventHandler(async (event) => {
-  const token = await validateAndGetToken(event);
+  const token = validateAndGetToken(event);
   const { pathname: dir } = parseURL(event.node.req.url);
 
   if (!guard.canUpload(token, dir)) {

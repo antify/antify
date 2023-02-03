@@ -3,6 +3,10 @@ import { minimatch } from 'minimatch';
 
 export default {
   canUpload: function (token: JsonWebToken, dirToUpload: string): boolean {
+    if (token.isSuperAdmin) {
+      return true;
+    }
+
     for (const permission of token.documentStorage.write) {
       const hasPermission = minimatch(dirToUpload, permission);
 
@@ -15,6 +19,10 @@ export default {
   },
 
   canRead: function (token: JsonWebToken, dirToRead: string): boolean {
+    if (token.isSuperAdmin) {
+      return true;
+    }
+
     for (const permission of token.documentStorage.read) {
       const hasPermission = minimatch(dirToRead, permission);
 
@@ -27,6 +35,10 @@ export default {
   },
 
   canDelete: function (token: JsonWebToken, dirToDelete: string): boolean {
+    if (token.isSuperAdmin) {
+      return true;
+    }
+
     for (const permission of token.documentStorage.delete) {
       const hasPermission = minimatch(dirToDelete, permission);
 
