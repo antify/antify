@@ -9,6 +9,8 @@ The token strukture looks like:
 
     {
         "iat": 1516239022,
+        "exp": 1516239023,
+        "isSuperAdmin": false,
         "documentStorage": {
             "read": ["/my-images"],
             "write": ["/my-images"],
@@ -18,6 +20,8 @@ The token strukture looks like:
 
 A user with this token only can read, write and delete files in the 
 "/my-images" directory. 
+
+Super admins have access to all directories.
 
 Permissions can also be a glob pattern like `/my-images/*` or `/my-images/**`. A list of pattern you can find [here]([here](https://github.com/isaacs/minimatch)).
 
