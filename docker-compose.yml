@@ -1,27 +1,27 @@
 version: '3'
 
 services:
-  # database:
-  #   image: mongo:latest
-  #   restart: always
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: root
-  #     MONGO_INITDB_USERNAME: core
-  #     MONGO_INITDB_PASSWORD: core
-  #     MONGO_INITDB_DATABASE: core
-  #   ports:
-  #     - 27017:27017
-  #   volumes:
-  #     - ./docker/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+  database:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+      MONGO_INITDB_USERNAME: core
+      MONGO_INITDB_PASSWORD: core
+      MONGO_INITDB_DATABASE: core
+    ports:
+      - 27017:27017
+    volumes:
+      - ./docker/docker-entrypoint-initdb.d/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
-  # mailhog:
-  #   image: mailhog/mailhog
-  #   logging:
-  #     driver: 'none' # disable saving logs
-  #   ports:
-  #     - '8025:8025' # web ui
-  #     - '1025:1025' # smtp server
+  mailhog:
+    image: mailhog/mailhog
+    logging:
+      driver: 'none' # disable saving logs
+    ports:
+      - '8025:8025' # web ui
+      - '1025:1025' # smtp server
 
   # antify-admin:
   #   depends_on:
@@ -38,15 +38,15 @@ services:
   #     - 3000:3000
   #     - 24678:24678
 
-  ant-document-storage:
-    image: ghcr.io/antify/antify/ant-document-storage:1.0.0
-    container_name: ant-document-storage
-    build:
-      context: .
-      dockerfile: ./packages/ant-document-storage/Dockerfile
-    ports:
-      - '4000:3000'
-    env_file:
-      - ./packages/ant-document-storage/.env.dist
-    volumes:
-      - ./packages/ant-document-storage/uploads:/app/uploads
+  # ant-document-storage:
+  #   image: ghcr.io/antify/antify/ant-document-storage:1.0.0
+  #   container_name: ant-document-storage
+  #   build:
+  #     context: .
+  #     dockerfile: ./packages/ant-document-storage/Dockerfile
+  #   ports:
+  #     - '4000:3000'
+  #   env_file:
+  #     - ./packages/ant-document-storage/.env.dist
+  #   volumes:
+  #     - ./packages/ant-document-storage/uploads:/app/uploads

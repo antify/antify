@@ -3,7 +3,7 @@ export { SingleConnectionClient } from './client/SingleConnectionClient';
 export { Client } from './client/Client';
 export { truncateAllCollections } from './client/utils';
 export * from './types';
-export { loadDatabaseConfiguration } from './utils';
+export { loadDatabaseConfiguration, getDatabaseClient } from './utils';
 
 export * from './migration/file-handler';
 // export * from './migration/migrate-down';

@@ -26,6 +26,7 @@ export default defineNuxtConfig({
   modules: [
     // TODO:: remove me and replace with antify-ui
     '@nuxtjs/tailwindcss',
+    '@antify/ant-media-module',
   ],
   runtimeConfig: {
     baseUrl: process.env.BASE_URL,
@@ -36,5 +37,17 @@ export default defineNuxtConfig({
     smtpUser: process.env.SMTP_USER,
     smtpPassword: process.env.SMTP_PASSWORD,
     mediaUploadDir: process.env.MEDIA_UPLOAD_DIR,
+  },
+  antMediaModule: {
+    providers: {
+      core: {
+        serverUrl: 'http://localhost:4000',
+        databaseName: 'core',
+      },
+      tenant: {
+        serverUrl: 'http://localhost:4000',
+        databaseName: 'tenant',
+      },
+    },
   },
 });

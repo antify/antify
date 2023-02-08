@@ -11,6 +11,7 @@ TODO's
 - [ ] Implement permission check in frontend. Does user x can navigate to "Roles"?
 - [ ] Implement whole CRUD with all posible Errors in a clean way.
 - [ ] When an unauthorized response come, remove the users token an redirect him to login.
+- [ ] Rewrite gurad things to ant-guard usage
 
 # Features
 

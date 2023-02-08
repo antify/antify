@@ -1,4 +1,6 @@
 import jiti from 'jiti';
+import { MultiConnectionClient } from './client/MultiConnectionClient';
+import { SingleConnectionClient } from './client/SingleConnectionClient';
 import { DatabaseConfigurations } from './types';
 // TODO:: rename file in load-database-configuration.ts
 
@@ -29,6 +31,7 @@ export function loadDatabaseConfiguration(
   require: boolean = true,
   rootDir: string = process.cwd()
 ): DatabaseConfigurations {
+  // TODO:: replace with unjs/c12
   const configurations: DatabaseConfigurations = require
     ? forceRequire('./database.config', rootDir)
     : tryRequire('./database.config', rootDir);
@@ -43,3 +46,18 @@ export function loadDatabaseConfiguration(
 export const removeFileTypeExtension = (filename: string): string => {
   return filename.substring(0, filename.lastIndexOf('.'));
 };
+
+export function getDatabaseClient(
+  databaseName: string,
+  rootDir: string = process.cwd()
+): SingleConnectionClient | MultiConnectionClient {
+  const configuration = loadDatabaseConfiguration(true, rootDir)[databaseName];
+
+  if (!configuration) {
+    throw new Error(`Configuration with name ${databaseName} does not exists`);
+  }
+
+  return configuration.isSingleConnection
+    ? SingleConnectionClient.getInstance(configuration)
+    : MultiConnectionClient.getInstance(configuration);
+}

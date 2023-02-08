@@ -28,6 +28,9 @@
   "dependencies": {
     "@antify/ant-database": "1.0.0",
     "@antify/antify-ui": "0.0.70",
+    "@antify/ant-media-module": "1.0.0",
+    "@antify/ant-toaster-module": "1.0.0",
+    "@antify/ant-guard": "1.0.0",
     "@antify/validate": "1.0.0",
     "@types/formidable": "^2.0.5",
     "formidable": "^2.0.1",
