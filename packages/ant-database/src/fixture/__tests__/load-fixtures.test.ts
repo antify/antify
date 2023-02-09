@@ -81,16 +81,25 @@ describe('Load fixtures test', async () => {
       defineFixture({
         name: 'test-1',
         async load() {},
+        dependsOn() {
+          return [];
+        },
       }),
       defineFixture({
         name: 'test-2',
         async load() {
           throw new Error('Some failure happened');
         },
+        dependsOn() {
+          return [];
+        },
       }),
       defineFixture({
         name: 'test-3',
         async load() {},
+        dependsOn() {
+          return [];
+        },
       }),
     ];
     const callback: LoadFixtureCallbacks = {

@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { Response as GetResponse } from '~~/glue/api/tenants/[tenantDetailId].get';
-const { $auth } = useNuxtApp();
+definePageMeta({
+  middleware: ['auth'],
+});
 
+const { $auth } = useNuxtApp();
 const me = useMeState();
 const { data: userResponseData } = await useFetch(
   `/api/global/me`,
@@ -31,30 +33,25 @@ if (!useRoute().params.tenantId) {
   if (
     !tenants.value.some((tenant) => tenant.id === useRoute().params.tenantId)
   ) {
-    const { data: currentTenantResponse } = await useFetch<GetResponse>(
+    const { data: currentTenantResponse } = await useFetch(
       `/api/tenants/${tenants.value[0].id}`,
       useDefaultFetchOpts()
     );
     tenant.value = currentTenantResponse.value.default;
 
     // User has no access to the current tenant - redirect him to another one.
-    // TODO:: 404 or 403 page
     await navigateTo({
       name: 'backoffice-tenantId-dashboard',
       params: { tenantId: tenants.value[0].id },
     });
   }
 } else {
-  const { data: currentTenantResponse } = await useFetch<GetResponse>(
+  const { data: currentTenantResponse } = await useFetch(
     `/api/tenants/${useRoute().params.tenantId}`,
     useDefaultFetchOpts()
   );
   tenant.value = currentTenantResponse.value.default;
 }
-
-definePageMeta({
-  middleware: ['auth'],
-});
 </script>
 
 <template>

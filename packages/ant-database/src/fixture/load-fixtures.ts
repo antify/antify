@@ -5,6 +5,7 @@ import {
 } from '../types';
 import { loadFixturesFromFilesystem } from './file-handler';
 import { Client } from '../client/Client';
+import { sortFixturesByDependency } from './depends-handler';
 
 export type LoadFixtureCallbacks = {
   beforeLoadFixture?: (fixtureName: string) => void;
@@ -18,7 +19,7 @@ export const loadFixtures = async (
   callbacks?: LoadFixtureCallbacks
 ): Promise<LoadFixtureExecutionResult[]> => {
   const results: LoadFixtureExecutionResult[] = [];
-  const fixtures = loadFixturesFromFilesystem(
+  let fixtures = loadFixturesFromFilesystem(
     projectRootDir,
     databaseConfiguration
   );
@@ -26,6 +27,16 @@ export const loadFixtures = async (
   if (fixtures.length <= 0) {
     callbacks?.onLoadFixtureFinished?.({
       info: 'No fixtures to load',
+    });
+
+    return results;
+  }
+
+  try {
+    fixtures = sortFixturesByDependency(fixtures);
+  } catch (e) {
+    callbacks?.onLoadFixtureFinished?.({
+      error: e as Error,
     });
 
     return results;

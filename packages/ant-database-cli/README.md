@@ -3,16 +3,19 @@
 It does:
 - [x] Merges multiple schemas to one
 - [x] Provide a client for each database
-- [ ] Make fixtures logic
-- [ ] Make seed logic
-- [ ] Make migration logic
+- [x] Make fixtures logic
+- [x] Make seed logic
+- [x] Make migration logic
 - [x] Handle multiple migrations from different sources
 - [x] Comes with a set of cli commands
 - [x] Provides a core and tenant client
 - [x] Handle multiple databases for one schema (tenancy)
 - [x] Define how things can be extended trought different schemas
 - [ ] Write docs
-- [ ] Improve security 
+- [ ] Improve security (mongodb user per tenant)
+- [ ] Make work with npx. Only works with yarn or pnpm exec
+- [ ] Add promps for load-migration and -fixtures to give the dev an abillity to exit before 
+any code get exec.
 
 TODO:
 - [x] Rename nuxt namings
@@ -26,6 +29,9 @@ D <-- Not executed
 ## Usage
 
 TODO::
+
+## Configuration
+## Commands
 
 ### Migration naming
 

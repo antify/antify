@@ -8,18 +8,26 @@ import {
   MultiConnectionClient,
   loadFixtures,
   loadFixturesMulticonnection,
+  truncateAllCollections,
+  migrateUpToEnd,
+  Migrator,
+  Client,
+  DatabaseConfiguration,
 } from '@antify/ant-database';
 import { loadDatabaseConfig } from '../utils/load-database-config';
 import { bold } from 'colorette';
 import { validateDatabaseName, validateHasTenantId } from '../utils/validate';
+import * as dotenv from 'dotenv';
 
 export default defineAntDbCommand({
   meta: {
     name: 'load-fixtures',
     usage: 'ant-db load-fixtures [databaseName] [--tenant]',
-    description: 'Load fixtures',
+    description: 'Truncate database, load migrations and load fixtures',
   },
   async invoke(args) {
+    dotenv.config();
+
     const databaseName = args._[0]?.trim();
     let tenantId = args['tenant'] || null;
 
@@ -81,6 +89,18 @@ export default defineAntDbCommand({
         databaseConfig
       ).connect(tenantId);
 
+      if (
+        !(await resetSingleDatabase(
+          client,
+          databaseConfig,
+          projectRootDir,
+          databaseName,
+          tenantId
+        ))
+      ) {
+        return;
+      }
+
       return await loadFixtures(
         databaseConfig,
         projectRootDir,
@@ -97,6 +117,18 @@ export default defineAntDbCommand({
         databaseConfig
       ).connect();
 
+      if (
+        !(await resetSingleDatabase(
+          client,
+          databaseConfig,
+          projectRootDir,
+          databaseName,
+          tenantId
+        ))
+      ) {
+        return;
+      }
+
       return await loadFixtures(
         databaseConfig,
         projectRootDir,
@@ -109,6 +141,30 @@ export default defineAntDbCommand({
      * User want to load fixtures for a multi connection
      */
     if (databaseConfig.isSingleConnection === false) {
+      const tenants = await databaseConfig.fetchTenants();
+
+      /**
+       * TODO:: Its not a nice dx that first all tenants databases get truncated and after that, all fixtures loaded for each tenant.
+       * Truncate, migrate and load fixtures for each database one by one.
+       */
+      for (const tenant of tenants) {
+        const client = await MultiConnectionClient.getInstance(
+          databaseConfig
+        ).connect(tenant.id);
+
+        if (
+          !(await resetSingleDatabase(
+            client,
+            databaseConfig,
+            projectRootDir,
+            databaseName,
+            tenant.id
+          ))
+        ) {
+          return;
+        }
+      }
+
       return await loadFixturesMulticonnection(
         databaseConfig,
         projectRootDir,
@@ -119,3 +175,34 @@ export default defineAntDbCommand({
     throw new Error('Unhandled combination of parameters');
   },
 });
+
+const resetSingleDatabase = async (
+  client: Client,
+  databaseConfig: DatabaseConfiguration,
+  projectRootDir: string,
+  databaseName: string,
+  tenantId: string | null
+): Promise<boolean> => {
+  consola.info(
+    `Truncate database ${databaseName}` +
+      (tenantId ? ` ${bold(tenantId)}` : '')
+  );
+
+  await truncateAllCollections(client.getConnection());
+
+  consola.success(`Database truncated`);
+  consola.info(`Load migrations`);
+
+  const results = await migrateUpToEnd(
+    new Migrator(client, databaseConfig, projectRootDir)
+  );
+  const errorResult = results.find((result) => result.error);
+
+  if (errorResult) {
+    consola.error(`Error while loading migrations: ${errorResult.error}`);
+    return false;
+  }
+
+  consola.success(`Migrations loaded\n`);
+  return true;
+};

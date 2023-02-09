@@ -5,6 +5,9 @@ export const generateFixtureMocks = (nameList: string[]) => {
     defineFixture({
       name,
       async load() {},
+      dependsOn() {
+        return [];
+      },
     })
   );
 };

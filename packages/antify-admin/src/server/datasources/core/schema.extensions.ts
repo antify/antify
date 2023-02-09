@@ -1,5 +1,4 @@
-// TODO:: Import from @antify/ant-database
-import { Client } from '~~/../../ant-database/src/module';
+import { Client } from '@antify/ant-database';
 import mongoose from 'mongoose';
 
 export const extendSchemas = (client: Client) => {

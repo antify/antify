@@ -31,6 +31,7 @@ export type MultiConnectionDatabaseConfiguration = {
   isSingleConnection: false;
   databasePrefix?: string;
 
+  // TODO:: In configurations should not be runtime code. Seperate it and find an other way.
   fetchTenants: () => Promise<DatabaseConfigurationTenant[]>;
 } & DatabaseConfiguration;
 
@@ -74,6 +75,7 @@ export const defineMigration = (migration: Migration): Migration => {
 export type Fixture = {
   name?: string;
   load: (client: Client) => Promise<void>;
+  dependsOn: () => string[];
 };
 
 export const defineFixture = (fixture: Fixture): Fixture => {

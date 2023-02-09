@@ -15,6 +15,7 @@ definePageMeta({
 const { $auth } = useNuxtApp();
 const route = useRoute();
 
+// TODO:: use runtime config
 const isDev = process.env.NODE_ENV === 'development';
 const errors = ref([]);
 const formData = ref<AuthLoginPostInput>({
@@ -56,6 +57,7 @@ async function onLogin() {
   }
 
   if (data.value.default) {
+    console.log("--------- navigateTo({ name: 'backoffice' })");
     return await navigateTo({ name: 'backoffice' });
   }
 

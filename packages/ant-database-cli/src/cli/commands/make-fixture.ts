@@ -9,19 +9,19 @@ import { loadDatabaseConfig } from '../utils/load-database-config';
 export default defineAntDbCommand({
   meta: {
     name: 'make-fixture',
-    usage: 'ant-db make-fixture [databaseName] [migrationName]',
+    usage: 'ant-db make-fixture [databaseName] [fixtureName]',
     description: 'Generates a fixture',
   },
   invoke(args) {
     const databaseName = args._[0]?.trim();
-    const migrationName = args._[1]?.trim();
+    const fixtureName = args._[1]?.trim();
 
     if (!databaseName) {
       return consola.error(`Missing required argument "databaseName"`);
     }
 
-    if (!migrationName) {
-      return consola.error(`Missing required argument "migrationName"`);
+    if (!fixtureName) {
+      return consola.error(`Missing required argument "fixtureName"`);
     }
 
     const databaseConfig = loadDatabaseConfig(
@@ -42,7 +42,7 @@ export default defineAntDbCommand({
       fs.mkdirSync(absoluteOutDir, { recursive: true });
     }
 
-    const fileName = `${migrationName}.ts`;
+    const fileName = `${fixtureName}.ts`;
 
     fs.writeFileSync(
       join(absoluteOutDir, fileName),
@@ -52,9 +52,13 @@ export default defineFixture({
   async load(client) {
     
   },
+
+  dependsOn() {
+    return [];
+  }
 });`
     );
 
-    consola.info(`Created: ${fileName}`);
+    consola.info(`Created: ${databaseConfig.fixturesDir}/${fileName}`);
   },
 });

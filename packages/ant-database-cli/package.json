@@ -11,7 +11,7 @@
     "./cli": "./bin/ant-db.mjs"
   },
   "bin": {
-    "db": "./bin/ant-db.mjs"
+    "ant-db": "./bin/ant-db.mjs"
   },
   "types": "./dist/index.d.ts",
   "files": [

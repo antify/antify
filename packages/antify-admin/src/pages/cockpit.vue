@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { Response as GetResponse } from '~~/glue/api/tenants/[tenantDetailId].get';
+definePageMeta({
+  middleware: ['auth'],
+});
+
 const { $auth } = useNuxtApp();
 
 const me = useMeState();
@@ -13,10 +16,6 @@ if (!userResponseData.value?.default) {
 }
 
 me.value = userResponseData.value.default;
-
-definePageMeta({
-  middleware: ['auth'],
-});
 </script>
 
 <template>

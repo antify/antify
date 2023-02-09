@@ -7,9 +7,7 @@
     "dev": "nuxi dev",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
-    "docker:start": "pnpm app:rebuild && nuxi dev",
-    "db:load:fixtures": "npx ts-node ./server/command/load-fixtures.ts",
-    "db:make-migration": "ant-db"
+    "docker:start": "pnpm app:rebuild && nuxi dev"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.2.0",
@@ -20,7 +18,6 @@
     "autoprefixer": "^10.4.4",
     "nuxt": "3.0.0",
     "postcss": "^8.4.12",
-    "ts-node": "^10.7.0",
     "typescript": "^4.6.4",
     "vite": "^2.3.0",
     "@antify/ant-database-cli": "1.0.0"

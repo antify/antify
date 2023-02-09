@@ -12,6 +12,7 @@ import {
   MultiConnectionDatabaseConfiguration,
   makeMigrationState,
 } from '@antify/ant-database';
+import * as dotenv from 'dotenv';
 
 export default defineAntDbCommand({
   meta: {
@@ -20,6 +21,8 @@ export default defineAntDbCommand({
     description: 'Show the migration status of the given database',
   },
   async invoke(args) {
+    dotenv.config();
+
     const databaseName = args._[0]?.trim();
     let tenantId = args['tenant'] || null;
 
@@ -70,9 +73,9 @@ export default defineAntDbCommand({
         return;
       }
 
-      client = await MultiConnectionClient.getInstance(
-        databaseConfig
-      ).connect(tenantId);
+      client = await MultiConnectionClient.getInstance(databaseConfig).connect(
+        tenantId
+      );
     }
 
     await printState(

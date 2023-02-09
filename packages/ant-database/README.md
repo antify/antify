@@ -16,6 +16,7 @@ It does:
 - [ ] Implement rollback mechanism on error
 - [x] Implement stop mechanism on error
 - [ ] Implement migrate down
+- [ ] Do not always need a schema extension for client. Do it once with a "get schema extension" hook or similar
 
 ## Usage
 

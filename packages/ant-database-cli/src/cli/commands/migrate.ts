@@ -16,6 +16,7 @@ import {
 import { loadDatabaseConfig } from '../utils/load-database-config';
 import { bold } from 'colorette';
 import { validateDatabaseName, validateHasTenantId } from '../utils/validate';
+import * as dotenv from 'dotenv';
 
 export default defineAntDbCommand({
   meta: {
@@ -24,6 +25,8 @@ export default defineAntDbCommand({
     description: 'Executes migrations',
   },
   async invoke(args) {
+    dotenv.config();
+
     const migrationDirection = args['down'] ? 'down' : 'up';
     const databaseName = args._[0]?.trim();
     let migrationName = args['migration'] || null;
