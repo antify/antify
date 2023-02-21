@@ -48,13 +48,13 @@ export const removeFileTypeExtension = (filename: string): string => {
 };
 
 export function getDatabaseClient(
-  databaseName: string,
+  contextId: string,
   rootDir: string = process.cwd()
 ): SingleConnectionClient | MultiConnectionClient {
-  const configuration = loadDatabaseConfiguration(true, rootDir)[databaseName];
+  const configuration = loadDatabaseConfiguration(true, rootDir)[contextId];
 
   if (!configuration) {
-    throw new Error(`Configuration with name ${databaseName} does not exists`);
+    throw new Error(`Configuration with name ${contextId} does not exists`);
   }
 
   return configuration.isSingleConnection

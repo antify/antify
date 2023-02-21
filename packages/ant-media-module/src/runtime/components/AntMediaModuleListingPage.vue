@@ -25,6 +25,7 @@ const {
     `/api/ant-media-module/media?search=${route.query.search || ''}&provider=${
       props.provider
     }`,
+  // TODO:: remove with nuxt 3.2.0
   { headers: useRequestHeaders() }
 );
 

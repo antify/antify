@@ -54,7 +54,7 @@ async function onSubmit() {
   loading.value = false;
 
   if (data.value.default) {
-    await navigateTo({ name: 'backoffice' });
+    return await navigateTo({ name: 'cockpit' });
   }
 
   if (data.value.badRequest || data.value.installNotPossible) {
@@ -113,7 +113,6 @@ async function onSubmit() {
           <AntInput
             v-model:value="user.email"
             label="E-Mail"
-            autofocus
             :validator="(val: string) => validator.validateProperty('email', val, 1)"
             :errors="validator.errorMap['email']"
           >

@@ -23,6 +23,7 @@
   "dependencies": {
     "@antify/ant-database": "1.0.0",
     "@antify/ant-guard": "1.0.0",
+    "@antify/context": "1.0.0",
     "@antify/validate": "1.0.0",
     "@nuxt/kit": "^3.0.0",
     "c12": "^1.1.0",

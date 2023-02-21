@@ -2,7 +2,7 @@ import { Toast, ToastType } from '../types';
 
 export const useToastState = () => useState<Toast[]>('toasts', () => []);
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(() => {
   const messageShowTime = useRuntimeConfig().public.antToaster.messageShowTime;
 
   return {

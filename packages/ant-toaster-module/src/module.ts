@@ -31,6 +31,7 @@ export default defineNuxtModule<ModuleOptions>({
       global: true,
     });
 
+    // TODO:: use defu
     nuxt.options.runtimeConfig.public.antToaster = {
       ...defaultOptions,
       ...options,

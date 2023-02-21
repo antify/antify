@@ -29,6 +29,7 @@ export const useGuard = (rawToken: string | null) => {
       };
     }
   } catch (e) {
+    // TODO:: log invlaid formats to keep an eye on hacky things
     // Catch it because a not valid token format throw an error.
     token = null;
   }

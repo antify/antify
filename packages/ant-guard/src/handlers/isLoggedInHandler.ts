@@ -1,6 +1,6 @@
 import { H3Event, createError } from 'h3';
+import { getAuthorizationHeader } from '../http/getAuthorizationHeader';
 import { useGuard } from '../useGuard';
-import { getAuthorizationHeader } from '../utils/getAuthorizationHeader';
 
 export const isLoggedInHandler = (event: H3Event) => {
   const guard = useGuard(getAuthorizationHeader(event));

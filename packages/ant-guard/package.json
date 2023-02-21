@@ -37,6 +37,7 @@
     "vitest": "latest"
   },
   "dependencies": {
+    "@antify/context": "1.0.0",
     "h3": "^1.1.0",
     "jsonwebtoken": "^8.5.1"
   },
