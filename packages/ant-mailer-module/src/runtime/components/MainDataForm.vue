@@ -2,11 +2,12 @@
 import { validator as baseValidator } from '../glue/main-data-form/[mailTemplateId].put';
 import SendTestMail from './SendTestMail.vue';
 import { LocationAsRelativeRaw } from 'vue-router';
-import { useContextHeader } from '@antify/context';
+import { useContextHeader, useTenantHeader } from '@antify/context';
 
 // TODO:: on loading, the rich text editor get hidden. Implement loading state in antify ui's richtext editor and fix it here
 const props = defineProps<{
   context: string;
+  tenantId?: string;
   getListingRoute: () => LocationAsRelativeRaw;
   getDetailRoute: (mailTemplateId: string) => LocationAsRelativeRaw;
   saveButtonTeleportTarget?: string;
@@ -25,6 +26,7 @@ const { data, refresh, error } = await useFetch(
       // TODO:: remove with nuxt 3.2.0
       ...useRequestHeaders(),
       ...useContextHeader(props.context),
+      ...useTenantHeader(props.tenantId),
     },
   }
 );
@@ -50,7 +52,10 @@ async function onSubmit() {
     {
       method: 'PUT',
       body: data.value.default,
-      headers: useContextHeader(props.context),
+      headers: {
+        ...useContextHeader(props.context),
+        ...useTenantHeader(props.tenantId),
+      },
     }
   );
 
@@ -144,6 +149,7 @@ hook('page:start', () => {
 
     <SendTestMail
       :context="context"
+      :tenant-id="tenantId"
       :mail-template-id="currentMailTemplateId"
     />
   </div>

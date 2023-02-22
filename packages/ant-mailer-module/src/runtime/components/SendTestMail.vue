@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { validator as sendTestMailValidator } from '../glue/send-test-mail/[mailTemplateId].post';
-import { useContextHeader } from '@antify/context';
+import { useContextHeader, useTenantHeader } from '@antify/context';
 
 const props = defineProps<{
   mailTemplateId: string;
   context: string;
+  tenantId?: string;
 }>();
 
 const { $toaster } = useNuxtApp();
@@ -30,7 +31,10 @@ async function onSendTestMail() {
       body: {
         testMail: testMail.value,
       },
-      headers: useContextHeader(props.context),
+      headers: {
+        ...useContextHeader(props.context),
+        ...useTenantHeader(props.tenantId),
+      },
     }
   );
 

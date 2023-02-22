@@ -216,9 +216,12 @@ importers:
       '@antify/ant-database': 1.0.0
       '@antify/ant-database-cli': 1.0.0
       '@antify/ant-guard': 1.0.0
+      '@antify/ant-mailer-module': 1.0.0
       '@antify/ant-media-module': 1.0.0
       '@antify/ant-toaster-module': 1.0.0
       '@antify/antify-ui': 0.0.70
+      '@antify/context': 1.0.0
+      '@antify/kit': 1.0.0
       '@antify/validate': 1.0.0
       '@faker-js/faker': ^6.2.0
       '@nuxt/kit': 3.0.0
@@ -239,9 +242,12 @@ importers:
     dependencies:
       '@antify/ant-database': link:../../ant-database
       '@antify/ant-guard': link:../../ant-guard
+      '@antify/ant-mailer-module': link:../../ant-mailer-module
       '@antify/ant-media-module': link:../../ant-media-module
       '@antify/ant-toaster-module': link:../../ant-toaster-module
       '@antify/antify-ui': 0.0.70_4keutw4zslgq6bxoqxoddfj5ty
+      '@antify/context': link:../../context
+      '@antify/kit': link:../../kit
       '@antify/validate': 1.0.0
       '@types/formidable': 2.0.5
       formidable: 2.1.1
@@ -261,27 +267,6 @@ importers:
       postcss: 8.4.21
       typescript: 4.9.5
       vite: 2.9.15
-
-  packages/antify-module:
-    specifiers:
-      '@antify/ant-database': 1.0.0
-      '@antify/ant-guard': 1.0.0
-      '@antify/context': 1.0.0
-      '@nuxt/module-builder': latest
-      '@nuxtjs/eslint-config-typescript': latest
-      '@types/nodemailer': ^6.4.4
-      eslint: latest
-      nuxt: 3.0.0
-    dependencies:
-      '@antify/ant-database': link:../ant-database
-      '@antify/ant-guard': link:../ant-guard
-      '@antify/context': link:../context
-    devDependencies:
-      '@nuxt/module-builder': 0.2.1
-      '@nuxtjs/eslint-config-typescript': 12.0.0_7kw3g6rralp5ps6mg3uyzz6azm
-      '@types/nodemailer': 6.4.7
-      eslint: 8.34.0
-      nuxt: 3.0.0_33ug6mxynxiw5bcu2hsvk6nktu
 
   packages/context:
     specifiers:

@@ -4,6 +4,7 @@ import { LocationAsRelativeRaw } from 'vue-router';
 
 defineProps<{
   context: string;
+  tenantId?: string;
   getDetailRoute: (mailTemplateId: string) => LocationAsRelativeRaw;
 }>();
 const route = useRoute();
@@ -38,6 +39,7 @@ const search = computed({
       <MailTemplatesTable
         :get-detail-route="getDetailRoute"
         :context="context"
+        :tenant-id="tenantId"
       />
     </template>
   </AntContent>

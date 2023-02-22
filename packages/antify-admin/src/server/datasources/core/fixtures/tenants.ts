@@ -9,7 +9,7 @@ export default defineFixture({
   async load(client) {
     extendSchemas(client);
 
-    client.getModel<Tenant>('tenants').insertMany([
+    await client.getModel<Tenant>('tenants').insertMany([
       tenantFixtures.createOne({
         _id: TEST_TENANT_ID,
         name: 'Test tenant',

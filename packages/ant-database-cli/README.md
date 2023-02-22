@@ -16,6 +16,7 @@ It does:
 - [ ] Make work with npx. Only works with yarn or pnpm exec
 - [ ] Add promps for load-migration and -fixtures to give the dev an abillity to exit before 
 any code get exec.
+- [ ] On load fixtures or migrations without database name, load everything
 
 TODO:
 - [x] Rename nuxt namings

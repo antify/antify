@@ -11,7 +11,7 @@ export default defineFixture({
   async load(client) {
     extendSchemas(client);
 
-    client.getModel<Role>('roles').insertMany([
+    await client.getModel<Role>('roles').insertMany([
       {
         name: 'Admin',
         isAdmin: true,
@@ -25,7 +25,7 @@ export default defineFixture({
       },
     ]);
 
-    client.getModel<User>('users').insertMany([
+    await client.getModel<User>('users').insertMany([
       userFixtures.createOne({
         email: 'admin@admin.de',
         password: await hashPassword(

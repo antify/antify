@@ -27,16 +27,12 @@ export default defineNuxtConfig({
     // TODO:: remove me and replace with antify-ui
     '@nuxtjs/tailwindcss',
     '@antify/ant-media-module',
+    '@antify/ant-mailer-module',
   ],
   runtimeConfig: {
     baseUrl: process.env.BASE_URL,
     systemMail: process.env.SYSTEM_MAIL,
     passwordSalt: process.env.PASSWORD_SALT,
-    smtpHost: process.env.SMTP_HOST,
-    smtpPort: process.env.SMTP_PORT,
-    smtpUser: process.env.SMTP_USER,
-    smtpPassword: process.env.SMTP_PASSWORD,
-    mediaUploadDir: process.env.MEDIA_UPLOAD_DIR,
   },
   antMediaModule: {
     providers: {
@@ -49,5 +45,21 @@ export default defineNuxtConfig({
         databaseName: 'tenant',
       },
     },
+  },
+  antMailerModule: {
+    providers: [
+      {
+        id: 'core',
+        smtpHost: 'localhost',
+        smtpPort: '1025',
+        isSingleTenancy: true,
+      },
+      {
+        id: 'tenant',
+        smtpHost: 'localhost',
+        smtpPort: '1025',
+        isSingleTenancy: false,
+      },
+    ],
   },
 });

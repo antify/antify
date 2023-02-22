@@ -3,10 +3,11 @@ import { ANT_ROW_TYPES } from '@antify/antify-ui';
 // TODO:: Fix this
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
 import { LocationAsRelativeRaw } from 'vue-router';
-import { useContextHeader } from '@antify/context';
+import { useContextHeader, useTenantHeader } from '@antify/context';
 
 const props = defineProps<{
   context: string;
+  tenantId?: string;
   active?: string;
   getDetailRoute: (mailTemplateId: string) => LocationAsRelativeRaw;
 }>();
@@ -26,8 +27,8 @@ const { data, error, pending } = await useFetch(
     headers: {
       // TODO:: remove with nuxt 3.2.0
       ...useRequestHeaders(),
-      // antc: props.context,
       ...useContextHeader(props.context),
+      ...useTenantHeader(props.tenantId),
     },
   }
 );

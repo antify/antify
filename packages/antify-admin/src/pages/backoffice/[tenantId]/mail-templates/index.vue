@@ -1,36 +1,20 @@
-<script setup>
-import MailTemplatesTable from '~~/components/entity/mail-templates/MailTemplatesTable.vue';
-
+<script lang="ts" setup>
 const route = useRoute();
-const router = useRouter();
 
-const search = computed({
-  get() {
-    return route.query.search;
-  },
-  set(val) {
-    router.push({
-      name: route.name,
-      query: {
-        ...route.query,
-        search: val,
-      },
-    });
-  },
-});
+const getDetailRoute = (mailTemplateId) =>
+  useBuildTenantLink(
+    {
+      name: 'backoffice-tenantId-mail-templates-mailTemplateId',
+      params: { mailTemplateId },
+    },
+    route
+  );
 </script>
 
 <template>
-  <AntContent>
-    <template #head>
-      <AntInput
-        v-model:value="search"
-        placeholder="Suche"
-      />
-    </template>
-
-    <template #body>
-      <MailTemplatesTable />
-    </template>
-  </AntContent>
+  <AntMailerModuleListingPage
+    context="tenant"
+    :tenant-id="$route.params.tenantId"
+    :get-detail-route="getDetailRoute"
+  />
 </template>

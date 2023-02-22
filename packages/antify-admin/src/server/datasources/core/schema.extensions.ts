@@ -102,30 +102,4 @@ export const extendSchemas = (client: Client) => {
       default: true,
     },
   });
-
-  client.getSchema('mail_templates').add({
-    title: {
-      type: String,
-      required: true,
-    },
-    content: {
-      type: String,
-      required: true,
-    },
-  });
-
-  client.getSchema('medias').add({
-    title: {
-      type: String,
-      required: true,
-    },
-    fileName: {
-      type: String,
-      required: true,
-    },
-    fileType: {
-      type: String,
-      required: true,
-    },
-  });
 };

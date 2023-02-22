@@ -11,7 +11,8 @@ const getDetailRoute = (mailTemplateId) => ({
 
 <template>
   <AntMailerModuleDetailPage
-    context="core"
+    context="tenant"
+    tenant-id="0815"
     :mail-template-id="route.params.mailTemplateId"
     :get-listing-route="getListingRoute"
     :get-detail-route="getDetailRoute"

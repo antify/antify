@@ -8,6 +8,7 @@ import { LocationAsRelativeRaw } from 'vue-router';
 
 const props = defineProps<{
   context: string;
+  tenantId?: string;
   getListingRoute: () => LocationAsRelativeRaw;
   getDetailRoute: (mailTemplateId: string) => LocationAsRelativeRaw;
 }>();
@@ -32,7 +33,8 @@ const tabs = ref<AntTabsType[]>([
 
       <template #mainBody>
         <MainDataForm
-          context="core"
+          :context="context"
+          :tenant-id="tenantId"
           :mail-template-id="currentMailTemplateId"
           save-button-teleport-target="#mainFooterSaveBtn"
           :get-listing-route="getListingRoute"
@@ -60,6 +62,7 @@ const tabs = ref<AntTabsType[]>([
           :active="currentMailTemplateId"
           :get-detail-route="getDetailRoute"
           :context="context"
+          :tenant-id="tenantId"
         />
       </template>
     </AntDualContent>
