@@ -1,36 +1,13 @@
-<script setup>
-import MailTemplatesTable from '~~/components/pages/cockpit/mailTemplates/MailTemplatesTable.vue';
-
-const route = useRoute();
-const router = useRouter();
-
-const search = computed({
-  get() {
-    return route.query.search;
-  },
-  set(val) {
-    router.push({
-      name: route.name,
-      query: {
-        ...route.query,
-        search: val,
-      },
-    });
-  },
+<script lang="ts" setup>
+const getDetailRoute = (mailTemplateId) => ({
+  name: 'core-mail-templates-mailTemplateId',
+  params: { mailTemplateId },
 });
 </script>
 
 <template>
-  <AntContent>
-    <template #head>
-      <AntInput
-        v-model:value="search"
-        placeholder="Suche"
-      />
-    </template>
-
-    <template #body>
-      <MailTemplatesTable />
-    </template>
-  </AntContent>
+  <AntMailerModuleListingPage
+    context="core"
+    :get-detail-route="getDetailRoute"
+  />
 </template>
