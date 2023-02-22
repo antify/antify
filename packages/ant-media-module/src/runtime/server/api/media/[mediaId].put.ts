@@ -1,30 +1,20 @@
 import { Input, Response, validator } from '../../../glue/media/[mediaId].put';
 import { Media } from '../../datasources/media.schema';
-import { getDatabaseClientFromRequest } from '../../utils/getDatabaseClient';
-import { isLoggedInHandler } from '@antify/ant-guard';
+import { isLoggedInHandler, isAuthorizedHandler } from '@antify/ant-guard';
+import { extendSchemas } from '../../datasources/schema.extensions';
+import { getDatabaseClientFromRequest } from '@antify/kit';
 
 export default defineEventHandler<Response>(async (event) => {
-  const client = await getDatabaseClientFromRequest(event);
+  const contextConfig = useRuntimeConfig().antMedia.providers;
 
   isLoggedInHandler(event);
-  // const tenantId = tenantContextMiddleware(event);
+  await isAuthorizedHandler(event, 'CAN_EDIT_MEDIA', contextConfig);
 
-  // if (!guard.hasPermissionTo(PermissionId.CAN_EDIT_MEDIA, tenantId)) {
-  //   throw createError({
-  //     statusCode: 401,
-  //     statusMessage: 'Forbidden',
-  //   });
-  // }
-
-  const response = await useNitroApp().hooks.callHook(
-    'before:media-[mediaId].put',
-    event
+  const client = await getDatabaseClientFromRequest(
+    event,
+    contextConfig,
+    extendSchemas
   );
-
-  if (response) {
-    return response;
-  }
-
   const MediaModel = client.getModel<Media>('medias');
 
   const media = await MediaModel.findById(event.context.params.mediaId);

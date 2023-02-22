@@ -35,16 +35,18 @@ export default defineNuxtConfig({
     passwordSalt: process.env.PASSWORD_SALT,
   },
   antMediaModule: {
-    providers: {
-      core: {
+    providers: [
+      {
+        id: 'core',
+        isSingleTenancy: true,
         serverUrl: 'http://localhost:4000',
-        databaseName: 'core',
       },
-      tenant: {
+      {
+        id: 'tenant',
+        isSingleTenancy: false,
         serverUrl: 'http://localhost:4000',
-        databaseName: 'tenant',
       },
-    },
+    ],
   },
   antMailerModule: {
     providers: [

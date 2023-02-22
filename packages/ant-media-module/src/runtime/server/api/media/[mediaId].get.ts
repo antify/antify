@@ -1,27 +1,20 @@
-import { getDatabaseClientFromRequest } from '../../utils/getDatabaseClient';
 import { Media } from '../../datasources/media.schema';
-import { isLoggedInHandler } from '@antify/ant-guard';
+import { isLoggedInHandler, isAuthorizedHandler } from '@antify/ant-guard';
+import { extendSchemas } from '../../datasources/schema.extensions';
+import { getDatabaseClientFromRequest } from '@antify/kit';
 
 export default defineEventHandler(async (event) => {
-  // const tenantId = tenantContextMiddleware(event);
-  // const guard = useGuard(useAuthorizationHeader(event));
-
-  // if (!guard.hasPermissionTo(PermissionId.CAN_READ_MEDIA, tenantId)) {
-  //   throw new HttpForbiddenError();
-  // }
+  const contextConfig = useRuntimeConfig().antMedia.providers;
 
   isLoggedInHandler(event);
+  await isAuthorizedHandler(event, 'CAN_READ_MEDIA', contextConfig);
 
-  const response = await useNitroApp().hooks.callHook(
-    'before:media-[mediaId].get',
-    event
+  const client = await getDatabaseClientFromRequest(
+    event,
+    contextConfig,
+    extendSchemas
   );
-
-  if (response) {
-    return response;
-  }
-
-  const media = await (await getDatabaseClientFromRequest(event))
+  const media = await client
     .getModel<Media>('medias')
     .findById(event.context.params.mediaId);
 

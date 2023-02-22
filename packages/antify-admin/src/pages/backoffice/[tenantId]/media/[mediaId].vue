@@ -20,6 +20,7 @@ const getDetailRoute = (mediaId) =>
 <template>
   <AntMediaModuleDetailPage
     provider="tenant"
+    :tenant-id="route.params.tenantId"
     :media-id="route.params.mediaId"
     :get-listing-route="getListingRoute"
     :get-detail-route="getDetailRoute"

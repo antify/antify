@@ -1,18 +1,16 @@
 <script lang="ts" setup>
-const route = useRoute();
 const getListingRoute = () => ({
-  name: 'medias',
+  name: 'backoffice-tenantId-media',
 });
 const getDetailRoute = (mediaId) => ({
-  name: 'medias-mediaId',
+  name: 'cockpit-media-mediaId',
   params: { mediaId },
 });
 </script>
 
 <template>
   <AntMediaModuleDetailPage
-    provider="tenant"
-    tenant-id="0815"
+    provider="core"
     :media-id="route.params.mediaId"
     :get-listing-route="getListingRoute"
     :get-detail-route="getDetailRoute"

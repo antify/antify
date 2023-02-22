@@ -4,11 +4,13 @@ import MediaTable from './MediaTable.vue';
 import { AntTabsType } from '@antify/antify-ui';
 import { createError } from 'h3';
 import { LocationAsRelativeRaw } from 'vue-router';
+import { useContextHeader, useTenantHeader } from '@antify/context';
 
 const route = useRoute();
 const router = useRouter();
 const props = defineProps<{
-  provider: string,
+  provider: string;
+  tenantId?: string;
   getListingRoute: () => LocationAsRelativeRaw;
   getDetailRoute: (mediaId: string) => LocationAsRelativeRaw;
 }>();
@@ -52,13 +54,13 @@ const {
   refresh: reloadAllMedia,
   error: mediaFilesError,
 } = await useFetch(
-  () =>
-    `/api/ant-media-module/media?search=${
-      route.query.search || ''
-    }&provider=${props.provider}`,
+  () => `/api/ant-media-module/media?search=${route.query.search || ''}`,
   {
     headers: {
-      Authorization: jwt,
+      // TODO:: remove with nuxt 3.2.0
+      ...useRequestHeaders(),
+      ...useContextHeader(props.provider),
+      ...useTenantHeader(props.tenantId),
     },
   }
 );
@@ -71,10 +73,13 @@ if (mediaFilesError.value) {
 }
 
 const { data, error } = await useFetch(
-  `/api/ant-media-module/media/${route.params.mediaId}?provider=${props.provider}`,
+  `/api/ant-media-module/media/${route.params.mediaId}`,
   {
     headers: {
-      Authorization: jwt,
+      // TODO:: remove with nuxt 3.2.0
+      ...useRequestHeaders(),
+      ...useContextHeader(props.provider),
+      ...useTenantHeader(props.tenantId),
     },
   }
 );
@@ -105,12 +110,15 @@ async function onSubmit() {
   // }
 
   const { data: response } = await useFetch(
-    `/api/ant-media-module/media/${useRoute().params.mediaId}?provider=${props.provider}`,
+    `/api/ant-media-module/media/${useRoute().params.mediaId}`,
     {
-      // ...useDefaultFetchOpts(),
       ...{
         method: 'PUT',
         body: media.value.default,
+        headers: {
+          ...useContextHeader(props.provider),
+          ...useTenantHeader(props.tenantId),
+        },
       },
     }
   );
@@ -134,15 +142,13 @@ function onDeleteMedia(mediaId: string) {
 }
 
 async function deleteMedia() {
-  await useFetch(
-    `/api/ant-media-module/media/${toDelete.value}?provider=${props.provider}`,
-    {
-      method: 'DELETE',
-      headers: {
-        Authorization: jwt,
-      },
-    }
-  );
+  await useFetch(`/api/ant-media-module/media/${toDelete.value}`, {
+    method: 'DELETE',
+    headers: {
+      ...useContextHeader(props.provider),
+      ...useTenantHeader(props.tenantId),
+    },
+  });
 
   $toaster.toastDeleted();
 

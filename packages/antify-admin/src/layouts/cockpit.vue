@@ -45,6 +45,12 @@ const navItems = computed(() => [
     active: route.name === 'cockpit-mail-templates',
   },
   {
+    label: 'Media',
+    route: { name: 'cockpit-media' },
+    icon: faPhotoFilm,
+    active: route.name === 'cockpit-media',
+  },
+  {
     label: 'Logout',
     active: false,
     clickHandler: () => $auth.logout(),

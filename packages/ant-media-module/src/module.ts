@@ -6,16 +6,15 @@ import {
   addPlugin,
   addServerHandler,
 } from '@nuxt/kit';
+import { ContextConfigurationItem } from '@antify/context';
 
 type Provider = {
   // TODO:: change to a name which say that it is a files provider
   serverUrl: string;
-  // TODOO:: find a better name - descripe not which database of what
-  databaseName: string;
-};
+} & ContextConfigurationItem;
 
 type ModuleOptions = {
-  providers: Record<string, Provider>;
+  providers: Provider[];
 };
 
 export default defineNuxtModule<ModuleOptions>({
@@ -33,9 +32,9 @@ export default defineNuxtModule<ModuleOptions>({
     // Make sure only serverUrl get to public runtimeConfig.
     nuxt.options.runtimeConfig.public.antMedia = { providers: {} };
 
-    Object.keys(options.providers).forEach((provider) => {
-      nuxt.options.runtimeConfig.public.antMedia.providers[provider] = {
-        serverUrl: options.providers[provider].serverUrl,
+    options.providers.forEach((provider) => {
+      nuxt.options.runtimeConfig.public.antMedia.providers[provider.id] = {
+        serverUrl: provider.serverUrl,
       };
     });
 

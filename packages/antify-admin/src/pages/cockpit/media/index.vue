@@ -1,15 +1,14 @@
 <script lang="ts" setup>
 const getDetailRoute = (mediaId) => ({
-  name: 'medias-mediaId',
+  name: 'cockpit-media-mediaId',
   params: { mediaId },
 });
 </script>
 
 <template>
   <AntMediaModuleListingPage
-    provider="tenant"
-    tenant-id="0815"
-    upload-dir="tenant"
+    provider="core"
+    upload-dir="/core"
     :get-detail-route="getDetailRoute"
   />
 </template>

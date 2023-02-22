@@ -1,24 +1,26 @@
-import AntMediaModule from '..';
+import Module from '..';
 import AntToasterModule from '@antify/ant-toaster-module';
 
 export default defineNuxtConfig({
   modules: [
-    AntMediaModule,
+    Module,
     AntToasterModule,
     // TODO:: remove me and replace with antify-ui
     '@nuxtjs/tailwindcss',
   ],
   antMediaModule: {
-    providers: {
-      core: {
+    providers: [
+      {
+        id: 'core',
+        isSingleTenancy: true,
         serverUrl: 'http://localhost:4000',
-        databaseName: 'core',
       },
-      tenant: {
+      {
+        id: 'tenant',
+        isSingleTenancy: false,
         serverUrl: 'http://localhost:4000',
-        databaseName: 'tenant',
       },
-    },
+    ],
   },
   tailwindcss: {
     config: {

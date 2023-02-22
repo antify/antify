@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import MediaTable from './MediaTable.vue';
 import { LocationAsRelativeRaw } from 'vue-router';
+import { useContextHeader, useTenantHeader } from '@antify/context';
 
 const props = defineProps<{
   uploadDir: string;
   provider: string;
+  tenantId?: string;
   getDetailRoute: (mediaId: string) => LocationAsRelativeRaw;
 }>();
 const file = ref({});
@@ -21,12 +23,15 @@ const {
   error,
   refresh: reloadAllMedia,
 } = await useFetch(
-  () =>
-    `/api/ant-media-module/media?search=${route.query.search || ''}&provider=${
-      props.provider
-    }`,
+  () => `/api/ant-media-module/media?search=${route.query.search || ''}`,
   // TODO:: remove with nuxt 3.2.0
-  { headers: useRequestHeaders() }
+  {
+    headers: {
+      ...useRequestHeaders(),
+      ...useContextHeader(props.provider),
+      ...useTenantHeader(props.tenantId),
+    },
+  }
 );
 
 if (error.value) {
@@ -47,9 +52,13 @@ const onSelectFile = async (event) => {
     event
   );
 
-  await useFetch(`/api/ant-media-module/media?provider=${props.provider}`, {
+  await useFetch(`/api/ant-media-module/media`, {
     method: 'POST',
     body: files,
+    headers: {
+      ...useContextHeader(props.provider),
+      ...useTenantHeader(props.tenantId),
+    },
   });
 
   // TODO:: update media table

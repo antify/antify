@@ -13,6 +13,7 @@ const getDetailRoute = (mediaId) =>
 <template>
   <AntMediaModuleListingPage
     provider="tenant"
+    :tenant-id="route.params.tenantId"
     upload-dir="/tenant"
     :get-detail-route="getDetailRoute"
   />

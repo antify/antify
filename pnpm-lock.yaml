@@ -157,6 +157,7 @@ importers:
       '@antify/ant-toaster-module': 1.0.0
       '@antify/antify-ui': 0.0.70
       '@antify/context': 1.0.0
+      '@antify/kit': 1.0.0
       '@antify/validate': 1.0.0
       '@nuxt/kit': ^3.0.0
       '@nuxt/module-builder': latest
@@ -173,6 +174,7 @@ importers:
       '@antify/ant-toaster-module': link:../ant-toaster-module
       '@antify/antify-ui': 0.0.70_4keutw4zslgq6bxoqxoddfj5ty
       '@antify/context': link:../context
+      '@antify/kit': link:../kit
       '@antify/validate': 1.0.0
       '@nuxt/kit': 3.2.2_rollup@2.79.1
       c12: 1.1.2
