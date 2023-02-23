@@ -5,7 +5,7 @@ import {
   faHouse,
   faTrophy,
   faUser,
-  faUsers,
+  faShieldHalved,
   faPhotoFilm,
   faCog,
 } from '@fortawesome/free-solid-svg-icons';
@@ -37,7 +37,7 @@ const navItems = computed(() => [
   {
     label: 'Roles',
     route: { name: 'backoffice-tenantId-roles' },
-    icon: faUsers,
+    icon: faShieldHalved,
     active: route.name === 'backoffice-tenantId-roles',
   },
   {

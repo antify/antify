@@ -10,15 +10,12 @@ const search = ref('');
     <template #head>
       <AntInput
         v-model:value="search"
-        placeholder="Suche"
+        placeholder="Search"
       />
 
-      <AntButton
-        :primary="true"
-        class=""
-      >
+      <AntButton :primary="true">
         <TenantLink :to="{ name: 'backoffice-tenantId-roles-create' }">
-          Hinzufügen
+          Create
         </TenantLink>
       </AntButton>
     </template>

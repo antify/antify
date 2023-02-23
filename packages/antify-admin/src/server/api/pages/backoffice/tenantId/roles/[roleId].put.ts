@@ -1,10 +1,8 @@
-import { useGuard } from '~~/composables/useGuard';
 import { PermissionId } from '~~/server/datasources/static/permissions';
-import { HttpBadRequestError, HttpForbiddenError } from '~~/server/errors';
-import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
-import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
+import { HttpBadRequestError } from '~~/server/errors';
 import { Role } from '~~/server/datasources/core/schemas/roles';
 import { useCoreClient } from '~~/server/service/useCoreClient';
+import { isLoggedInHandler, isAuthorizedHandler } from '@antify/ant-guard';
 
 // TODO:: glue
 export type RoleInput = {
@@ -12,7 +10,7 @@ export type RoleInput = {
   permissions: string[];
 };
 
-// TODO:: glue + implement on frontend
+// TODO:: use ant validator + glue + implement on frontend
 export const validate = (data: RoleInput): RoleInput => {
   if (!data.name) {
     throw new HttpBadRequestError('Missing required name');
@@ -26,12 +24,12 @@ export const validate = (data: RoleInput): RoleInput => {
 };
 
 export default defineEventHandler(async (event) => {
-  const tenantId = tenantContextMiddleware(event);
-  const guard = useGuard(useAuthorizationHeader(event));
-
-  if (!guard.hasPermissionTo(PermissionId.CAN_UPDATE_ROLE, tenantId)) {
-    throw new HttpForbiddenError();
-  }
+  isLoggedInHandler(event);
+  await isAuthorizedHandler(
+    event,
+    PermissionId.CAN_UPDATE_ROLE,
+    useRuntimeConfig().contextConfig
+  );
 
   const requestBody = await readBody<RoleInput>(event);
   const requestData = validate(requestBody);
@@ -40,9 +38,7 @@ export default defineEventHandler(async (event) => {
 
   if (!role) {
     return {
-      notFound: {
-        errors: ['Not Found'],
-      },
+      notFound: true,
     };
   }
 
@@ -52,11 +48,9 @@ export default defineEventHandler(async (event) => {
   await role.save();
 
   return {
-    default: {
-      id: role.id,
-      name: role.name,
-      isAdmin: role.isAdmin,
-      permissions: role.permissions,
-    },
+    id: role.id,
+    name: role.name,
+    isAdmin: role.isAdmin,
+    permissions: role.permissions,
   };
 });

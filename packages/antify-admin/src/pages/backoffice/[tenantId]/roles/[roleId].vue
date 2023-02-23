@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import RoleTable from '~~/components/entity/role/RoleTable.vue';
 import TenantLink from '~~/components/fields/TenantLink.vue';
+import RoleForm from '~~/components/entity/role/RoleForm';
+import DeleteRole from '~~/components/entity/role/DeleteRole';
 import { AntTabsType } from '@antify/antify-ui';
-import { Response as PermissionsResponse } from '~~/glue/api/backoffice/[tenantId]/roles/permissions.get';
+import { useContextHeader, useTenantHeader } from '@antify/context';
 
 const { $toaster } = useNuxtApp();
-const route = useRoute();
-
+const saving = ref(false);
 const search = ref('');
-const deleteDialogActive = ref(false);
-const loading = ref(true);
 const tabs = ref<AntTabsType[]>([
   {
     name: 'Stammdaten',
@@ -17,51 +16,80 @@ const tabs = ref<AntTabsType[]>([
     to: '',
   },
 ]);
-const role = ref({ default: {} });
-const permissions = ref<PermissionsResponse>({ default: [] });
 
-const { data: permissionsData } = await useFetch<PermissionsResponse>(
-  '/api/roles/permissions',
-  useDefaultFetchOpts()
+const { data, error, pending } = await useFetch(
+  `/api/pages/backoffice/tenantId/roles/${useRoute().params.roleId}`,
+  {
+    headers: {
+      // TODO:: remove with nuxt 3.2.0
+      ...useRequestHeaders(),
+      ...useContextHeader('tenant'),
+      ...useTenantHeader(useRoute().params.tenantId as string),
+    },
+  }
 );
 
-permissions.value = permissionsData.value as PermissionsResponse;
+if (error.value) {
+  throw createError(error.value.data);
+}
 
-const { data: roleData } = await useFetch<Response>(
-  `/api/roles/${route.params.roleId}`,
-  useDefaultFetchOpts()
-);
+if (data.value?.notFound) {
+  await navigateTo(
+    useBuildTenantLink(
+      {
+        name: 'backoffice-tenantId-roles',
+      },
+      useRoute()
+    )
+  );
+}
 
-role.value = roleData.value;
+async function onSave() {
+  saving.value = true;
 
-loading.value = false;
+  const { data: roleData } = await useFetch(
+    `/api/pages/backoffice/tenantId/roles/${data.value.role.id}`,
+    {
+      method: 'PUT',
+      body: data.value.role,
+      headers: {
+        ...useContextHeader('tenant'),
+        ...useTenantHeader(useRoute().params.tenantId as string),
+      },
+    }
+  );
 
-async function onDelete() {
-  const { data } = await useFetch(`/api/roles/${route.params.roleId}`, {
-    ...useDefaultFetchOpts(),
-    method: 'DELETE',
-  });
+  saving.value = false;
 
-  if (data.value && data.value.errors) {
-    data.value.errors.forEach((error) => {
-      $toaster.toastError(error);
-    });
+  if (roleData.value.notFound) {
+    $toaster.toastError(
+      'Role does not exists anymore. Maybe an other user deleted it.'
+    );
 
-    deleteDialogActive.value = false;
-
-    return;
+    return await navigateTo(
+      useBuildTenantLink(
+        {
+          name: 'backoffice-tenantId-roles',
+        },
+        useRoute()
+      )
+    );
   }
 
-  deleteDialogActive.value = false;
-  $toaster.toastDeleted();
+  $toaster.toastUpdated();
 
-  await navigateTo({
-    name: 'backoffice-tenantId-roles',
-    params: {
-      roleId: route.params.roleId,
-      tenantId: route.params.tenantId,
-    },
-  });
+  data.value.role = roleData.value;
+}
+
+function onRoleDeleted() {
+  useRouter().push(
+    useBuildTenantLink(
+      {
+        name: 'backoffice-tenantId-roles',
+      },
+      useRoute()
+    )
+  );
 }
 </script>
 
@@ -70,23 +98,28 @@ async function onDelete() {
     <AntDualContent>
       <template #mainHead>
         <AntTabs :tabs="tabs" />
-        <DeleteButton @click="onDelete">Löschen </DeleteButton>
+        <DeleteRole
+          :role-id="$route.params.roleId"
+          @submit="onRoleDeleted"
+        />
       </template>
 
       <template #mainBody>
-        <EntityRoleEditRoleForm
-          :role="role.default"
-          :permissions="permissions.default"
-          :loading="loading"
+        <RoleForm
+          v-if="data?.role && data?.permissions"
+          :role="data.role"
+          :permissions="data.permissions"
+          :loading="pending"
           id="edit-role-form"
+          @save="onSave"
         />
       </template>
 
       <template #mainFooter>
         <AntButton>
-          <TenantLink :to="{ name: 'backoffice-tenantId-roles' }"
-            >Zurück</TenantLink
-          >
+          <TenantLink :to="{ name: 'backoffice-tenantId-roles' }">
+            Back
+          </TenantLink>
         </AntButton>
 
         <AntButton
@@ -94,39 +127,18 @@ async function onDelete() {
           type="submit"
           form="edit-role-form"
         >
-          Speichern
+          Save
         </AntButton>
       </template>
 
       <template #asideHead>
         <AntInput
           v-model:value="search"
-          placeholder="Suche"
+          placeholder="Search"
         />
       </template>
 
-      <template #asideBody> <RoleTable /> </template>
+      <template #asideBody><RoleTable /></template>
     </AntDualContent>
-
-    <AntModal
-      v-model:active="deleteDialogActive"
-      title="Rolle löschen"
-    >
-      <div>Sind sie sicher das Sie diese Rolle wirklich löschen wollen?</div>
-
-      <template #buttons>
-        <AntButton
-          primary
-          @click="deleteDialogActive = false"
-        >
-          Abbrechen
-        </AntButton>
-
-        <DeleteButton
-          label="Löschen"
-          @click="onDelete"
-        />
-      </template>
-    </AntModal>
   </div>
 </template>

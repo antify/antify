@@ -1,10 +1,9 @@
-import { useGuard } from '~~/composables/useGuard';
 import { PermissionId } from '~~/server/datasources/static/permissions';
-import { HttpBadRequestError, HttpForbiddenError } from '~~/server/errors';
-import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
-import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
+import { HttpBadRequestError } from '~~/server/errors';
 import { Role } from '~~/server/datasources/core/schemas/roles';
 import { useCoreClient } from '~~/server/service/useCoreClient';
+import { isLoggedInHandler, isAuthorizedHandler } from '@antify/ant-guard';
+import { getTenantId } from '@antify/context';
 
 // TODO:: move to glue
 export type RoleInput = {
@@ -14,6 +13,7 @@ export type RoleInput = {
 
 // TODO:: mvoe to glue and implement in frontend
 export const validate = (data: RoleInput): RoleInput => {
+  console.log(data);
   if (!data.name) {
     throw new HttpBadRequestError('Missing required name');
   }
@@ -26,12 +26,12 @@ export const validate = (data: RoleInput): RoleInput => {
 };
 
 export default defineEventHandler(async (event) => {
-  const tenantId = tenantContextMiddleware(event);
-  const guard = useGuard(useAuthorizationHeader(event));
-
-  if (!guard.hasPermissionTo(PermissionId.CAN_CREATE_ROLE, tenantId)) {
-    throw new HttpForbiddenError();
-  }
+  isLoggedInHandler(event);
+  await isAuthorizedHandler(
+    event,
+    PermissionId.CAN_CREATE_ROLE,
+    useRuntimeConfig().contextConfig
+  );
 
   const requestBody = await readBody(event);
   const requestData = validate(requestBody);
@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
     name: requestData.name,
     isAdmin: false,
     permissions: requestData.permissions,
-    tenant: tenantId,
+    tenant: getTenantId(event),
   });
 
   await role.save();

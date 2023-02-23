@@ -2,11 +2,19 @@
 import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
+import { useContextHeader, useTenantHeader } from '@antify/context';
 
 const route = useRoute();
 const { data: roles } = await useFetch(
-  '/api/roles/roles',
-  useDefaultFetchOpts()
+  `/api/components/entity/role/role-table/roles`,
+  {
+    headers: {
+      // TODO:: remove with nuxt 3.2.0
+      ...useRequestHeaders(),
+      ...useContextHeader('tenant'),
+      ...useTenantHeader(route.params.tenantId as string),
+    },
+  }
 );
 
 const _roles = computed(() => {
@@ -27,7 +35,7 @@ const _roles = computed(() => {
 
 const tableHeaders = ref<Array<TableHeader>>([
   {
-    title: 'Rollen',
+    title: 'Role',
     identifier: 'name',
     type: ANT_ROW_TYPES.SLOT,
   },
