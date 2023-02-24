@@ -1,23 +1,17 @@
 <script setup lang="ts">
-import { Response as GetResponse } from '~~/glue/api/users/[userId].get';
 import TenantLink from '~~/components/fields/TenantLink.vue';
-import {
-  validator as baseValidator,
-  Response as PutResponse,
-} from '~~/glue/api/users/[userId].put';
-import UserTable from '~~/components/entity/user/UserTable.vue';
+import RemoveUser from '~~/components/backoffice/user/RemoveUser.vue';
+import BanOrUnbanUser from '~~/components/backoffice/user/BanOrUnbanUser.vue';
+import { validator as baseValidator } from '~~/glue/api/users/[userId].put';
+import UserTable from '~~/components/backoffice/user/UserTable.vue';
 import { AntTabsType } from '@antify/antify-ui';
+import { useContextHeader, useTenantHeader } from '@antify/context';
 
 const route = useRoute();
-const router = useRouter();
 const { $toaster } = useNuxtApp();
 
-const errors = ref([]);
 const search = ref('');
-const loading = ref<Boolean>(true);
 const saving = ref<Boolean>(false);
-const deleteDialogActive = ref<Boolean>(false);
-
 const validator = ref(baseValidator);
 const tabs = ref<AntTabsType[]>([
   {
@@ -26,38 +20,46 @@ const tabs = ref<AntTabsType[]>([
     to: '',
   },
 ]);
-const user = ref<GetResponse>({ default: {} });
-const roles = ref({ default: [] });
-
 const roleOptions = computed(() => {
   return (
-    roles.value.default.map((role) => ({
+    data.value.roles.map((role) => ({
       value: role.id,
       label: role.name,
     })) || []
   );
 });
 
-const { data: userData, refresh } = await useFetch<GetResponse | PutResponse>(
-  `/api/users/${useRoute().params.userId}`,
-  useDefaultFetchOpts()
+const { data, refresh, error } = await useFetch(
+  `/api/pages/backoffice/tenantId/users/${useRoute().params.userId}`,
+  {
+    headers: {
+      // TODO:: remove with nuxt 3.2.0
+      ...useRequestHeaders(),
+      ...useContextHeader('tenant'),
+      ...useTenantHeader(route.params.tenantId as string),
+    },
+  }
 );
 
-user.value = userData.value as GetResponse;
+if (error.value) {
+  throw createError(error.value.data);
+}
 
-const { data: rolesData } = await useFetch<RoleResponse>(
-  '/api/roles/roles',
-  useDefaultFetchOpts()
-);
-
-roles.value = rolesData.value;
-loading.value = false;
+if (data.value?.notFound) {
+  await navigateTo(
+    useBuildTenantLink(
+      {
+        name: 'backoffice-tenantId-users',
+      },
+      useRoute()
+    )
+  );
+}
 
 async function onSubmit() {
   saving.value = true;
-  errors.value = [];
 
-  validator.value.validate(user.value.default, 1);
+  validator.value.validate(data.value.user, 1);
 
   if (validator.value.hasErrors()) {
     saving.value = false;
@@ -65,63 +67,48 @@ async function onSubmit() {
     return;
   }
 
-  await useFetch<PutResponse>(`/api/users/${route.params.userId}`, {
-    ...useDefaultFetchOpts(),
-    ...{
+  const { data: updateData, error } = await useFetch(
+    `/api/pages/backoffice/tenantId/users/${route.params.userId}`,
+    {
       method: 'PUT',
-      body: user.value.default,
-    },
-  });
+      body: data.value.user,
+      headers: {
+        ...useContextHeader('tenant'),
+        ...useTenantHeader(route.params.tenantId as string),
+      },
+    }
+  );
+
+  if (error.value) {
+    throw createError({ ...error.value.data, fatal: true });
+  }
+
+  if (data.value?.notFound) {
+    $toaster.toastError(
+      'Entry does not exists. Maybe an other user deleted it.'
+    );
+
+    await navigateTo(
+      useBuildTenantLink(
+        {
+          name: 'backoffice-tenantId-roles',
+        },
+        useRoute()
+      )
+    );
+  }
+
+  if (data.value?.roleNotFound) {
+    return $toaster.toastError(
+      `The role does not exists anymore. Maybe an other user deleted it. Please select an other one.`
+    );
+  }
+
+  data.value.user = updateData.value;
 
   saving.value = false;
 
   $toaster.toastUpdated();
-  refresh();
-}
-
-async function deleteUser() {
-  await useFetch(`/api/users/${route.params.userId}`, {
-    ...useDefaultFetchOpts(),
-    ...{
-      method: 'DELETE',
-    },
-  });
-
-  $toaster.toastDeleted();
-  deleteDialogActive.value = false;
-
-  router.push({ name: 'backoffice-tenantId-users' });
-}
-
-async function banUser() {
-  saving.value = true;
-  await useFetch<PutResponse>(`/api/users/${route.params.userId}/ban`, {
-    ...useDefaultFetchOpts(),
-    ...{
-      method: 'PUT',
-    },
-  });
-
-  saving.value = false;
-
-  $toaster.toastUpdated();
-  refresh();
-}
-
-async function unbanUser() {
-  saving.value = true;
-
-  await useFetch<PutResponse>(`/api/users/${route.params.userId}/unban`, {
-    ...useDefaultFetchOpts(),
-    ...{
-      method: 'PUT',
-    },
-  });
-
-  saving.value = false;
-
-  $toaster.toastUpdated();
-  refresh();
 }
 </script>
 
@@ -132,45 +119,18 @@ async function unbanUser() {
         <AntTabs :tabs="tabs"></AntTabs>
 
         <div class="flex space-x-4">
-          <DeleteButton
-            v-if="!user.default.isAdmin"
-            label="Remove Access"
-            @click="deleteDialogActive = true"
-          />
+          <!-- TODO:: not self && userCan -->
+          <RemoveUser :user-id="$route.params.userId" />
 
-          <AntButton
-            v-if="!user.default.isAdmin && !user.default.isBanned"
-            label="Ban"
-            @click="banUser"
-          />
-
-          <AntButton
-            v-if="!user.default.isAdmin && user.default.isBanned"
-            label="Unban"
-            @click="unbanUser"
+          <!-- TODO:: not self && userCan -->
+          <BanOrUnbanUser
+            :user-id="$route.params.userId"
+            v-model:is-banned="data.user.isBannedInCurrentTenant"
           />
         </div>
       </template>
 
       <template #mainBody>
-        <ul
-          data-cy="response-errors"
-          v-if="errors.length"
-          style="
-            background: #dc2626;
-            color: #fff;
-            padding: 20px;
-            list-style-position: inside;
-          "
-        >
-          <li
-            v-for="(error, index) in errors"
-            :key="`user-error-${index}`"
-          >
-            {{ error }}
-          </li>
-        </ul>
-
         <AntForm
           @submit.prevent="onSubmit"
           class="flex flex-col bg-white"
@@ -178,7 +138,7 @@ async function unbanUser() {
         >
           <div data-cy="name">
             <AntInput
-              v-model:value="user.default.name"
+              v-model:value="data.user.name"
               label="Name"
               :errors="validator.errorMap['name']"
               :validator="(val: string) => validator.validateProperty('name', val, 1)"
@@ -198,7 +158,7 @@ async function unbanUser() {
 
           <div data-cy="email">
             <AntInput
-              v-model:value="user.default.email"
+              v-model:value="data.user.email"
               label="Mail"
               :errors="validator.errorMap['email']"
               :validator="(val: string) => validator.validateProperty('email', val, 1)"
@@ -220,12 +180,12 @@ async function unbanUser() {
             <AntSelect
               label="Role"
               :options="roleOptions"
-              v-model:value="user.default.roleId"
+              v-model:value="data.user.roleId"
               data-cy="roles"
               @change="
-                () =>
-                  validator.validateProperty('roleId', user.default.roleId, 1)
+                () => validator.validateProperty('roleId', data.user.roleId, 1)
               "
+              :disabled="saving"
             />
 
             <div
@@ -263,7 +223,7 @@ async function unbanUser() {
       <template #asideHead>
         <AntInput
           v-model:value="search"
-          placeholder="Suche"
+          placeholder="Search"
         />
       </template>
 
@@ -271,26 +231,5 @@ async function unbanUser() {
         <UserTable :single-col="true" />
       </template>
     </AntDualContent>
-
-    <AntModal
-      v-model:active="deleteDialogActive"
-      title="Remove access"
-    >
-      <div>Do you relay want to remove the users access to this tenant?</div>
-
-      <template #buttons>
-        <AntButton
-          primary
-          @click="deleteDialogActive = false"
-        >
-          Cancel
-        </AntButton>
-
-        <DeleteButton
-          label="Remove Access"
-          @click="deleteUser"
-        />
-      </template>
-    </AntModal>
   </div>
 </template>

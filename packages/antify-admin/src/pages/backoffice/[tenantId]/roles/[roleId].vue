@@ -34,6 +34,8 @@ if (error.value) {
 }
 
 if (data.value?.notFound) {
+  $toaster.toastError('Entry does not exists. Maybe an other user deleted it.');
+
   await navigateTo(
     useBuildTenantLink(
       {

@@ -2,16 +2,27 @@
 import { ANT_ROW_TYPES } from '@antify/antify-ui';
 import TenantLink from '~~/components/fields/TenantLink.vue';
 import { TableHeader } from '@antify/antify-ui/dist/types/TableHeader.type';
+import { useContextHeader, useTenantHeader } from '@antify/context';
 
 const route = useRoute();
 const props = defineProps<{
   singleCol: boolean;
 }>();
-
-const { data: users } = await useFetch(
-  '/api/users/users',
-  useDefaultFetchOpts()
+const { data: users, error } = await useFetch(
+  '/api/components/backoffice/user/user-table',
+  {
+    headers: {
+      // TODO:: remove with nuxt 3.2.0
+      ...useRequestHeaders(),
+      ...useContextHeader('tenant'),
+      ...useTenantHeader(route.params.tenantId as string),
+    },
+  }
 );
+
+if (error.value) {
+  throw createError(error.value.data);
+}
 
 const _users = computed(() => {
   return (users.value as Array<any>).map((user) => {

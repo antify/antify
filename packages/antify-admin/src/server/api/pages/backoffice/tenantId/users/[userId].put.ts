@@ -1,34 +1,34 @@
-import { useGuard } from '~~/composables/useGuard';
 import { PermissionId } from '~~/server/datasources/static/permissions';
-import { HttpForbiddenError } from '~~/server/errors';
-import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
-import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { Input, validator } from '~~/glue/api/users/[userId].put';
 import { UserTenantAccess } from '~~/server/datasources/core/schemas/userTenantAccess';
 import { Role } from '~~/server/datasources/core/schemas/roles';
 import { useCoreClient } from '~~/server/service/useCoreClient';
+import { isLoggedInHandler, isAuthorizedHandler } from '@antify/ant-guard';
+import { getTenantId } from '@antify/context';
 
 export default defineEventHandler(async (event) => {
-  const tenantId = tenantContextMiddleware(event);
-  const guard = useGuard(useAuthorizationHeader(event));
-
-  if (!guard.hasPermissionTo(PermissionId.CAN_UPDATE_USER, tenantId)) {
-    throw new HttpForbiddenError();
-  }
+  isLoggedInHandler(event);
+  await isAuthorizedHandler(
+    event,
+    PermissionId.CAN_UPDATE_USER,
+    useRuntimeConfig().contextConfig
+  );
 
   const coreClient = await useCoreClient().connect();
 
   // Make sure, the user want to update a user which is related to his tenant.
   const userTenantAccess = await coreClient
     .getModel<UserTenantAccess>('user_tenant_accesses')
-    .findOne({ tenant: tenantId, user: event.context.params.userId })
+    .findOne({ tenant: getTenantId(event), user: event.context.params.userId })
     .populate({
       path: 'user',
       model: coreClient.getModel('users'),
     });
 
   if (!userTenantAccess) {
-    throw new HttpForbiddenError();
+    return {
+      notFound: true,
+    };
   }
 
   const requestData = await readBody<Input>(event);
@@ -36,10 +36,11 @@ export default defineEventHandler(async (event) => {
   validator.validate(requestData);
 
   if (validator.hasErrors()) {
-    return {
-      errors: validator.getErrors(),
-      errorType: 'BAD_REQUEST',
-    };
+    throw createError({
+      statusCode: 500,
+      statusMessage: validator.getErrors(),
+      fatal: true,
+    });
   }
 
   const role = await coreClient
@@ -48,8 +49,7 @@ export default defineEventHandler(async (event) => {
 
   if (!role) {
     return {
-      errors: [`Role with id ${requestData.roleId} does not exists.`],
-      errorType: 'BAD_REQUEST',
+      roleNotFound: true,
     };
   }
 
@@ -58,11 +58,9 @@ export default defineEventHandler(async (event) => {
   await userTenantAccess.save();
 
   return {
-    default: {
-      id: userTenantAccess.user.id,
-      name: userTenantAccess.user.name,
-      email: userTenantAccess.user.email,
-      roleId: userTenantAccess.role._id,
-    },
+    id: userTenantAccess.user.id,
+    name: userTenantAccess.user.name,
+    email: userTenantAccess.user.email,
+    roleId: userTenantAccess.role._id,
   };
 });
