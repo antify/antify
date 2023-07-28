@@ -5,6 +5,33 @@ importers:
   .:
     specifiers: {}
 
+  packages/ant-auth-module:
+    specifiers:
+      '@antify/ant-database': 1.0.0
+      '@antify/ant-guard': 1.0.0
+      '@antify/antify-ui': 0.0.70
+      '@antify/context': 1.0.0
+      '@antify/kit': 1.0.0
+      '@antify/validate': 1.0.0
+      '@nuxt/kit': ^3.0.0
+      '@nuxt/module-builder': latest
+      '@nuxtjs/eslint-config-typescript': latest
+      eslint: latest
+      nuxt: 3.0.0
+    dependencies:
+      '@antify/ant-database': link:../ant-database
+      '@antify/ant-guard': link:../ant-guard
+      '@antify/antify-ui': 0.0.70_4keutw4zslgq6bxoqxoddfj5ty
+      '@antify/context': link:../context
+      '@antify/kit': link:../kit
+      '@antify/validate': 1.0.0
+      '@nuxt/kit': 3.2.2_rollup@2.79.1
+    devDependencies:
+      '@nuxt/module-builder': 0.2.1
+      '@nuxtjs/eslint-config-typescript': 12.0.0_7kw3g6rralp5ps6mg3uyzz6azm
+      eslint: 8.34.0
+      nuxt: 3.0.0_33ug6mxynxiw5bcu2hsvk6nktu
+
   packages/ant-database:
     specifiers:
       '@nuxtjs/eslint-config-typescript': latest

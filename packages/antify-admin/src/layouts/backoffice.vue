@@ -8,6 +8,7 @@ import {
   faShieldHalved,
   faPhotoFilm,
   faCog,
+  faArrowRightFromBracket,
 } from '@fortawesome/free-solid-svg-icons';
 
 const { $auth, hook, $toaster } = useNuxtApp();
@@ -61,6 +62,7 @@ const navItems = computed(() => [
   {
     label: 'Logout',
     active: false,
+    icon: faArrowRightFromBracket,
     clickHandler: () => $auth.logout(),
   },
 ]);
