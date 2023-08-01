@@ -1,4 +1,3 @@
-import { HttpNotFoundError } from '~~/server/errors';
 import {
   Input,
   Response,
@@ -25,7 +24,11 @@ export default defineEventHandler<Response>(async (event) => {
   const user = await UserModel.findOne({ id: event.context.params.userId });
 
   if (!user) {
-    throw new HttpNotFoundError();
+    return {
+      notFound: {
+        message: 'Not Found',
+      },
+    };
   }
 
   const requestData = await readBody<Input>(event);
@@ -40,10 +43,7 @@ export default defineEventHandler<Response>(async (event) => {
     };
   }
 
-  user.email = requestData.email;
-  user.name = requestData.name;
-
-  await user.save();
+  await UserModel.updateOne({ id: user.id }, { email: requestData.email, name: requestData.name });
 
   return {
     id: user.id,

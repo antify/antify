@@ -12,8 +12,6 @@ const validator = ref(baseValidator);
 
 const userData = useUserDetailState();
 
-console.log(userData);
-
 loading.value = false;
 
 onMounted(async () => {});

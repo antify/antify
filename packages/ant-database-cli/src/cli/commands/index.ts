@@ -9,6 +9,7 @@ export const commands = {
   'load-fixtures': () => import('./load-fixtures').then(_rDefault),
   'make-fixture': () => import('./make-fixture').then(_rDefault),
   'make-migration': () => import('./make-migration').then(_rDefault),
+  'drop-database': () => import('./drop-database').then(_rDefault),
   usage: () => import('./usage').then(_rDefault),
 };
 

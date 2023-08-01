@@ -1,9 +1,9 @@
 /// <reference types="cypress" />
 
 describe('Test login page', () => {
-  // before(() => {
-  //   cy.exec('cd ../src && pnpm app:rebuild', { timeout: 20000 });
-  // });
+  before(() => {
+    cy.exec('cd ../src && pnpm ant-db load-fixtures core', { timeout: 20000 });
+  });
 
   it('Should show errors on empty from', () => {
     cy.visit('/login');
@@ -43,6 +43,6 @@ describe('Test login page', () => {
     cy.get('[data-cy=password] input').clear().type('admin');
     cy.get('[data-cy=submit]').click();
 
-    cy.location('pathname').should('match', /\/backoffice\/.*\/dashboard/);
+    cy.location('pathname').should('match', /cockpit\/dashboard/);
   });
 });

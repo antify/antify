@@ -26,17 +26,17 @@
     "@antify/context": "1.0.0",
     "@antify/kit": "1.0.0",
     "@antify/validate": "1.0.0",
-    "@nuxt/kit": "^3.0.0",
-    "c12": "^1.1.0",
+    "@nuxt/kit": "^3.6.5",
+    "c12": "^1.4.2",
     "formidable": "^2.0.1",
-    "jiti": "^1.16.1",
-    "ufo": "^1.0.1"
+    "jiti": "^1.19.1",
+    "ufo": "^1.1.2"
   },
   "devDependencies": {
     "@nuxt/module-builder": "latest",
     "@nuxtjs/eslint-config-typescript": "latest",
     "eslint": "latest",
-    "nuxt": "3.0.0"
+    "nuxt": "3.6.5"
   },
   "peerDependencies": {
     "@antify/ant-toaster-module": "1.0.0",

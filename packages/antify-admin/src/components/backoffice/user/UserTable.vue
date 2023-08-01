@@ -8,7 +8,7 @@ const route = useRoute();
 const props = defineProps<{
   singleCol: boolean;
 }>();
-const { data: users, error } = await useFetch(
+const { data: users, error, pending } = await useFetch(
   '/api/components/backoffice/user/user-table',
   {
     headers: {
@@ -63,6 +63,7 @@ if (!props.singleCol) {
   <AntTable
     :headers="tableHeaders"
     :data="_users"
+    :loading="pending"
   >
     <template #cellContent="{ elem }">
       <TenantLink

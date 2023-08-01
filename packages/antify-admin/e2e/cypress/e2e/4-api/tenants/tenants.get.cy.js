@@ -1,6 +1,10 @@
 /// <reference types="cypress" />
 
 describe('Test get tenants api endpoint', () => {
+    before(() => {
+        cy.exec('cd ../src && pnpm ant-db load-fixtures core', { timeout: 20000 });
+    });
+
     it('Should not allow to get tenants without token', () => {
         cy.request({
             url: '/api/tenants/tenants',

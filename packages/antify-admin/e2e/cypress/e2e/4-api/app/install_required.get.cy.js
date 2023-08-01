@@ -2,7 +2,7 @@
 
 describe('Test get install required api endpoint', () => {
     it('Should return false on empty database', () => {
-        cy.exec('cd ../src && pnpm auth:migration:reset', { timeout: 10000 });
+        cy.exec('cd ../src && pnpm ant-db drop-database core', { timeout: 10000 });
 
         cy.request({
             method: 'get',
@@ -14,7 +14,7 @@ describe('Test get install required api endpoint', () => {
     });
 
     it('Should return true on already initialized database', () => {
-        cy.exec('cd ../src && pnpm app:rebuild', { timeout: 20000 });
+        cy.exec('cd ../src && pnpm ant-db load-fixtures core', { timeout: 20000 });
 
         cy.request({
             method: 'get',

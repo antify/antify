@@ -1,6 +1,10 @@
 /// <reference types="cypress" />
 
 describe('Test refresh token api endpoint', () => {
+    before(() => {
+        cy.exec('cd ../src && pnpm ant-db load-fixtures core', { timeout: 20000 });
+    });
+
     it('Should throw unautorized error on missing cookie', () => {
         cy.request({
             method: 'post',

@@ -2,7 +2,7 @@
 
 describe('Test install page', () => {
   before(() => {
-    cy.exec('cd ../src && pnpm core:migration:reset', { timeout: 10000 });
+    cy.exec('cd ../src && pnpm ant-db drop-database core', { timeout: 10000 });
   });
 
   it('Should show errors on empty from', () => {
@@ -55,10 +55,7 @@ describe('Test install page', () => {
     cy.get('[data-cy=password-repeat] input').clear().type('admin');
     cy.get('[data-cy=submit]').click();
 
-    cy.location('pathname').should(
-      'match',
-      /\/backoffice\/(((\w{4,12}-?)){5})\/dashboard/
-    );
+    cy.location('pathname').should('match', /cockpit\/dashboard/);
   });
 
   it('Should redirect to login if app is installed', () => {
@@ -74,9 +71,6 @@ describe('Test install page', () => {
     cy.get('[data-cy=password] input').clear().type('admin');
     cy.get('[data-cy=submit]').click();
 
-    cy.location('pathname').should(
-      'match',
-      /\/backoffice\/(((\w{4,12}-?)){5})\/dashboard/
-    );
+    cy.location('pathname').should('match', /cockpit\/dashboard/);
   });
 });

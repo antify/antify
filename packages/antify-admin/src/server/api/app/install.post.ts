@@ -8,6 +8,7 @@ import { apiAppInstallService } from './install.service';
 import { User } from '~~/server/datasources/core/schemas/user';
 import { hashPassword } from '~~/server/utils/passwordHashUtil';
 import { useCoreClient } from '~~/server/service/useCoreClient';
+import { Migrator, migrateUpToEnd } from '@antify/ant-database';
 
 export default defineEventHandler<AppInstallPostResponse>(async (event) => {
   const requireInstall = await apiAppInstallService.requireInstall();
@@ -33,6 +34,11 @@ export default defineEventHandler<AppInstallPostResponse>(async (event) => {
   }
 
   const coreClient = await useCoreClient().connect();
+
+  const migrator = new Migrator(coreClient, coreClient.getConfiguration());
+  const result = await migrateUpToEnd(migrator);
+
+  // TODO:: handle on error -> result.error
 
   const UserModel = coreClient.getModel<User>('users');
   const password = await hashPassword(requestData.password, useRuntimeConfig().passwordSalt);

@@ -36,9 +36,7 @@ export default defineEventHandler(async (event) => {
     };
   }
 
-  tenant.name = requestData.name;
-
-  await tenant.save();
+  await TenantModel.updateOne({ id: event.context.params?.tenantDetailId }, { name: requestData.name });
 
   return {
     default: {

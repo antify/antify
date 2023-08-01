@@ -1,12 +1,10 @@
-import { User } from '~~/server/datasources/core/schemas/user';
 import { useCoreClient } from '~~/server/service/useCoreClient';
+import { doesDatabaseExist } from '@antify/ant-database';
 
 export const apiAppInstallService = {
   requireInstall: async () => {
     const coreClient = await useCoreClient().connect();
 
-    const User = coreClient.getModel<User>('users');
-
-    return (await User.find({})).length <= 0;
+    return !await doesDatabaseExist(coreClient.getConnection(), coreClient.getConnection().name);
   },
 };

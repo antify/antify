@@ -4,12 +4,14 @@ import { Client } from './Client';
 
 export class MultiConnectionClient extends Client {
   private static instance: MultiConnectionClient;
+  private configuration: MultiConnectionDatabaseConfiguration;
   private databasePrefix: string;
 
   private constructor(configuration: MultiConnectionDatabaseConfiguration) {
     super(configuration.databaseUrl);
 
     this.databasePrefix = configuration.databasePrefix || 'tenant_';
+    this.configuration = configuration;
   }
 
   public static getInstance(
@@ -54,5 +56,9 @@ export class MultiConnectionClient extends Client {
     });
 
     return this.connection;
+  }
+
+  getConfiguration(): MultiConnectionDatabaseConfiguration {
+    return this.configuration;
   }
 }

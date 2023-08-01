@@ -4,9 +4,12 @@ import { Client } from './Client';
 
 export class SingleConnectionClient extends Client {
   private static instance: SingleConnectionClient;
+  private configuration: SingleConnectionDatabaseConfiguration;
 
   private constructor(configuration: SingleConnectionDatabaseConfiguration) {
     super(configuration.databaseUrl);
+
+    this.configuration = configuration;
   }
 
   public static getInstance(
@@ -37,5 +40,9 @@ export class SingleConnectionClient extends Client {
     }
 
     return this;
+  }
+
+  getConfiguration(): SingleConnectionDatabaseConfiguration {
+    return this.configuration;
   }
 }

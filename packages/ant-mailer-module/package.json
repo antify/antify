@@ -26,7 +26,7 @@
     "@antify/ant-guard": "1.0.0",
     "@antify/kit": "1.0.0",
     "@antify/validate": "1.0.0",
-    "@nuxt/kit": "^3.0.0",
+    "@nuxt/kit": "^3.6.5",
     "nodemailer": "^6.7.7"
   },
   "devDependencies": {
@@ -34,7 +34,7 @@
     "@nuxtjs/eslint-config-typescript": "latest",
     "@types/nodemailer": "^6.4.4",
     "eslint": "latest",
-    "nuxt": "3.0.0"
+    "nuxt": "3.6.5"
   },
   "peerDependencies": {
     "@antify/ant-toaster-module": "1.0.0",

@@ -2,7 +2,7 @@
 
 describe('Test CurrentTenantSelectField component', () => {
     before(() => {
-        // cy.exec('cd ../src && pnpm app:rebuild', { timeout: 20000 });
+        cy.exec('cd ../src && pnpm ant-db load-fixtures core', { timeout: 20000 });
     });
 
     it('Should show component correct', () => {

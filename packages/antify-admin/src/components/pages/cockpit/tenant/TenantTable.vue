@@ -23,7 +23,7 @@ const page = computed<number>({
   },
 });
 
-const { data } = await useFetch<Response>(
+const { data, pending } = await useFetch<Response>(
   () =>
     `/api/components/pages/cockpit/tenants/tenant-table?page=${page.value}&itemsPerPage=${itemsPerPage.value}`,
   useDefaultFetchOpts()
@@ -72,6 +72,7 @@ function next() {
       <AntTable
         :headers="tableHeaders"
         :data="_data"
+        :loading="pending"
       >
         <template #cellContent="{ elem }">
           <NuxtLink

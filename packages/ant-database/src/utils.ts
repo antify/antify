@@ -2,6 +2,7 @@ import jiti from 'jiti';
 import { MultiConnectionClient } from './client/MultiConnectionClient';
 import { SingleConnectionClient } from './client/SingleConnectionClient';
 import { DatabaseConfigurations } from './types';
+import { Connection } from 'mongoose';
 // TODO:: rename file in load-database-configuration.ts
 
 function tryRequire(id: string, rootDir: string = process.cwd()) {
@@ -61,3 +62,10 @@ export function getDatabaseClient(
     ? SingleConnectionClient.getInstance(configuration)
     : MultiConnectionClient.getInstance(configuration);
 }
+
+export const doesDatabaseExist = async (connection: Connection, databaseName: string): Promise<boolean> => {
+  const databases = await connection.db.admin().listDatabases();
+  const databaseNames = databases.databases.map((dbInfo) => dbInfo.name);
+
+  return databaseNames.includes(databaseName);
+};

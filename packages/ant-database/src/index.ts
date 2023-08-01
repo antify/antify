@@ -18,3 +18,6 @@ export * from './fixture/load-fixtures-multi';
 export * from './fixture/utils';
 
 // export * from './http/getDatabaseClient';
+export * from './drop-database/drop-database';
+export * from './drop-database/drop-database-multi';
+export { doesDatabaseExist } from './utils';

@@ -21,13 +21,13 @@
     "dev:prepare": "nuxt-module-build --stub && nuxi prepare playground"
   },
   "dependencies": {
-    "@nuxt/kit": "^3.0.0"
+    "@nuxt/kit": "^3.6.5"
   },
   "devDependencies": {
     "@nuxt/module-builder": "latest",
     "@nuxtjs/eslint-config-typescript": "latest",
     "eslint": "latest",
-    "nuxt": "3.0.0"
+    "nuxt": "3.6.5"
   },
   "peerDependencies": {
     "@antify/antify-ui": "0.0.70"

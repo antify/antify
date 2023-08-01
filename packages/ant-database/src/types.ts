@@ -115,3 +115,14 @@ export type LoadFixtureResult = {
   tenantName?: string | null;
   results?: LoadFixtureExecutionResult[];
 };
+
+export type DropDatabaseResult = {
+  tenantId?: string | null;
+  tenantName?: string | null;
+  result: DropDatabaseExecutionResult;
+};
+
+export type DropDatabaseExecutionResult = {
+  executionTimeInMs?: number | null;
+  error?: Error | null;
+};

@@ -38,7 +38,7 @@
   "dependencies": {
     "@antify/ant-database": "1.0.0",
     "@antify/context": "1.0.0",
-    "h3": "^1.1.0"
+    "h3": "^1.7.1"
   },
   "optionalDependencies": {
     "fsevents": "~2.3.2"

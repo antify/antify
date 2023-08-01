@@ -57,8 +57,7 @@ async function onLogin() {
   }
 
   if (data.value.default) {
-    console.log("--------- navigateTo({ name: 'backoffice' })");
-    return await navigateTo({ name: 'backoffice' });
+    return await navigateTo({ name: 'cockpit' });
   }
 
   if (
@@ -90,38 +89,22 @@ onBeforeUnmount(() => {
       </AntHeader>
     </template>
 
-    <AntLoginWidget
-      @submit.prevent="onLogin"
-      :errors="validateErrors"
-    >
+    <AntLoginWidget @submit.prevent="onLogin" :errors="validateErrors">
       <template #emailField>
         <div data-cy="email">
-          <AntInput
-            v-model:value="formData.email"
-            class="rounded-none relative block rounded-t-md focus:z-10"
-            placeholder="Email"
-            :is-error="
-              validator.errorMap['email'] &&
+          <AntInput v-model:value="formData.email" class="rounded-none relative block rounded-t-md focus:z-10"
+            placeholder="Email" :is-error="validator.errorMap['email'] &&
               validator.errorMap['email'].length > 0
-            "
-            :validator="(val: string) => validator.validateProperty('email', val, 1)"
-          />
+              " :validator="(val: string) => validator.validateProperty('email', val, 1)" />
         </div>
       </template>
 
       <template #passwordField>
         <div data-cy="password">
-          <AntPasswordField
-            v-model:password="formData.password"
-            class="rounded-none block rounded-b-md focus:z-10"
-            placeholder="password"
-            :is-error="
-              validator.errorMap['password'] &&
+          <AntPasswordField v-model:password="formData.password" class="rounded-none block rounded-b-md focus:z-10"
+            placeholder="password" :is-error="validator.errorMap['password'] &&
               validator.errorMap['password'].length > 0
-            "
-            :validator="(val: string) => validator.validateProperty('password', val, 1)"
-            :show-password="true"
-          />
+              " :validator="(val: string) => validator.validateProperty('password', val, 1)" :show-password="true" />
         </div>
       </template>
 
@@ -140,11 +123,7 @@ onBeforeUnmount(() => {
       </template>
 
       <template #submitButton>
-        <AntButton
-          type="submit"
-          data-cy="submit"
-          :primary="true"
-        >
+        <AntButton type="submit" data-cy="submit" :primary="true">
           Login
         </AntButton>
       </template>

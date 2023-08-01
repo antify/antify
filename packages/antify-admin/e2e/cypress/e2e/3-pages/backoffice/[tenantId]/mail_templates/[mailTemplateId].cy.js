@@ -1,6 +1,10 @@
 /// <reference types="cypress" />
 
 describe('Test mail templates detail page', () => {
+  before(() => {
+    cy.exec('cd ../src && pnpm ant-db load-fixtures core', { timeout: 20000 });
+  });
+
   it('Should show page correct', () => {
     cy.login();
     cy.visit(

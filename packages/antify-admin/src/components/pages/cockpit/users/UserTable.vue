@@ -7,13 +7,13 @@ const props = defineProps<{
   singleCol: boolean;
 }>();
 
-const { data: users } = await useFetch(
+const { data: users, pending } = useFetch(
   '/api/components/pages/cockpit/users/user-table',
   useDefaultFetchOpts()
 );
 
 const _users = computed(() => {
-  return (users.value as Array<any>).map((user) => {
+  return (users.value as Array<any> || []).map((user) => {
     if (route.params?.userId === user.id) {
       return {
         ...user,
@@ -48,19 +48,12 @@ if (!props.singleCol) {
 </script>
 
 <template>
-  <AntTable
-    :headers="tableHeaders"
-    :data="_users"
-  >
+  <AntTable :headers="tableHeaders" :data="_users" :loading="pending">
     <template #cellContent="{ elem }">
-      <NuxtLink
-        data-cy="user-link"
-        class="w-full block"
-        :to="{
-          name: 'cockpit-users-userId',
-          params: { userId: elem.id },
-        }"
-      >
+      <NuxtLink data-cy="user-link" class="w-full block" :to="{
+        name: 'cockpit-users-userId',
+        params: { userId: elem.id },
+      }">
         {{ elem.name }}
       </NuxtLink>
     </template>
