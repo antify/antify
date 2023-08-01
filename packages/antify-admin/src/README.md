@@ -1,6 +1,6 @@
-# Antify
+# Antify Admin
 
-Look at the [nuxt 3 documentation](https://v3.nuxtjs.org) to learn more.
+The ready-to-go Nuxt project which use all available antify modules.
 
 ## Setup
 
