@@ -39,6 +39,7 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@antify/ant-media-module',
     '@antify/ant-mailer-module',
+    '@antify/note-module',
   ],
   runtimeConfig: {
     baseUrl: process.env.BASE_URL,
@@ -69,6 +70,18 @@ export default defineNuxtConfig({
         ...tenantContext,
         smtpHost: 'localhost',
         smtpPort: '1025',
+      },
+    ],
+  },
+  antNoteModule: {
+    providers: [
+      {
+        id: 'core',
+        isSingleTenancy: true,
+      },
+      {
+        id: 'tenant',
+        isSingleTenancy: false,
       },
     ],
   },

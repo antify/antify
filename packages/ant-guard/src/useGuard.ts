@@ -35,6 +35,7 @@ export const useGuard = (rawToken: string | null) => {
   }
 
   return {
+    userId: token?.id || null,
     isUserLoggedIn: token !== null,
     isSuperAdmin: token?.isSuperAdmin || false,
     hasPermissionTo: (permission: string[] | string, tenantId: string) => {

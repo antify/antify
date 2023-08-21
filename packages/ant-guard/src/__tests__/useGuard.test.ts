@@ -1,4 +1,4 @@
-import { describe, test, expect } from 'vitest';
+import { describe, test, expect, beforeAll } from 'vitest';
 import { useGuard } from '../useGuard';
 
 describe('useGuard test', async () => {

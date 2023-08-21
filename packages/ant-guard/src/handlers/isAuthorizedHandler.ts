@@ -18,12 +18,13 @@ export const isAuthorizedHandler = async (
     permissions = [permissions];
   }
 
-  // @ts-ignore
-  if (context.isMultiTenantcy) {
+  if (context.isSingleTenancy) {
+    // TODO:: Implement auth for single tenancy too
+  } else {
     const tenantId = getTenantId(event);
 
     if (!tenantId) {
-      throw Error('Missing required tenantId');
+      throw createError('Missing required tenantId');
     }
 
     if (
@@ -31,9 +32,7 @@ export const isAuthorizedHandler = async (
         guard.hasPermissionTo(permission, tenantId)
       )
     ) {
-      throw createError({ statusCode: 403, statusMessage: 'Unauthorized' });
+      throw createError('Unauthorized');
     }
-  } else {
-    // TODO:: Implement auth for single tenancy too
   }
 };
