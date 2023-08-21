@@ -24,7 +24,7 @@
     "@antify/ant-database": "1.0.0",
     "@antify/ant-guard": "1.0.0",
     "@antify/context": "1.0.0",
-    "@antify/validate": "1.0.0",
+    "@antify/validate": "1.2.2",
     "@antify/kit": "1.0.0",
     "@nuxt/kit": "^3.6.5"
   },
