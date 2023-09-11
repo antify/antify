@@ -2,6 +2,10 @@
 
 The ready-to-go Nuxt project which use all available antify modules.
 
+## TODO's
+
+- [ ] Replace toaster correctly
+
 ## Setup
 
 Make sure to install the dependencies:

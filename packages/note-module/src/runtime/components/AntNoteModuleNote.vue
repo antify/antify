@@ -1,7 +1,7 @@
 <script setup lang='ts'>
 import AntNoteModuleDeleteModal from './AntNoteModuleDeleteModal.vue';
 import { useContextHeader, useTenantHeader } from '@antify/context';
-import { AntSkeleton, AntTextarea } from '@antify/antify-ui';
+import { AntTextarea } from '@antify/antify-ui';
 import { validator as updateValidator } from '../glue/note/[noteId].put';
 
 const { $toaster } = useNuxtApp();
@@ -47,7 +47,7 @@ const {
       ...useTenantHeader(props.tenantId)
     },
     immediate: false,
-    watch: false
+    watch: false,
   }
 );
 
@@ -59,13 +59,12 @@ async function deleteNote() {
       ...error.value,
       fatal: true
     });
-  } else {
-    $toaster.toastDeleted();
-    modalVisible.value = false;
-    emit('noteDeleted');
   }
-}
 
+  $toaster.toastDeleted();
+  modalVisible.value = false;
+  emit('noteDeleted');
+}
 async function updateNote() {
   validator.value.validate(updateRequestData);
 
@@ -77,21 +76,20 @@ async function updateNote() {
 
   if (updateError.value) {
     throw createError({
-      ...error.value,
+      ...updateError.value,
       fatal: true
     });
-  } else {
-    if (updateData.value.notFound) {
-      return $toaster.toastError('Note not found');
-    }
-
-    $toaster.toastUpdated();
-    isUpdateContext.value = false;
-    emit('update:content', updateData.value.default.content);
-    _content.value = updateData.value.default.content;
   }
-}
 
+  if (updateData.value.notFound) {
+    return $toaster.toastError('Note not found');
+  }
+
+  $toaster.toastUpdated();
+  isUpdateContext.value = false;
+  emit('update:content', updateData.value.default.content);
+  _content.value = updateData.value.default.content;
+}
 function onFocusOut() {
   setTimeout(() => showMenu.value = false, 100);
 }

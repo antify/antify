@@ -11,6 +11,7 @@ TODO::
 
 - [ ] Write docs
 - [ ] Tests
+- [ ] Rename useContext into useProvider. Provider and tenant are the context.
 
 ## Development
 

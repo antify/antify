@@ -2,7 +2,7 @@ import { Client } from '@antify/ant-database';
 
 export const extendSchemas = (client: Client) => {
     client.getSchema('mail_templates').add({
-        templateId: {
+        mailTemplateId: {
             type: String,
             required: true,
             unique: true,

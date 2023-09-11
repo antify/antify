@@ -1,5 +1,7 @@
-export default defineNuxtRouteMiddleware((nuxtApp) => {
-    if (!useNuxtApp().$auth.getGuard().isUserLoggedIn) {
-        return navigateTo({name: 'login'});
-    }
+import { useGuard } from '@antify/ant-guard';
+
+export default defineNuxtRouteMiddleware(() => {
+  if (!useGuard(useNuxtApp()?.ssrContext?.event).isLoggedIn()) {
+    return navigateTo({ name: 'login' });
+  }
 });

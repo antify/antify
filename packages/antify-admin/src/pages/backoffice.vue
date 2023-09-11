@@ -1,28 +1,31 @@
-<script setup lang="ts">
+<script setup lang='ts'>
 definePageMeta({
-  middleware: ['auth'],
+  middleware: ['auth']
 });
 
-const { $auth } = useNuxtApp();
 const me = useMeState();
-const { data: userResponseData } = await useFetch(
+const { data: userResponseData, error: userError } = await useFetch(
   `/api/global/me`,
   useDefaultFetchOpts()
 );
-
-if (!userResponseData.value?.default) {
-  await $auth.logout();
-}
-
-me.value = userResponseData.value.default;
-
-const tenants = useTenantState();
-const tenant = useCurrentTenantState();
-const { data: tennantsResponseData } = await useFetch(
+const { data: tenantsResponseData, tenantsError } = await useFetch(
   `/api/global/tenants`,
   useDefaultFetchOpts()
 );
-tenants.value = tennantsResponseData.value.default.data;
+
+if (userError.value) {
+  throw createError({ ...error.value, fatal: true });
+}
+
+if (tenantsError.value) {
+  throw createError({ ...tenantsError.value, fatal: true });
+}
+
+const tenants = useTenantState();
+const tenant = useCurrentTenantState();
+
+tenants.value = tenantsResponseData.value.default.data;
+me.value = userResponseData.value.default;
 
 if (!useRoute().params.tenantId) {
   if (tenants.value.length <= 0) {
@@ -42,7 +45,7 @@ if (!useRoute().params.tenantId) {
     // User has no access to the current tenant - redirect him to another one.
     await navigateTo({
       name: 'backoffice-tenantId-dashboard',
-      params: { tenantId: tenants.value[0].id },
+      params: { tenantId: tenants.value[0].id }
     });
   }
 } else {

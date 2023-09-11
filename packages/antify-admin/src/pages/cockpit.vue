@@ -1,25 +1,23 @@
-<script setup lang="ts">
+<script setup lang='ts'>
 definePageMeta({
-  middleware: ['auth'],
+  middleware: ['auth']
 });
 
-const { $auth } = useNuxtApp();
-
 const me = useMeState();
-const { data: userResponseData } = await useFetch(
+const { data, error } = await useFetch(
   `/api/global/me`,
   useDefaultFetchOpts()
 );
 
-if (!userResponseData.value?.default) {
-  await $auth.logout();
+if (error.value) {
+  throw createError({ ...error.value, fatal: true });
 }
 
-me.value = userResponseData.value.default;
+me.value = data.value.default;
 </script>
 
 <template>
-  <NuxtLayout name="cockpit">
+  <NuxtLayout name='cockpit'>
     <NuxtPage />
   </NuxtLayout>
 </template>

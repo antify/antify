@@ -1,13 +1,12 @@
 import { CompatibilityEvent } from 'h3';
 import { HttpForbiddenError } from '../errors';
-import { useAuthorizationHeader } from '../utils/useAuthorizationHeader';
-import { useGuard } from '~~/composables/useGuard';
+import { useServerGuard } from '@antify/ant-guard';
 import { authenticatedMiddleware } from './authenticated.middleware';
 
-export const isSuperAdminMiddleware = (event: CompatibilityEvent): void => {
-  authenticatedMiddleware(event);
+export const isSuperAdminMiddleware = async (event: CompatibilityEvent): void => {
+  await authenticatedMiddleware(event);
 
-  const guard = useGuard(useAuthorizationHeader(event));
+  const guard = await useServerGuard(event);
 
   if (!guard.isSuperAdmin) {
     throw new HttpForbiddenError();

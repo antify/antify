@@ -1,8 +1,7 @@
-import { useGuard } from '~~/composables/useGuard';
+import { useServerGuard } from '@antify/ant-guard';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { HttpForbiddenError } from '~~/server/errors';
 import { authenticatedMiddleware } from '~~/server/guard/authenticated.middleware';
-import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { Response } from '~~/glue/api/tenants/tenants.get';
 import { Paginator } from '~~/server/utils/paginator';
@@ -11,9 +10,9 @@ import { Model } from 'mongoose';
 import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler<Response>(async (event) => {
-  authenticatedMiddleware(event);
+  await authenticatedMiddleware(event);
 
-  const guard = useGuard(useAuthorizationHeader(event));
+  const guard = await useServerGuard(event);
   const tenantId = useTenantHeader(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_READ_TENANT, tenantId)) {

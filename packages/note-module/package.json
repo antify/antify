@@ -26,8 +26,7 @@
     "@antify/context": "1.0.0",
     "@antify/kit": "1.0.0",
     "@antify/validate": "1.2.2",
-    "@nuxt/kit": "^3.6.5",
-    "@vueuse/core": "^10.3.0"
+    "@nuxt/kit": "^3.6.5"
   },
   "devDependencies": {
     "@nuxt/module-builder": "latest",
@@ -38,6 +37,7 @@
   },
   "peerDependencies": {
     "@antify/ant-toaster-module": "1.0.0",
-    "@antify/antify-ui": "0.0.70"
+    "@antify/antify-ui": "0.0.70",
+    "@antify/dev-module": "1.0.0"
   }
 }

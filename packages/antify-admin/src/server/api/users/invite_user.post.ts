@@ -1,6 +1,5 @@
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
-import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
-import { useGuard } from '~~/composables/useGuard';
+import { useServerGuard } from '@antify/ant-guard';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { HttpForbiddenError } from '~~/server/errors';
 import { Input } from '~~/glue/api/users/invite_user.post';
@@ -14,8 +13,8 @@ import { useCoreClient } from '~~/server/service/useCoreClient';
 import { User } from '~~/server/datasources/core/schemas/user';
 
 export default defineEventHandler(async (event) => {
-  const tenantId = tenantContextMiddleware(event);
-  const guard = useGuard(useAuthorizationHeader(event));
+  const tenantId = await tenantContextMiddleware(event);
+  const guard = await useServerGuard(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_READ_USER, tenantId)) {
     throw new HttpForbiddenError();

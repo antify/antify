@@ -1,15 +1,14 @@
-import { useGuard } from '~~/composables/useGuard';
+import { useServerGuard } from '@antify/ant-guard';
 import { HttpUnauthorizedError } from '~~/server/errors';
-import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { Input, validator } from '~~/glue/api/profile/user.put';
 import { authenticatedMiddleware } from '~~/server/guard/authenticated.middleware';
 import { User } from '~~/server/datasources/core/schemas/user';
 import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler(async (event) => {
-  authenticatedMiddleware(event);
+  await authenticatedMiddleware(event);
 
-  const guard = useGuard(useAuthorizationHeader(event));
+  const guard = await useServerGuard(event);
   const requestData = await readBody<Input>(event);
 
   validator.validate(requestData);

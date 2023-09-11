@@ -1,17 +1,16 @@
-import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
 import { HttpForbiddenError, HttpNotFoundError } from '~~/server/errors';
 import { sendStream } from 'h3';
 import { useMediaService } from '~~/server/service/useMediaService';
-import { useGuard } from '~~/composables/useGuard';
+import { useServerGuard } from '@antify/ant-guard';
 import { User } from '~~/server/datasources/core/schemas/user';
 import { useCoreClient } from '~~/server/service/useCoreClient';
 
 // TODO:: this endpoint makes no sense. Redesign it to use cockpit media endpoint
 export default defineEventHandler(async (event) => {
-  const tenantId = tenantContextMiddleware(event);
-  const guard = useGuard(useAuthorizationHeader(event));
+  const tenantId = await tenantContextMiddleware(event);
+  const guard = await useServerGuard(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_READ_MEDIA, tenantId)) {
     throw new HttpForbiddenError();

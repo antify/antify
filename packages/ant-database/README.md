@@ -18,6 +18,7 @@ It does:
 - [ ] Implement migrate down
 - [ ] Do not always need a schema extension for client. Do it once with a "get schema extension" hook or similar
 - [ ] Find a way to handle schema options like {timestamps: true}
+- [ ] Make migrations dir in configuration not required
 
 ## Usage
 

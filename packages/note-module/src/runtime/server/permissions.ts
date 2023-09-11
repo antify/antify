@@ -14,7 +14,7 @@ export enum PermissionId {
 export const permissions: Permission[] = [
   {
     id: PermissionId.CAN_DELETE_GLOBAL_NOTE,
-    name: 'Can read global notes'
+    name: 'Can delete global notes'
   },
   {
     id: PermissionId.CAN_DELETE_PERSONAL_NOTE,

@@ -1,54 +1,119 @@
-import { describe, test, expect, beforeAll } from 'vitest';
+/**
+ * @vitest-environment jsdom
+ */
+
+import { describe, test, expect, spyOn, beforeEach, vi, afterEach } from 'vitest';
 import { useGuard } from '../useGuard';
 
 describe('useGuard test', async () => {
-  // Info: for all token is "secret" used as secret.
-  const tokenWithoutExp =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MTYyMzkwMjJ9.ygbbkdw2ZRJSTyNSL5o8fKNLngAIQTkGsDCM8g6sGrg';
-  const expieredToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MTYyMzkwMjIsImV4cCI6MTUxNjIzOTAyM30.vK2qplADijF9w834FC2oA4f-fXfrFnSdPeDST8-1nGE';
-  const validToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MTYyMzkwMjIsImV4cCI6MzUxNjIzOTAyMywiaXNTdXBlckFkbWluIjpmYWxzZSwidGVuYW50c0FjY2VzcyI6W3sidGVuYW50SWQiOiIwODE1IiwiaXNBZG1pbiI6ZmFsc2UsInBlcm1pc3Npb25zIjpbIkNBTl9URVNUIl19XSwicGVybWlzc2lvbnMiOlsiQ0FOX1RFU1QiXX0.qnETi24Nv3F4CngfffzmEhJDZxO90zzr5UFAXjJHoX8';
-  const wrongSecretToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MTYyMzkwMjIsImV4cCI6MzUxNjIzOTAyM30.-1-pNZDfn00yEBFQ0Xn7E54meO5aVTad0j3c8HLlACA';
+  let getAuthorizationHeaderSpy: spyOn;
   const superAdminToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MTYyMzkwMjIsImV4cCI6MzUxNjIzOTAyMywiaXNTdXBlckFkbWluIjp0cnVlLCJ0ZW5hbnRzQWNjZXNzIjpbXSwicGVybWlzc2lvbnMiOlsiQ0FOX1RFU1QiXX0.uRvfGB6Vkj-p3xAFINWIaGlrVYDnSwuU3NVCRFB640E';
+    'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6InRlc3QtaWQiLCJpc1N1cGVyQWRtaW4iOnRydWUsInByb3ZpZGVycyI6W3sicHJvdmlkZXJJZCI6ImNvcmUiLCJ0ZW5hbnRJZCI6IiIsInBlcm1pc3Npb25zIjpbIkNBTl9URVNUIl19LHsicHJvdmlkZXJJZCI6InRlbmFudCIsInRlbmFudElkIjoib25lIiwicGVybWlzc2lvbnMiOlsiQ0FOX1RFU1QiXX0seyJwcm92aWRlcklkIjoidGVuYW50IiwidGVuYW50SWQiOiJ0d28iLCJwZXJtaXNzaW9ucyI6WyJDQU5fVEVTVCJdfV0sImV4cCI6MzI1MjQzNzAyNDgsImlhdCI6MTY5MzIxNDI0OH0.pIW16YZ_2047GCb79I5LutThaSxodMaQBS1JyieVhDs';
+  const adminToken =
+    'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6InRlc3QtaWQiLCJpc1N1cGVyQWRtaW4iOmZhbHNlLCJwcm92aWRlcnMiOlt7ImlzQWRtaW4iOnRydWUsInByb3ZpZGVySWQiOiJjb3JlIiwidGVuYW50SWQiOiIiLCJwZXJtaXNzaW9ucyI6WyJDQU5fVEVTVCJdfSx7ImlzQWRtaW4iOnRydWUsInByb3ZpZGVySWQiOiJ0ZW5hbnQiLCJ0ZW5hbnRJZCI6Im9uZSIsInBlcm1pc3Npb25zIjpbIkNBTl9URVNUIl19LHsiaXNBZG1pbiI6dHJ1ZSwicHJvdmlkZXJJZCI6InRlbmFudCIsInRlbmFudElkIjoidHdvIiwicGVybWlzc2lvbnMiOlsiQ0FOX1RFU1QiXX1dLCJleHAiOjMyNTI0MzcwMjQ4LCJpYXQiOjE2OTMyMTQyNDh9.YZbZFFJoYkEJjJr8n3s_dWvdQXrgmgneONmboDoxFi0';
+  const normalToken =
+    'eyJhbGciOiJIUzI1NiJ9.eyJpZCI6InRlc3QtaWQiLCJpc1N1cGVyQWRtaW4iOmZhbHNlLCJwcm92aWRlcnMiOlt7ImlzQWRtaW4iOmZhbHNlLCJwcm92aWRlcklkIjoiY29yZSIsInRlbmFudElkIjoiIiwicGVybWlzc2lvbnMiOlsiQ0FOX1RFU1QiXX0seyJpc0FkbWluIjpmYWxzZSwicHJvdmlkZXJJZCI6InRlbmFudCIsInRlbmFudElkIjoib25lIiwicGVybWlzc2lvbnMiOlsiQ0FOX1RFU1QiXX0seyJpc0FkbWluIjpmYWxzZSwicHJvdmlkZXJJZCI6InRlbmFudCIsInRlbmFudElkIjoidHdvIiwicGVybWlzc2lvbnMiOlsiQ0FOX1RFU1QiXX1dLCJleHAiOjMyNTI0MzcwMjQ4LCJpYXQiOjE2OTMyMTQyNDh9.dP25wYfoXMbbmiuVARBsTME9ExN7wIlyckcGF7cJvVA';
+  vi.mock('../utils');
 
-  test('should validate a token without exp correctly', async () => {
-    const guard = useGuard(tokenWithoutExp);
-
-    expect(guard.isUserLoggedIn).toBeTruthy();
+  beforeEach(async () => {
+    getAuthorizationHeaderSpy = vi.spyOn(await import('../utils'), 'getAuthorizationHeader');
   });
 
-  test('should validate an expiered token correctly', async () => {
-    const guard = useGuard(expieredToken);
-
-    expect(guard.isUserLoggedIn).toBeFalsy();
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
-  test('should validate a valid token correctly', async () => {
-    const guard = useGuard(validToken);
+  test('should give access to a super admin to a single connection', async () => {
+    getAuthorizationHeaderSpy.mockReturnValue(superAdminToken);
 
-    expect(guard.isUserLoggedIn).toBeTruthy();
-    expect(guard.isSuperAdmin).toBeFalsy();
-    expect(guard.hasPermissionTo('CAN_TEST', '0815')).toBeTruthy();
-    expect(guard.hasPermissionTo(['CAN_TEST'], '0815')).toBeTruthy();
-    expect(guard.hasPermissionTo(['CAN_NOT_TEST'], '0815')).toBeFalsy();
+    const guard = useGuard();
+
+    expect(guard.isLoggedIn()).toBeTruthy();
+    expect(guard.isSuperAdmin()).toBeTruthy();
+    expect(guard.hasPermissionTo('CAN_TEST', 'core')).toBeTruthy();
+    expect(guard.hasPermissionTo(['CAN_TEST'], 'core')).toBeTruthy();
+    expect(guard.hasPermissionTo('CAN_NOT_TEST', 'tenant', 'one')).toBeTruthy();
+    expect(guard.hasPermissionTo(['CAN_NOT_TEST'], 'core')).toBeTruthy();
   });
 
-  test('should validate an invlaid token correctly', async () => {
-    const guard = useGuard(wrongSecretToken);
+  test('should give access to a super admin to a multi connection', async () => {
+    getAuthorizationHeaderSpy.mockReturnValue(superAdminToken);
 
-    expect(guard.isUserLoggedIn).toBeFalsy();
+    const guard = useGuard();
+
+    expect(guard.isLoggedIn()).toBeTruthy();
+    expect(guard.isSuperAdmin()).toBeTruthy();
+    expect(guard.hasPermissionTo('CAN_TEST', 'tenant', 'one')).toBeTruthy();
+    expect(guard.hasPermissionTo(['CAN_TEST'], 'tenant', 'one')).toBeTruthy();
+    expect(guard.hasPermissionTo('CAN_NOT_TEST', 'tenant', 'one')).toBeTruthy();
+    expect(guard.hasPermissionTo(['CAN_NOT_TEST'], 'tenant', 'one')).toBeTruthy();
   });
 
-  test('should give access to a super admin', async () => {
-    const guard = useGuard(superAdminToken);
+  test('should give access to an admin to a single connection', async () => {
+    getAuthorizationHeaderSpy.mockReturnValue(adminToken);
 
-    expect(guard.isUserLoggedIn).toBeTruthy();
-    expect(guard.isSuperAdmin).toBeTruthy();
-    expect(guard.hasPermissionTo('CAN_TEST', '0815')).toBeTruthy();
-    expect(guard.hasPermissionTo(['CAN_TEST'], '0815')).toBeTruthy();
-    expect(guard.hasPermissionTo(['CAN_NOT_TEST'], '0815')).toBeTruthy();
+    const guard = useGuard();
+
+    expect(guard.isLoggedIn()).toBeTruthy();
+    expect(guard.isSuperAdmin()).toBeFalsy();
+    expect(guard.hasPermissionTo('CAN_TEST', 'core')).toBeTruthy();
+    expect(guard.hasPermissionTo(['CAN_TEST'], 'core')).toBeTruthy();
+    expect(guard.hasPermissionTo('CAN_NOT_TEST', 'core')).toBeTruthy();
+    expect(guard.hasPermissionTo(['CAN_NOT_TEST'], 'core')).toBeTruthy();
+  });
+
+  test('should give access to an admin to a multi connection', async () => {
+    getAuthorizationHeaderSpy.mockReturnValue(adminToken);
+
+    const guard = useGuard();
+
+    expect(guard.isLoggedIn()).toBeTruthy();
+    expect(guard.isSuperAdmin()).toBeFalsy();
+    expect(guard.hasPermissionTo('CAN_TEST', 'tenant', 'one')).toBeTruthy();
+    expect(guard.hasPermissionTo(['CAN_TEST'], 'tenant', 'one')).toBeTruthy();
+    expect(guard.hasPermissionTo('CAN_NOT_TEST', 'tenant', 'one')).toBeTruthy();
+    expect(guard.hasPermissionTo(['CAN_NOT_TEST'], 'tenant', 'one')).toBeTruthy();
+  });
+
+  test('should give access to a normal user to a single connection', async () => {
+    getAuthorizationHeaderSpy.mockReturnValue(normalToken);
+
+    const guard = useGuard();
+
+    expect(guard.isLoggedIn()).toBeTruthy();
+    expect(guard.isSuperAdmin()).toBeFalsy();
+    expect(guard.hasPermissionTo('CAN_TEST', 'core')).toBeTruthy();
+    expect(guard.hasPermissionTo(['CAN_TEST'], 'core')).toBeTruthy();
+    expect(guard.hasPermissionTo('CAN_NOT_TEST', 'core')).toBeFalsy();
+    expect(guard.hasPermissionTo(['CAN_NOT_TEST'], 'core')).toBeFalsy();
+  });
+
+  test('should give access to a normal user to a multi connection', async () => {
+    getAuthorizationHeaderSpy.mockReturnValue(normalToken);
+
+    const guard = useGuard();
+
+    expect(guard.isLoggedIn()).toBeTruthy();
+    expect(guard.isSuperAdmin()).toBeFalsy();
+    expect(guard.hasPermissionTo('CAN_TEST', 'tenant', 'one')).toBeTruthy();
+    expect(guard.hasPermissionTo(['CAN_TEST'], 'tenant', 'one')).toBeTruthy();
+    expect(guard.hasPermissionTo('CAN_NOT_TEST', 'tenant', 'one')).toBeFalsy();
+    expect(guard.hasPermissionTo(['CAN_NOT_TEST'], 'tenant', 'one')).toBeFalsy();
+  });
+
+  test('should not give access to a normal user to a multi connection with a tenant which does not exists', async () => {
+    getAuthorizationHeaderSpy.mockReturnValue(normalToken);
+
+    const guard = useGuard();
+
+    expect(guard.hasPermissionTo('CAN_TEST', 'tenant', 'notExistingOne')).toBeFalsy();
+  });
+
+  test('should not give access to a normal user to a connection which does not exists', async () => {
+    getAuthorizationHeaderSpy.mockReturnValue(normalToken);
+
+    const guard = useGuard();
+
+    expect(guard.hasPermissionTo('CAN_TEST', 'notExistingOne')).toBeFalsy();
   });
 });

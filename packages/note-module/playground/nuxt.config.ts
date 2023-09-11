@@ -1,5 +1,6 @@
 import Module from '..';
 import AntToasterModule from '@antify/ant-toaster-module';
+import AntDevModule from '@antify/dev-module';
 
 export default defineNuxtConfig({
   modules: [
@@ -7,6 +8,7 @@ export default defineNuxtConfig({
     AntToasterModule,
     // TODO:: remove me and replace with antify-ui
     '@nuxtjs/tailwindcss',
+    AntDevModule
   ],
   buildModules: [
     'nuxt-storm',

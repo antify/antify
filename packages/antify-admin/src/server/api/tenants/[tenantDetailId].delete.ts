@@ -1,16 +1,15 @@
 import { tenantContextMiddleware } from '~~/server/guard/tenantContext.middleware';
-import { useGuard } from '~~/composables/useGuard';
-import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { HttpForbiddenError } from '~~/server/errors';
 import { Tenant } from '~~/server/datasources/core/schemas/tenant';
 import { useCoreClient } from '~~/server/service/useCoreClient';
+import { useServerGuard } from '@antify/ant-guard';
 
 export default defineEventHandler(async (event) => {
-  tenantContextMiddleware(event);
+  await tenantContextMiddleware(event);
 
-  const guard = useGuard(useAuthorizationHeader(event));
+  const guard = await useServerGuard(event);
   const tenantId = useTenantHeader(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_DELETE_TENANT, tenantId)) {

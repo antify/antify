@@ -1,5 +1,0 @@
-<template>
-  <slot />
-
-  <AntToasterModule />
-</template>

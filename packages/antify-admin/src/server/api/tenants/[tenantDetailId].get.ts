@@ -1,6 +1,5 @@
-import { useGuard } from '~~/composables/useGuard';
+import { useServerGuard } from '@antify/ant-guard';
 import { HttpForbiddenError, HttpNotFoundError } from '~~/server/errors';
-import { useAuthorizationHeader } from '~~/server/utils/useAuthorizationHeader';
 import { useTenantHeader } from '~~/server/utils/useTenantHeader';
 import { PermissionId } from '~~/server/datasources/static/permissions';
 import { Response } from '~~/glue/api/tenants/[tenantDetailId].get';
@@ -9,7 +8,7 @@ import { Tenant } from '~~/server/datasources/core/schemas/tenant';
 import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler<Response>(async (event) => {
-  const guard = useGuard(useAuthorizationHeader(event));
+  const guard = await useServerGuard(event);
 
   if (!guard.isUserLoggedIn) {
     throw new HttpForbiddenError();

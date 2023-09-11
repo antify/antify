@@ -13,7 +13,7 @@ export const getDatabaseClientFromRequest = async (
   // TODO:: find a propper way to extend schemas. Global registry etc?
   extendSchemaCb?: (client: Client) => void
 ) => {
-  const context = await getContext(event, contextConfiguration);
+  const context = getContext(event, contextConfiguration);
   const client = getDatabaseClient(context.id);
 
   if (context.isSingleTenancy) {

@@ -1,6 +1,5 @@
 import { tenantContextMiddleware } from '../../../../guard/tenantContext.middleware';
-import { useGuard } from '../../../../../composables/useGuard';
-import { useAuthorizationHeader } from '../../../../utils/useAuthorizationHeader';
+import { useServerGuard } from '@antify/ant-guard';
 import { PermissionId } from '../../../../datasources/static/permissions';
 import { HttpForbiddenError, HttpNotFoundError } from '../../../../errors';
 import { sendStream } from 'h3';
@@ -9,8 +8,8 @@ import { useCoreClient } from '~~/server/service/useCoreClient';
 import { Tenant } from '~~/server/datasources/core/schemas/tenant';
 
 export default defineEventHandler(async (event) => {
-  const tenantId = tenantContextMiddleware(event);
-  const guard = useGuard(useAuthorizationHeader(event));
+  const tenantId = await tenantContextMiddleware(event);
+  const guard = await useServerGuard(event);
 
   if (!guard.hasPermissionTo(PermissionId.CAN_READ_MEDIA, tenantId)) {
     throw new HttpForbiddenError();

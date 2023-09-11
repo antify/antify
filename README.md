@@ -12,12 +12,17 @@ This repository is a mono repository.
 
 Install dependencies
 
-TODO:: remove --shamefully-hoist flag when https://github.com/nuxt/framework/discussions/939 is fixed
-
-    pnpm i --shamefully-hoist
+    pnpm i
 
 Run for development required containers
 
     docker compose up -d
 
 Navigate to the project, module or package you want to develop and look into package.json for useful commands.
+
+# TODO's
+
+- [ ] Unify context configuration
+- [ ] Unify provider configuration
+- [ ] Add lerna
+- [ ] Finish packaging and rollup pipeline

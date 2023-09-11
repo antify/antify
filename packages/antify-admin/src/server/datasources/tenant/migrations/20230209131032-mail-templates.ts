@@ -9,13 +9,13 @@ export default defineMigration({
 
     await client.getModel<MailTemplate>('mail_templates').insertMany([
       {
-        templateId: MailTemplateId.RESET_PASSWORD,
+        mailTemplateId: MailTemplateId.RESET_PASSWORD,
         title: 'Passwort zurücksetzen',
         content: '<div>Passwort zurücksetzten</div>',
         info: 'Wird versendet, wenn der Nutzer auf "Paswort vergessen" klickt.',
       },
       {
-        templateId: MailTemplateId.INVITE_USER,
+        mailTemplateId: MailTemplateId.INVITE_USER,
         title: 'Neuen Benutzer einladen',
         content: `
             <div contenteditable="true" translate="no" class="ProseMirror" tabindex="0">

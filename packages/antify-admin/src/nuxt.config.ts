@@ -11,6 +11,66 @@ const tenantContext: ContextConfigurationItem = {
 
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
+  modules: [
+    // TODO:: remove me and replace with antify-ui
+    '@nuxtjs/tailwindcss',
+    '@antify/ant-media-module',
+    '@antify/mailer-module',
+    '@antify/note-module',
+    '@antify/auth-module',
+    '@antify/dev-module',
+  ],
+  runtimeConfig: {
+    systemMail: process.env.SYSTEM_MAIL,
+    baseUrl: process.env.BASE_URL,
+    passwordSalt: process.env.PASSWORD_SALT,
+    contextConfig: [coreContext, tenantContext],
+  },
+  antAuthModule: {
+    providers: [
+      {
+        id: 'core',
+        isSingleTenancy: true,
+        jwtSecret: process.env.JWT_SECRET,
+        jwtExpiration: '2h',
+        passwordSalt: process.env.PASSWORD_SALT,
+        canRegister: false
+      }
+    ]
+  },
+  antMediaModule: {
+    providers: [
+      {
+        ...coreContext,
+        serverUrl: 'http://localhost:4000',
+      },
+      {
+        ...tenantContext,
+        serverUrl: 'http://localhost:4000',
+      },
+    ],
+  },
+  antMailerModule: {
+    systemMail: '"Testsystem 👻" <noreply@example.com>',
+    providers: [
+      {
+        ...coreContext,
+        smtpHost: 'localhost',
+        smtpPort: '1025',
+      },
+      {
+        ...tenantContext,
+        smtpHost: 'localhost',
+        smtpPort: '1025',
+      },
+    ],
+  },
+  antNoteModule: {
+    providers: [
+      coreContext,
+      tenantContext
+    ],
+  },
   tailwindcss: {
     config: {
       // plugins: [tailwindForms],
@@ -33,56 +93,5 @@ export default defineNuxtConfig({
         './node_modules/@antify/antify-ui/dist/index.{js,vue,ts}',
       ],
     },
-  },
-  modules: [
-    // TODO:: remove me and replace with antify-ui
-    '@nuxtjs/tailwindcss',
-    '@antify/ant-media-module',
-    '@antify/ant-mailer-module',
-    '@antify/note-module',
-  ],
-  runtimeConfig: {
-    baseUrl: process.env.BASE_URL,
-    systemMail: process.env.SYSTEM_MAIL,
-    passwordSalt: process.env.PASSWORD_SALT,
-    contextConfig: [coreContext, tenantContext],
-  },
-  antMediaModule: {
-    providers: [
-      {
-        ...coreContext,
-        serverUrl: 'http://localhost:4000',
-      },
-      {
-        ...tenantContext,
-        serverUrl: 'http://localhost:4000',
-      },
-    ],
-  },
-  antMailerModule: {
-    providers: [
-      {
-        ...coreContext,
-        smtpHost: 'localhost',
-        smtpPort: '1025',
-      },
-      {
-        ...tenantContext,
-        smtpHost: 'localhost',
-        smtpPort: '1025',
-      },
-    ],
-  },
-  antNoteModule: {
-    providers: [
-      {
-        id: 'core',
-        isSingleTenancy: true,
-      },
-      {
-        id: 'tenant',
-        isSingleTenancy: false,
-      },
-    ],
   },
 });

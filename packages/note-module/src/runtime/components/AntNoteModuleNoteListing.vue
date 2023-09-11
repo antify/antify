@@ -10,10 +10,9 @@ const props = defineProps<{
   isGlobalVisible: boolean;
 }>();
 const showCreateNote = ref(false);
-
 const url = `/api/note-module/notes?isGlobalVisible=${props.isGlobalVisible}`;
-const { data, execute, refresh, status } = useFetch(
-  () => url,
+const { data, execute, refresh, status, error } = useFetch(
+  url,
   {
     key: url + props.provider + props.tenantId,
     headers: {
@@ -23,7 +22,6 @@ const { data, execute, refresh, status } = useFetch(
     immediate: false
   }
 );
-
 onMounted(() => execute());
 
 function onCreated(note) {

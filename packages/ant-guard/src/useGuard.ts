@@ -1,71 +1,96 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { type JWTPayload } from 'jose';
+import * as jose from 'jose';
+import { getAuthorizationHeader, TOKEN_COOKIE_KEY } from './utils';
+import { H3Event } from 'h3';
+import { serialize } from 'cookie-es';
 
-export type AntJwtPayload = {
-  isSuperAdmin: boolean;
-  tenantsAccess: {
-    tenantId: string;
-    isAdmin: boolean;
-    permissions: string[];
-  }[];
-} & JwtPayload;
-
-// TODO:: make changeable
-export const TOKEN_COOKIE_KEY = 'antt';
-export const useGuard = (rawToken: string | null) => {
-  let token: AntJwtPayload | null = null;
-
-  try {
-    // TODO:: get secret from somewhere
-    const payload = jwt.verify(rawToken as string, 'secret') as JwtPayload;
-
-    // Jwt.verify returns payload or string. Only work with object.
-    if (typeof token === 'object') {
-      token = {
-        ...{
-          isSuperAdmin: false,
-          tenantsAccess: [],
-        },
-        ...payload,
-      };
-    }
-  } catch (e) {
-    // TODO:: log invlaid formats to keep an eye on hacky things
-    // Catch it because a not valid token format throw an error.
-    token = null;
+export type JsonWebToken = {
+  id?: string,
+  isSuperAdmin?: boolean;
+  providers?: JsonWebTokenProvider[];
+} & JWTPayload;
+export type JsonWebTokenProvider = {
+  providerId: string;
+  tenantId: string | null;
+  isAdmin: boolean;
+  permissions: string[];
+}
+export class Guard {
+  constructor(private token: JsonWebToken | null = null) {
   }
 
-  return {
-    userId: token?.id || null,
-    isUserLoggedIn: token !== null,
-    isSuperAdmin: token?.isSuperAdmin || false,
-    hasPermissionTo: (permission: string[] | string, tenantId: string) => {
-      if (token?.isSuperAdmin) {
-        return true;
-      }
+  setToken(token: JsonWebToken | null) {
+    this.token = token;
+  }
 
-      const tenantAccess = (token?.tenantsAccess || []).find(
-        (tenantAccessItem) => tenantAccessItem.tenantId === tenantId
+  getToken() {
+    return this.token;
+  }
+
+  userId() {
+    return this.token?.id;
+  }
+
+  isLoggedIn(): boolean {
+    return this.token !== null;
+  }
+
+  isSuperAdmin(): boolean {
+    return this.token?.isSuperAdmin || false;
+  }
+
+  hasPermissionTo(permission: string[] | string, providerId: string, tenantId: string | null = null) {
+    if (this.token?.isSuperAdmin) {
+      return true;
+    }
+
+    const provider = (this.token?.providers || [])
+      .find((provider) => tenantId ?
+        tenantId === provider.tenantId && provider.providerId === providerId :
+        provider.providerId === providerId);
+
+    if (!provider) {
+      return false;
+    }
+
+    if (provider.isAdmin) {
+      return true;
+    }
+
+    if (Array.isArray(permission)) {
+      return (provider.permissions || []).some((permissionItem) =>
+        permission.some(
+          (permissionToFind) => permissionToFind === permissionItem
+        )
       );
+    }
 
-      if (!tenantAccess) {
-        return false;
-      }
+    return (provider.permissions || []).some(
+      (permissionItem) => permissionItem === permission
+    );
+  }
 
-      if (tenantAccess.isAdmin) {
-        return true;
-      }
+  logoutUser() {
+    if (typeof document !== 'undefined' && document?.cookie) {
+      document.cookie = serialize(TOKEN_COOKIE_KEY, '', {
+        expires: new Date()
+      });
 
-      if (Array.isArray(permission)) {
-        return tenantAccess.permissions.some((permissionItem) =>
-          permission.some(
-            (permissionToFind) => permissionToFind === permissionItem
-          )
-        );
-      }
+      this.token = null;
+    }
+  }
 
-      return tenantAccess.permissions.some(
-        (permissionItem) => permissionItem === permission
-      );
-    },
-  };
+  reset() {
+    const rawToken = getAuthorizationHeader();
+
+    this.token = rawToken ? jose.decodeJwt(rawToken) : null;
+  }
+}
+
+export const useGuard = (event: H3Event | undefined) => {
+  const rawToken = getAuthorizationHeader(event);
+  // TODO:: catch invalid token format error
+  const payload = rawToken ? jose.decodeJwt(rawToken) : null;
+
+  return new Guard(payload);
 };

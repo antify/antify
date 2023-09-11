@@ -9,8 +9,11 @@ TODO::
 ## TODO's
 
 - [ ] Write docs
-- [ ] Extend token logic to have permissions for single database apps too
+- [x] Extend token logic to have permissions for single database apps too
 - [ ] Implement refresh token: https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html
+- [ ] Improve security by adding issuer and audience https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1
+- [ ] Improve security by using maxTokenAge from JWTVerifyOptions from jwtVerify function 
+- [ ] Add security logs
 
 ## Development
 

@@ -1,6 +1,5 @@
 import { tenantContextMiddleware } from '../../guard/tenantContext.middleware';
-import { useGuard } from '~~/composables/useGuard';
-import { useAuthorizationHeader } from '../../utils/useAuthorizationHeader';
+import { useServerGuard } from '@antify/ant-guard';
 import { HttpForbiddenError } from '../../errors';
 import { PermissionId } from '../../datasources/static/permissions';
 import { useMediaService } from '../../service/useMediaService';
@@ -12,8 +11,8 @@ import { useCoreClient } from '~~/server/service/useCoreClient';
  * TODO:: remove this request and implement image remove logic in user.put request.
  */
 export default defineEventHandler(async (event) => {
-  const tenantId = tenantContextMiddleware(event);
-  const guard = useGuard(useAuthorizationHeader(event));
+  const tenantId = await tenantContextMiddleware(event);
+  const guard = await useServerGuard(event);
   const coreClient = await useCoreClient().connect();
   const user = await coreClient
     .getModel<User>('users')

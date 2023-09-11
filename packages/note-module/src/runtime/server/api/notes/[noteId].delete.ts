@@ -6,10 +6,7 @@ import { PermissionId } from '../../permissions';
 
 export default defineEventHandler(async (event) => {
   const contextConfig = useRuntimeConfig().antNote.providers;
-
-  isLoggedInHandler(event);
-  await isAuthorizedHandler(event, 'CAN_DELETE_NOTE', contextConfig);
-
+  const guard = await isLoggedInHandler(event);
   const client = await getDatabaseClientFromRequest(
     event,
     contextConfig,
@@ -26,11 +23,8 @@ export default defineEventHandler(async (event) => {
       contextConfig
     );
 
-    if (!note.isGlobalVisible && note.owner !== guard.userId && !guard.isSuperAdmin) {
-      throw createError({
-        status: 500,
-        message: 'You have no access to delete this note'
-      });
+    if (!note.isGlobalVisible && note.owner !== guard.userId() && !guard.isSuperAdmin) {
+      throw new Error('You have no access to delete this note');
     }
 
     await note.remove();

@@ -1,8 +1,7 @@
 import { tenantContextMiddleware } from '../../guard/tenantContext.middleware';
-import { useAuthorizationHeader } from '../../utils/useAuthorizationHeader';
 import { PermissionId } from '../../datasources/static/permissions';
 import { HttpBadRequestError, HttpForbiddenError } from '../../errors';
-import { useGuard } from '~~/composables/useGuard';
+import { useServerGuard } from '@antify/ant-guard';
 import { useMediaStorage } from '../../service/useMediaService';
 import formidable, { Files, File } from 'formidable';
 import { User } from '~~/server/datasources/core/schemas/user';
@@ -10,8 +9,8 @@ import { Media } from '~~/server/datasources/core/schemas/media';
 import { useCoreClient } from '~~/server/service/useCoreClient';
 
 export default defineEventHandler(async (event) => {
-  const tenantId = tenantContextMiddleware(event);
-  const guard = useGuard(useAuthorizationHeader(event));
+  const tenantId = await tenantContextMiddleware(event);
+  const guard = await useServerGuard(event);
   const coreClient = await useCoreClient().connect();
   const user = await coreClient
     .getModel<User>('users')
