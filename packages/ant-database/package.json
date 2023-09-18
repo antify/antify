@@ -27,7 +27,7 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@nuxtjs/eslint-config-typescript": "latest",
+    "@nuxt/eslint-config": "^0.2.0",
     "c8": "latest",
     "eslint": "latest",
     "standard-version": "latest",
@@ -36,10 +36,10 @@
     "vitest": "latest"
   },
   "dependencies": {
-    "mongoose": "^6.8.1",
+    "h3": "^1.7.1",
     "jiti": "^1.16.1",
-    "pathe": "^1.0.0",
-    "h3": "^1.7.1"
+    "mongoose": "^6.8.1",
+    "pathe": "^1.0.0"
   },
   "optionalDependencies": {
     "fsevents": "~2.3.2"

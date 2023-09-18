@@ -1,10 +1,10 @@
 {
   "extends": [
-    "@nuxtjs/eslint-config-typescript"
+    "@nuxt/eslint-config"
   ],
   "rules": {
-    "@typescript-eslint/no-unused-vars": [
-      "off"
-    ]
+    "no-extra-semi": 0,
+    "vue/html-self-closing": 0,
+    "vue/singleline-html-element-content-newline": 0
   }
 }

@@ -1,6 +1,7 @@
 # Ant Database
 
 It does:
+
 - [x] Merges multiple schemas to one
 - [x] Provide a client for each database
 - [x] Make fixtures logic
@@ -19,6 +20,7 @@ It does:
 - [ ] Do not always need a schema extension for client. Do it once with a "get schema extension" hook or similar
 - [ ] Find a way to handle schema options like {timestamps: true}
 - [ ] Make migrations dir in configuration not required
+- [ ] Allow multiple migration dirs to add them from different positions (modules)
 
 ## Usage
 

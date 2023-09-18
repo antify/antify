@@ -1,15 +1,20 @@
-import { join } from 'pathe';
-import { DatabaseConfiguration } from '../types';
+import {join} from 'pathe';
+import {DatabaseConfiguration} from '../types';
 
-export const getAbsoluteFixturesDir = (
-  databaseConfig: DatabaseConfiguration,
-  projectRootDir: string
-) => {
-  let fixturesDir = databaseConfig?.fixturesDir;
+export const getAbsoluteFixturesDirs = (
+    databaseConfig: DatabaseConfiguration,
+    projectRootDir: string
+): string[] => {
+    let fixturesDir = databaseConfig?.fixturesDir;
 
-  if (!fixturesDir) {
-    fixturesDir = `fixtures/${databaseConfig.name}`;
-  }
+    if (!fixturesDir) {
+        // fixturesDir = `fixtures/${databaseConfig.name}`;
+        return []
+    }
 
-  return join(projectRootDir, fixturesDir);
+    if (!Array.isArray(fixturesDir)) {
+        fixturesDir = [fixturesDir];
+    }
+
+    return fixturesDir.map((dir) => join(projectRootDir, dir));
 };
